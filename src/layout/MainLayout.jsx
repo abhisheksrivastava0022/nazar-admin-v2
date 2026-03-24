@@ -31,7 +31,7 @@ const MainLayout = () => {
             <div className="">
               {/* Main content area */}
               <div className="row">
-                <div className="col-md-4 g-0">
+                <div className="col-md-3 g-0">
                   <div className="menu-header">
                     {/* User Detail's */}
                     <div className="user-detail">
@@ -61,7 +61,24 @@ const MainLayout = () => {
                         >
                           <i class="bi bi-people"></i> User Request
                         </button>
-
+                        <button
+                          class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab2"
+                          type="button"
+                          onClick={() => navigate("/approved-request")}
+                        >
+                          <i class="bi bi-people"></i> Approved Request
+                        </button>
+                        <button
+                          class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab2"
+                          type="button"
+                          onClick={() => navigate("/completed-request")}
+                        >
+                          <i class="bi bi-people"></i> Completed Request
+                        </button>
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
                           data-bs-toggle="pill"
@@ -103,7 +120,7 @@ const MainLayout = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-md-8 g-0">
+                <div className="col-md-9 g-0">
                   {/* Calling Component By using Outlet */}
                   <Outlet />
                 </div>

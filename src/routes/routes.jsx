@@ -1,5 +1,7 @@
 import Login from "../Auth/Login ";
 import NotFound from "../Component/NotFound";
+import ApprovedListing from "../Component/Producer/ApprovedListing.";
+import CompletedListing from "../Component/Producer/CompletedListing";
 import ProducerListing from "../Component/Producer/ProducerListing";
 import ProducerCreateUpdate from "../Component/Producer/ProducterCreateUpdate";
 import RequestListing from "../Component/Producer/RequestListing";
@@ -17,6 +19,14 @@ export const routes = [
       {
         index: true,
         element: <RequestListing />,
+      },
+      {
+        path: "/approved-request",
+        element: <ApprovedListing />,
+      },
+      {
+        path: "/completed-request",
+        element: <CompletedListing />,
       },
       {
         path: "/user-request",
