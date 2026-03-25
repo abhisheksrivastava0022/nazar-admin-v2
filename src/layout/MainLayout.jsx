@@ -90,9 +90,18 @@ const MainLayout = () => {
                         </button>
 
                         <button
-                          class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
+                          class={`nav-link ${location.pathname == "/intermediary" ? "active" : ""}`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab5"
+                          type="button"
+                          onClick={() => navigate("/intermediary")}
+                        >
+                          <i class="bi bi-cassette"></i> Intermediary
+                        </button>
+                        <button
+                          class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab6"
                           type="button"
                           onClick={() => navigate("/user")}
                         >
