@@ -91,7 +91,9 @@ const RequestListing = () => {
       urlParams.set("producer_id", params.producer_id);
     }
 
-    const newUrl = urlParams.toString() ? `?${urlParams.toString()}` : window.location.pathname;
+    const newUrl = urlParams.toString()
+      ? `?${urlParams.toString()}`
+      : window.location.pathname;
     navigate(newUrl, { replace: true });
   };
 
@@ -271,7 +273,7 @@ const RequestListing = () => {
 
       if (response.status) {
         setSuccess(
-          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`
+          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`,
         );
         loadData();
         handleActionClose();
@@ -280,7 +282,7 @@ const RequestListing = () => {
       }
     } catch (err) {
       setError(
-        `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`
+        `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`,
       );
       console.error("Error processing request:", err);
     } finally {
@@ -311,7 +313,7 @@ const RequestListing = () => {
       case 2:
         return (
           <Chip
-            label="Approved"
+            label="Verified"
             color="success"
             size="small"
             sx={{ fontWeight: 500 }}

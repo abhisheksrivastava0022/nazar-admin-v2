@@ -298,7 +298,7 @@ const ProducerListing = () => {
       >
         <Grid container spacing={2} alignItems="center">
           {/* Search Bar */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ md: 5 }}>
             <TextField
               fullWidth
               placeholder="Search producers by name, email, or mobile..."
@@ -318,8 +318,8 @@ const ProducerListing = () => {
           </Grid>
 
           {/* Rows Per Page Selector */}
-          <Grid item xs={12} md={4}>
-            <FormControl size="small" sx={{ minWidth: 120 }}>
+          <Grid size={{ md: 4 }}>
+            <FormControl size="small" fullWidth>
               <InputLabel id="rows-per-page-label">Rows per page</InputLabel>
               <Select
                 labelId="rows-per-page-label"
@@ -339,9 +339,7 @@ const ProducerListing = () => {
 
           {/* Action Buttons */}
           <Grid
-            item
-            xs={12}
-            md={2}
+            size={{ md: 3 }}
             sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
           >
             <Tooltip title="Refresh">

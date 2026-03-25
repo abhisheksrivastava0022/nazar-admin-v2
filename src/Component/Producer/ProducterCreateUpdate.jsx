@@ -31,6 +31,8 @@ import {
   Phone as PhoneIcon,
   Cancel as CancelIcon,
 } from "@mui/icons-material";
+import HomeIcon from "@mui/icons-material/Home";
+import BusinessIcon from "@mui/icons-material/Business";
 import ApiClient from "../../API/ApiClient";
 
 const ProducerCreateUpdate = () => {
@@ -46,6 +48,8 @@ const ProducerCreateUpdate = () => {
     last_name: "",
     email: "",
     mobile: "",
+    address: "",
+    production_house: "",
     status: 1,
   });
 
@@ -395,6 +399,54 @@ const ProducerCreateUpdate = () => {
                         startAdornment: (
                           <InputAdornment position="start">
                             <PhoneIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Address"
+                      name="Address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      error={!!errors.address}
+                      helperText={errors.address}
+                      // required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <HomeIcon color="action" />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid size={{ md: 6 }}>
+                    <TextField
+                      fullWidth
+                      label="Production House"
+                      name="production_house"
+                      value={formData.production_house}
+                      onChange={handleInputChange}
+                      error={!!errors.production_house}
+                      helperText={errors.production_house}
+                      // required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <BusinessIcon color="action" />
                           </InputAdornment>
                         ),
                       }}

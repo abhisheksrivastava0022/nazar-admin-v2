@@ -59,16 +59,16 @@ const MainLayout = () => {
                           type="button"
                           onClick={() => navigate("/user-request")}
                         >
-                          <i class="bi bi-people"></i> User Request
+                          <i class="bi bi-person-lines-fill"></i> User Request
                         </button>
                         <button
                           class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab2"
                           type="button"
-                          onClick={() => navigate("/approved-request")}
+                          onClick={() => navigate("/verified-request")}
                         >
-                          <i class="bi bi-people"></i> Approved Request
+                          <i class="bi bi-patch-check"></i> Verified Request
                         </button>
                         <button
                           class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
@@ -77,7 +77,7 @@ const MainLayout = () => {
                           type="button"
                           onClick={() => navigate("/completed-request")}
                         >
-                          <i class="bi bi-people"></i> Completed Request
+                          <i class="bi bi-check-circle"></i> Completed Request
                         </button>
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
@@ -96,7 +96,7 @@ const MainLayout = () => {
                           type="button"
                           onClick={() => navigate("/user")}
                         >
-                          <i class="bi bi-people"></i> User
+                          <i class="bi bi-person"></i> User
                         </button>
 
                         {/* Log Out Btn */}

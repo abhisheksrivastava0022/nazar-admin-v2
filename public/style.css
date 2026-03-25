@@ -709,3 +709,7 @@ h3 {
 .border-radius-norm {
   border-radius: 0 5px 5px 0;
 }
+
+.MuiFormLabel-asterisk {
+  color: red !important;
+}

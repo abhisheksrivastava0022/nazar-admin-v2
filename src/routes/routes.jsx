@@ -21,7 +21,7 @@ export const routes = [
         element: <RequestListing />,
       },
       {
-        path: "/approved-request",
+        path: "/verified-request",
         element: <ApprovedListing />,
       },
       {
