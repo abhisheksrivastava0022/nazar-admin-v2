@@ -314,12 +314,21 @@ const RequestListing = () => {
         return (
           <Chip
             label="Verified"
-            color="success"
+            color="info"
             size="small"
             sx={{ fontWeight: 500 }}
           />
         );
       case 3:
+        return (
+          <Chip
+            label="Approved"
+            color="success"
+            size="small"
+            sx={{ fontWeight: 500 }}
+          />
+        );
+      case 4:
         return (
           <Chip
             label="Rejected"
