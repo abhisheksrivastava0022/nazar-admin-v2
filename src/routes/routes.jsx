@@ -69,6 +69,19 @@ export const routes = [
         path: "/history",
         element: <History />,
       },
+
+      {
+        path: "/intermediary",
+        element: <IntermediaryListing />,
+      },
+      {
+        path: "/intermediary/create",
+        element: <IntermediaryCreateUpdate />,
+      },
+      {
+        path: "/intermediary/update/:id",
+        element: <IntermediaryCreateUpdate />,
+      },
     ],
   },
   {
