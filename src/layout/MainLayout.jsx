@@ -75,9 +75,9 @@ const MainLayout = () => {
                           data-bs-toggle="pill"
                           data-bs-target="#tab3"
                           type="button"
-                          onClick={() => navigate("/completed-request")}
+                          onClick={() => navigate("/approved-request")}
                         >
-                          <i class="bi bi-check-circle"></i> Completed Request
+                          <i class="bi bi-check-circle"></i> Approved Request
                         </button>
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
