@@ -47,6 +47,8 @@ const RequestFilter = ({
   // Refresh props
   onRefresh,
   onClearProducer,
+
+  statusConfig,
 }) => {
   return (
     <Paper
@@ -152,9 +154,11 @@ const RequestFilter = ({
               sx={{ borderRadius: 2 }}
             >
               <MenuItem value="all">All Status</MenuItem>
-              <MenuItem value="1">Pending</MenuItem>
-              <MenuItem value="2">Approved</MenuItem>
-              <MenuItem value="3">Rejected</MenuItem>
+              {Object.entries(statusConfig).map(([key, value]) => (
+                <MenuItem key={key} value={key}>
+                  {value.label}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
         </Grid>

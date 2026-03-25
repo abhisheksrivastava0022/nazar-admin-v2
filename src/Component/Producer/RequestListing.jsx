@@ -299,48 +299,29 @@ const RequestListing = () => {
   };
 
   // Helper functions
-  const getStatusChip = (status) => {
-    switch (status) {
-      case 1:
-        return (
-          <Chip
-            label="Pending"
-            color="warning"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      case 2:
-        return (
-          <Chip
-            label="Verified"
-            color="info"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      case 3:
-        return (
-          <Chip
-            label="Approved"
-            color="success"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      case 4:
-        return (
-          <Chip
-            label="Rejected"
-            color="error"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      default:
-        return <Chip label="Unknown" color="default" size="small" />;
-    }
+  const statusConfig = {
+    1: { label: "Pending", color: "warning" },
+    2: { label: "Verified", color: "info" },
+    3: { label: "Approved", color: "success" },
+    4: { label: "Rejected", color: "error" },
+    5: { label: "Declined", color: "error" },
   };
+
+  // const getStatusChip = (status) => {
+  //   const config = statusConfig[status] || {
+  //     label: "Unknown",
+  //     color: "default",
+  //   };
+
+  //   return (
+  //     <Chip
+  //       label={config.label}
+  //       color={config.color}
+  //       size="small"
+  //       sx={{ fontWeight: 500 }}
+  //     />
+  //   );
+  // };
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -358,8 +339,10 @@ const RequestListing = () => {
   const stats = {
     totalRecords,
     pending: data.filter((item) => item.status === 1).length,
-    approved: data.filter((item) => item.status === 2).length,
-    rejected: data.filter((item) => item.status === 3).length,
+    Verified: data.filter((item) => item.status === 2).length,
+    approved: data.filter((item) => item.status === 3).length,
+    rejected: data.filter((item) => item.status === 4).length,
+    rejected_by: data.filter((item) => item.status === 5).length,
   };
 
   return (
@@ -428,6 +411,7 @@ const RequestListing = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
         onRefresh={handleRefresh}
         onClearProducer={handleClearProducer}
+        statusConfig={statusConfig}
       />
 
       {/* Statistics Cards */}
@@ -435,8 +419,10 @@ const RequestListing = () => {
         <StatisticsCards
           totalRecords={stats.totalRecords}
           pending={stats.pending}
+          Verified={stats.Verified}
           approved={stats.approved}
           rejected={stats.rejected}
+          rejected_by={stats.rejected_by}
         />
       )}
 
@@ -448,10 +434,12 @@ const RequestListing = () => {
             loading={loading}
             BASE_URL_API={BASE_URL_API}
             onViewDetails={handleViewDetails}
-            onApprove={(request) => handleActionClick(request, "approve")}
+            onVerified={(request) => handleActionClick(request, "verified")}
+            // onApprove={(request) => handleActionClick(request, "approve")}
             onReject={(request) => handleActionClick(request, "reject")}
             formatDate={formatDate}
-            getStatusChip={getStatusChip}
+            statusConfig={statusConfig}
+            // getStatusChip={getStatusChip}
           />
         </CardContent>
 
@@ -512,7 +500,8 @@ const RequestListing = () => {
         request={viewRequest}
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
-        getStatusChip={getStatusChip}
+        statusConfig={statusConfig}
+        // getStatusChip={getStatusChip}
       />
     </Container>
   );

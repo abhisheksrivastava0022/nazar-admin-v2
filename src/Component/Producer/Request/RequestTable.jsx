@@ -27,10 +27,12 @@ const RequestTable = ({
   loading,
   BASE_URL_API,
   onViewDetails,
-  onApprove,
+  onVerified,
+  // onApprove,
   onReject,
   formatDate,
-  getStatusChip,
+  // getStatusChip,
+  statusConfig,
 }) => {
   if (loading) {
     return (
@@ -58,14 +60,15 @@ const RequestTable = ({
       <Table>
         <TableHead>
           <TableRow sx={{ backgroundColor: "grey.50" }}>
-            <TableCell>CASE NO</TableCell>
+            <TableCell>CASE ID</TableCell>
             <TableCell>TITLE</TableCell>
-            <TableCell>NAME</TableCell>
-            <TableCell>MODE</TableCell>
-            <TableCell>CURRENT STATUS</TableCell>
+            {/* <TableCell>NAME</TableCell> */}
+            {/* <TableCell>MODE</TableCell> */}
+            <TableCell>STATUS</TableCell>
             <TableCell>CBFC CERTIFICATE</TableCell>
             <TableCell>EVIDENCE</TableCell>
-            <TableCell>Created</TableCell>
+            <TableCell>Report Date</TableCell>
+            <TableCell align="center">View</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -90,17 +93,27 @@ const RequestTable = ({
                   {request.title || "N/A"}
                 </Typography>
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <Typography variant="body2" fontWeight="medium">
                   {request.producer?.first_name} {request.producer?.last_name}
                 </Typography>
-              </TableCell>
-              <TableCell>
+              </TableCell> */}
+              {/* <TableCell>
                 <Typography variant="body2" fontWeight="medium">
                   {request.mode || "N/A"}
                 </Typography>
+              </TableCell> */}
+              <TableCell>
+                {/* {getStatusChip(request.status)} */}
+                {/* {request.status}
+                {getStatusChip(3)} */}
+                <Chip
+                  label={statusConfig[request.status]?.label || "Unknown"}
+                  color={statusConfig[request.status]?.color || "default"}
+                  size="small"
+                  sx={{ fontWeight: 500 }}
+                />
               </TableCell>
-              <TableCell>{getStatusChip(request.status)}</TableCell>
 
               {/* CBFC Certificate Column */}
               <TableCell>
@@ -151,31 +164,32 @@ const RequestTable = ({
               </TableCell>
 
               <TableCell align="center">
+                <Tooltip title="View Details">
+                  <IconButton
+                    size="small"
+                    color="info"
+                    onClick={() => onViewDetails(request)}
+                    sx={{
+                      bgcolor: "info.lighter",
+                      "&:hover": { bgcolor: "info.light" },
+                    }}
+                  >
+                    <ViewIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
+              <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
-                  <Tooltip title="View Details">
-                    <IconButton
-                      size="small"
-                      color="info"
-                      onClick={() => onViewDetails(request)}
-                      sx={{
-                        bgcolor: "info.lighter",
-                        "&:hover": { bgcolor: "info.light" },
-                      }}
-                    >
-                      <ViewIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-
                   {request.status === 1 && (
                     <>
                       <Tooltip title="Verified Request">
                         <IconButton
                           size="small"
-                          color="success"
-                          onClick={() => onApprove(request)}
+                          color="info"
+                          onClick={() => onVerified(request)}
                           sx={{
-                            bgcolor: "success.lighter",
-                            "&:hover": { bgcolor: "success.light" },
+                            bgcolor: "info.lighter",
+                            "&:hover": { bgcolor: "info.light" },
                           }}
                         >
                           <ApproveIcon fontSize="small" />
@@ -200,10 +214,11 @@ const RequestTable = ({
 
                   {request.status !== 1 && (
                     <Chip
+                      label={statusConfig[request.status]?.label || "Unknown"}
+                      color={statusConfig[request.status]?.color || "default"}
                       size="small"
-                      label={request.status === 2 ? "Verified" : "Rejected"}
-                      color={request.status === 2 ? "success" : "error"}
                       variant="outlined"
+                      // sx={{ fontWeight: 500 }}
                     />
                   )}
                 </Stack>

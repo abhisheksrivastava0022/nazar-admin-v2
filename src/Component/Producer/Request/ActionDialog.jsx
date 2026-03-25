@@ -17,6 +17,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
+import ApiClient from "../../../API/ApiClient";
 
 // Intermediaries data
 const intermediaries = [
@@ -30,20 +31,6 @@ const intermediaries = [
   { id: 8, name: "LinkedIn" },
 ];
 
-// Rules data
-const rules = [
-  { id: 1, name: "Rule 1: Prohibition of obscene content" },
-  { id: 2, name: "Rule 2: Protection of minors" },
-  { id: 3, name: "Rule 3: Copyright infringement" },
-  { id: 4, name: "Rule 4: Defamation and hate speech" },
-  { id: 5, name: "Rule 5: Privacy violation" },
-  { id: 6, name: "Rule 6: Misinformation and fake news" },
-  { id: 7, name: "Rule 7: Intellectual property rights" },
-  { id: 8, name: "Rule 8: National security concerns" },
-  { id: 9, name: "Rule 9: Impersonation and fraud" },
-  { id: 10, name: "Rule 10: Spam and malicious content" },
-];
-
 const ActionDialog = ({
   open,
   onClose,
@@ -54,18 +41,24 @@ const ActionDialog = ({
   onCommentChange,
   actionLoading,
 }) => {
+  const { getRequestApi } = ApiClient();
+  const [intermediaries, setIntermediaries] = useState([]);
   const [selectedIntermediary, setSelectedIntermediary] = useState("");
   const [selectedRule, setSelectedRule] = useState("");
-  const [noticeSent, setNoticeSent] = useState(false);
-  const [actionTaken, setActionTaken] = useState("");
+
+  const loadData = async () => {
+    const response = await getRequestApi("api/intermediary");
+    if (response.status) {
+      setIntermediaries(response.data);
+    }
+  };
 
   // Reset state when dialog opens
   React.useEffect(() => {
     if (open) {
       setSelectedIntermediary("");
       setSelectedRule("");
-      setNoticeSent(false);
-      setActionTaken("");
+      loadData();
     }
   }, [open]);
 
@@ -74,13 +67,16 @@ const ActionDialog = ({
     const additionalData = {
       intermediary_id: selectedIntermediary,
       rule_id: selectedRule,
-      notice_sent: noticeSent,
-      action_taken: actionTaken,
     };
 
     // Pass the additional data to onConfirm
     onConfirm(additionalData);
   };
+
+  const urlsArray =
+    typeof selectedRequest?.urls === "string"
+      ? JSON.parse(selectedRequest.urls)
+      : selectedRequest?.urls || [];
 
   return (
     <Dialog
@@ -106,7 +102,7 @@ const ActionDialog = ({
         <Typography
           variant="h6"
           fontWeight="bold"
-          color={actionType === "verified" ? "success.main" : "error.main"}
+          color={actionType === "verified" ? "info.main" : "error.main"}
         >
           {actionType === "verified" ? "Verified Request" : "Reject Request"}
         </Typography>
@@ -115,12 +111,12 @@ const ActionDialog = ({
         {selectedRequest && (
           <>
             <Alert
-              severity={actionType === "verified" ? "success" : "error"}
+              severity={actionType === "verified" ? "info" : "error"}
               sx={{ mb: 3 }}
             >
               {actionType === "verified"
-                ? "Are you sure you want to verified this request?"
-                : "Are you sure you want to reject this request?"}
+                ? "Are you sure you want to verified this request ?"
+                : "Are you sure you want to reject this request ?"}
             </Alert>
 
             <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
@@ -128,81 +124,51 @@ const ActionDialog = ({
                 Request Details:
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                <strong>URL:</strong> {selectedRequest.url}
+                <strong>URL:</strong>
+                <ol>
+                  {urlsArray.map((url, index) => (
+                    <li key={index}>{url}</li>
+                  ))}
+                </ol>
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 <strong>Description:</strong> {selectedRequest.description}
               </Typography>
             </Box>
 
-            {/* Intermediary Selection - Single */}
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Intermediary Involved</InputLabel>
-              <Select
-                value={selectedIntermediary}
-                onChange={(e) => setSelectedIntermediary(e.target.value)}
-                label="Intermediary Involved"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {intermediaries.map((intermediary) => (
-                  <MenuItem key={intermediary.id} value={intermediary.id}>
-                    {intermediary.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Rule Selection - Single */}
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Rule Violated</InputLabel>
-              <Select
-                value={selectedRule}
-                onChange={(e) => setSelectedRule(e.target.value)}
-                label="Rule Violated"
-              >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {rules.map((rule) => (
-                  <MenuItem key={rule.id} value={rule.id}>
-                    {rule.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            {/* Notice Sent Checkbox */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={noticeSent}
-                  onChange={(e) => setNoticeSent(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="Notice sent to intermediary"
-              sx={{ mb: 2, display: "block" }}
-            />
-
-            {/* Action Taken Field */}
-            <TextField
-              fullWidth
-              label="Action Taken"
-              multiline
-              rows={2}
-              value={actionTaken}
-              onChange={(e) => setActionTaken(e.target.value)}
-              placeholder="Describe the action taken against the content..."
-              variant="outlined"
-              sx={{ mb: 3 }}
-            />
+            {actionType === "verified" ? (
+              <>
+                {/* Intermediary Selection - Single */}
+                <FormControl fullWidth sx={{ mb: 3 }}>
+                  <InputLabel>Intermediary Involved</InputLabel>
+                  <Select
+                    value={selectedIntermediary}
+                    onChange={(e) => setSelectedIntermediary(e.target.value)}
+                    label="Intermediary Involved"
+                  >
+                    <MenuItem disabled>
+                      <em>None</em>
+                    </MenuItem>
+                    {intermediaries.map((intermediary) => (
+                      <MenuItem key={intermediary.id} value={intermediary.id}>
+                        {intermediary.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : (
+              <></>
+            )}
 
             {/* Comment Field */}
             <TextField
               fullWidth
-              label="Add Comment (Optional)"
+              label={
+                actionType === "verified"
+                  ? "Add any approval comments..."
+                  : "Please provide a reason for rejection..."
+              }
               multiline
               rows={3}
               value={comment}
@@ -218,7 +184,12 @@ const ActionDialog = ({
         )}
       </DialogContent>
       <DialogActions
-        sx={{ p: 2, borderTop: "1px solid", borderColor: "divider" }}
+        sx={{
+          p: 2,
+          borderTop: "1px solid",
+          borderColor: "divider",
+          justifyContent: "space-between",
+        }}
       >
         <Button
           onClick={onClose}
@@ -231,7 +202,7 @@ const ActionDialog = ({
         <Button
           onClick={handleConfirm}
           variant="contained"
-          color={actionType === "verified" ? "success" : "error"}
+          color={actionType === "verified" ? "info" : "error"}
           sx={{ borderRadius: 2 }}
           disabled={actionLoading}
           startIcon={actionLoading && <CircularProgress size={20} />}

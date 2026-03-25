@@ -569,8 +569,8 @@ body {
 .menu-list button {
   border-radius: inherit !important;
   padding: 10px 15px 10px 0px;
-  font-weight: 600;
-  font-size: 18px;
+  font-weight: 400;
+  font-size: 16px;
 }
 
 .input-group .btn {

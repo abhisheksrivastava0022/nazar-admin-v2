@@ -26,7 +26,8 @@ const DetailsDialog = ({
   request,
   BASE_URL_API,
   formatDate,
-  getStatusChip,
+  statusConfig,
+  // getStatusChip,
 }) => {
   if (!request) return null;
 
@@ -72,7 +73,15 @@ const DetailsDialog = ({
                   <Typography variant="caption" color="text.secondary">
                     Status
                   </Typography>
-                  <Box mt={0.5}>{getStatusChip(request.status)}</Box>
+                  <Box mt={0.5}>
+                    <Chip
+                      label={statusConfig[request.status]?.label || "Unknown"}
+                      color={statusConfig[request.status]?.color || "default"}
+                      size="small"
+                      sx={{ fontWeight: 500 }}
+                    />
+                    {/* {getStatusChip(request.status)} */}
+                  </Box>
                 </Grid>
                 <Grid size={{ md: 12 }}>
                   <Typography variant="caption" color="text.secondary">

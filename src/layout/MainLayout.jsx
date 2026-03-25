@@ -55,14 +55,14 @@ const MainLayout = () => {
                         <button
                           class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
-                          data-bs-target="#tab2"
+                          data-bs-target="#tab1"
                           type="button"
                           onClick={() => navigate("/user-request")}
                         >
                           <i class="bi bi-person-lines-fill"></i> User Request
                         </button>
                         <button
-                          class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                          class={`nav-link ${location.pathname == "/verified-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab2"
                           type="button"
@@ -71,9 +71,9 @@ const MainLayout = () => {
                           <i class="bi bi-patch-check"></i> Verified Request
                         </button>
                         <button
-                          class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                          class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
-                          data-bs-target="#tab2"
+                          data-bs-target="#tab3"
                           type="button"
                           onClick={() => navigate("/completed-request")}
                         >
@@ -82,7 +82,7 @@ const MainLayout = () => {
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
                           data-bs-toggle="pill"
-                          data-bs-target="#tab2"
+                          data-bs-target="#tab4"
                           type="button"
                           onClick={() => navigate("/producer")}
                         >
@@ -92,7 +92,7 @@ const MainLayout = () => {
                         <button
                           class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
                           data-bs-toggle="pill"
-                          data-bs-target="#tab2"
+                          data-bs-target="#tab5"
                           type="button"
                           onClick={() => navigate("/user")}
                         >
@@ -103,7 +103,7 @@ const MainLayout = () => {
                         <button
                           class={`nav-link logout-btn`}
                           data-bs-toggle="pill"
-                          data-bs-target="#tab4"
+                          data-bs-target="#tab6"
                           type="button"
                           onClick={logoutHandler}
                         >
