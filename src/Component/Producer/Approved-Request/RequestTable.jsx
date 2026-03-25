@@ -65,7 +65,6 @@ const RequestTable = ({
                         <TableCell>TITLE</TableCell>
                         <TableCell>NAME</TableCell>
                         <TableCell>MODE</TableCell>
-                        <TableCell>CURRENT STATUS</TableCell>
                         <TableCell>CBFC CERTIFICATE</TableCell>
                         <TableCell>EVIDENCE</TableCell>
                         <TableCell>Created</TableCell>
@@ -103,7 +102,6 @@ const RequestTable = ({
                                     {request.mode || "N/A"}
                                 </Typography>
                             </TableCell>
-                            <TableCell>{getStatusChip(request.status)}</TableCell>
 
                             {/* CBFC Certificate Column */}
                             <TableCell>
