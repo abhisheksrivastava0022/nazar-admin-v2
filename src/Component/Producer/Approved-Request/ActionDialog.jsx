@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -10,39 +10,7 @@ import {
     Typography,
     Alert,
     CircularProgress,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormControlLabel,
-    Checkbox,
 } from "@mui/material";
-
-// Intermediaries data
-const intermediaries = [
-    { id: 1, name: "Facebook" },
-    { id: 2, name: "Google" },
-    { id: 3, name: "YouTube" },
-    { id: 4, name: "Telegram" },
-    { id: 5, name: "Twitter/X" },
-    { id: 6, name: "Instagram" },
-    { id: 7, name: "WhatsApp" },
-    { id: 8, name: "LinkedIn" },
-];
-
-// Rules data
-const rules = [
-    { id: 1, name: "Rule 1: Prohibition of obscene content" },
-    { id: 2, name: "Rule 2: Protection of minors" },
-    { id: 3, name: "Rule 3: Copyright infringement" },
-    { id: 4, name: "Rule 4: Defamation and hate speech" },
-    { id: 5, name: "Rule 5: Privacy violation" },
-    { id: 6, name: "Rule 6: Misinformation and fake news" },
-    { id: 7, name: "Rule 7: Intellectual property rights" },
-    { id: 8, name: "Rule 8: National security concerns" },
-    { id: 9, name: "Rule 9: Impersonation and fraud" },
-    { id: 10, name: "Rule 10: Spam and malicious content" },
-];
 
 const ActionDialog = ({
     open,
@@ -53,33 +21,89 @@ const ActionDialog = ({
     comment,
     onCommentChange,
     actionLoading,
-}) => {
-    const [selectedIntermediary, setSelectedIntermediary] = useState("");
-    const [selectedRule, setSelectedRule] = useState("");
-    const [noticeSent, setNoticeSent] = useState(false);
-    const [actionTaken, setActionTaken] = useState("");
+    otpLoading,
+    onSendOtp,
+    otpSent,
+    otp,
+    onOtpChange,
+    otpError, // New prop for OTP error
 
-    // Reset state when dialog opens
-    React.useEffect(() => {
+}) => {
+    // Create an array of refs for OTP inputs
+    const otpInputs = useRef([]);
+
+    // Local OTP state as array of 6 digits
+    const [otpArray, setOtpArray] = useState(["", "", "", "", "", ""]);
+
+    // Combine OTP array into a single string for parent component
+    useEffect(() => {
+        const combinedOtp = otpArray.join("");
+        if (onOtpChange) {
+            onOtpChange({ target: { value: combinedOtp } });
+        }
+    }, [otpArray, onOtpChange]);
+
+    // Reset OTP array when dialog opens
+    useEffect(() => {
         if (open) {
-            setSelectedIntermediary("");
-            setSelectedRule("");
-            setNoticeSent(false);
-            setActionTaken("");
+            setOtpArray(["", "", "", "", "", ""]);
+            // Focus on first input
+            setTimeout(() => {
+                if (otpInputs.current[0]) {
+                    otpInputs.current[0].focus();
+                }
+            }, 100);
         }
     }, [open]);
 
-    const handleConfirm = () => {
-        // Prepare additional data to send with confirmation
-        const additionalData = {
-            intermediary_id: selectedIntermediary,
-            rule_id: selectedRule,
-            notice_sent: noticeSent,
-            action_taken: actionTaken,
-        };
+    // Handle OTP input change
+    const handleOtpChange = (index, value) => {
+        // Only allow numbers
+        const numericValue = value.replace(/[^0-9]/g, "");
 
-        // Pass the additional data to onConfirm
-        onConfirm(additionalData);
+        // Update the OTP array
+        const newOtpArray = [...otpArray];
+        newOtpArray[index] = numericValue.slice(0, 1);
+        setOtpArray(newOtpArray);
+
+        // Auto-focus next input if current field is filled
+        if (numericValue && index < 5) {
+            otpInputs.current[index + 1].focus();
+        }
+    };
+
+    // Handle key press for backspace navigation
+    const handleKeyPress = (index, e) => {
+        if (e.key === "Backspace" && !otpArray[index] && index > 0) {
+            otpInputs.current[index - 1].focus();
+        }
+    };
+
+    // Handle paste event for OTP
+    const handlePaste = (e) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData("text/plain").slice(0, 6);
+        const pastedNumbers = pastedData.replace(/[^0-9]/g, "").split("");
+
+        const newOtpArray = [...otpArray];
+        for (let i = 0; i < Math.min(pastedNumbers.length, 6); i++) {
+            newOtpArray[i] = pastedNumbers[i];
+        }
+        setOtpArray(newOtpArray);
+
+        // Focus on the next empty field or last field
+        const lastFilledIndex = Math.min(pastedNumbers.length - 1, 5);
+        if (lastFilledIndex < 5 && pastedNumbers.length < 6) {
+            otpInputs.current[lastFilledIndex + 1].focus();
+        } else {
+            otpInputs.current[5].focus();
+        }
+    };
+
+    const handleSendOtp = () => {
+        if (onSendOtp) {
+            onSendOtp();
+        }
     };
 
     return (
@@ -134,70 +158,104 @@ const ActionDialog = ({
                                 <strong>Description:</strong> {selectedRequest.description}
                             </Typography>
                         </Box>
-
-                        {/* Intermediary Selection - Single */}
-                        <FormControl fullWidth sx={{ mb: 3 }}>
-                            <InputLabel>Intermediary Involved</InputLabel>
-                            <Select
-                                value={selectedIntermediary}
-                                onChange={(e) => setSelectedIntermediary(e.target.value)}
-                                label="Intermediary Involved"
+                        {otpError && (
+                            <Alert
+                                severity="error"
+                                sx={{ mb: 2 }}
+                                onClose={() => {
+                                    if (onOtpChange) {
+                                        onOtpChange({ target: { value: "" } });
+                                    }
+                                }}
                             >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {intermediaries.map((intermediary) => (
-                                    <MenuItem key={intermediary.id} value={intermediary.id}>
-                                        {intermediary.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                                {otpError}
+                            </Alert>
+                        )}
+                        {/* OTP Section with 6 Textboxes */}
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="subtitle2" gutterBottom>
+                                OTP Verification
+                            </Typography>
 
-                        {/* Rule Selection - Single */}
-                        <FormControl fullWidth sx={{ mb: 3 }}>
-                            <InputLabel>Rule Violated</InputLabel>
-                            <Select
-                                value={selectedRule}
-                                onChange={(e) => setSelectedRule(e.target.value)}
-                                label="Rule Violated"
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {rules.map((rule) => (
-                                    <MenuItem key={rule.id} value={rule.id}>
-                                        {rule.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-
-                        {/* Notice Sent Checkbox */}
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={noticeSent}
-                                    onChange={(e) => setNoticeSent(e.target.checked)}
+                            {/* Send OTP Button */}
+                            <Box sx={{ mb: 3 }}>
+                                <Button
+                                    onClick={handleSendOtp}
+                                    variant="contained"
                                     color="primary"
-                                />
-                            }
-                            label="Notice sent to intermediary"
-                            sx={{ mb: 2, display: "block" }}
-                        />
+                                    disabled={otpLoading || otpSent}
+                                    sx={{
+                                        minWidth: "150px",
+                                        borderRadius: 2
+                                    }}
+                                >
+                                    {otpLoading ? (
+                                        <CircularProgress size={24} />
+                                    ) : otpSent ? (
+                                        "OTP Sent ✓"
+                                    ) : (
+                                        "Send OTP"
+                                    )}
+                                </Button>
+                                {otpSent && (
+                                    <Typography variant="caption" color="success.main" sx={{ mt: 1, display: "block" }}>
+                                        OTP has been sent to the producer's registered email/phone
+                                    </Typography>
+                                )}
+                            </Box>
 
-                        {/* Action Taken Field */}
-                        <TextField
-                            fullWidth
-                            label="Action Taken"
-                            multiline
-                            rows={2}
-                            value={actionTaken}
-                            onChange={(e) => setActionTaken(e.target.value)}
-                            placeholder="Describe the action taken against the content..."
-                            variant="outlined"
-                            sx={{ mb: 3 }}
-                        />
+                            {/* 6 OTP Textboxes */}
+                            {otpSent && (
+                                <>
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                        Enter the 6-digit verification code
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            gap: 2,
+                                            justifyContent: "center",
+                                            mb: 2,
+                                            flexWrap: "wrap"
+                                        }}
+                                        onPaste={handlePaste}
+                                    >
+                                        {otpArray.map((digit, index) => (
+                                            <TextField
+                                                key={index}
+                                                inputRef={(el) => (otpInputs.current[index] = el)}
+                                                value={digit}
+                                                onChange={(e) => handleOtpChange(index, e.target.value)}
+                                                onKeyDown={(e) => handleKeyPress(index, e)}
+                                                variant="outlined"
+                                                inputProps={{
+                                                    maxLength: 1,
+                                                    style: {
+                                                        textAlign: "center",
+                                                        fontSize: "24px",
+                                                        padding: "12px 0",
+                                                        width: "60px",
+                                                    },
+                                                    pattern: "[0-9]*",
+                                                    inputMode: "numeric",
+                                                }}
+                                                sx={{
+                                                    width: "60px",
+                                                    "& .MuiOutlinedInput-root": {
+                                                        borderRadius: 2,
+                                                    },
+                                                }}
+                                                disabled={actionLoading}
+                                                autoFocus={index === 0 && otpSent}
+                                            />
+                                        ))}
+                                    </Box>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", textAlign: "center" }}>
+                                        Didn't receive OTP? You can request a new one
+                                    </Typography>
+                                </>
+                            )}
+                        </Box>
 
                         {/* Comment Field */}
                         <TextField
@@ -213,6 +271,7 @@ const ActionDialog = ({
                                     : "Please provide a reason for rejection..."
                             }
                             variant="outlined"
+                            sx={{ mt: 2 }}
                         />
                     </>
                 )}
@@ -229,11 +288,11 @@ const ActionDialog = ({
                     Cancel
                 </Button>
                 <Button
-                    onClick={handleConfirm}
+                    onClick={onConfirm}
                     variant="contained"
                     color={actionType === "approve" ? "success" : "error"}
                     sx={{ borderRadius: 2 }}
-                    disabled={actionLoading}
+                    disabled={actionLoading || !otpSent || otpArray.join("").length !== 6}
                     startIcon={actionLoading && <CircularProgress size={20} />}
                 >
                     {actionLoading

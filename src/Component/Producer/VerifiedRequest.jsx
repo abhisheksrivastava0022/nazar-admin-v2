@@ -16,12 +16,11 @@ import ApiClient from "../../API/ApiClient";
 
 // Import components
 import RequestFilter from "./Approved-Request/RequestFilter";
-import StatisticsCards from "./Approved-Request/StatisticsCards";
 import RequestTable from "./Approved-Request/RequestTable";
 import ActionDialog from "./Approved-Request/ActionDialog";
 import DetailsDialog from "./Approved-Request/DetailsDialog";
 
-const ApprovedListing = () => {
+const VerifiedRequest = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -65,6 +64,12 @@ const ApprovedListing = () => {
   const [actionType, setActionType] = useState(null);
   const [comment, setComment] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+
+  // OTP states
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState(""); // Separate OTP error state
 
   // View details dialog
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -124,7 +129,7 @@ const ApprovedListing = () => {
         producer_id: selectedProducer?.id,
       };
 
-      const response = await getRequestApi("api/producer/request", params);
+      const response = await getRequestApi("api/producer/verified-request", params);
 
       if (response.status) {
         setData(response.data || []);
@@ -200,14 +205,121 @@ const ApprovedListing = () => {
     });
   }, [currentPage, rowsPerPage, searchQuery, statusFilter, selectedProducer]);
 
-  // Handlers
+  // Function to send OTP
+  const handleSendOtp = async () => {
+    if (!selectedRequest) return;
+
+    setOtpLoading(true);
+    setOtpError(""); // Clear any previous OTP errors
+
+    try {
+      const response = await postRequestApi(`api/producer/${selectedRequest.id}/send-otp`, {});
+
+      if (response.status) {
+        setOtpSent(true);
+        setSuccess("OTP sent successfully to the producer!");
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        setOtpError(response.message || "Failed to send OTP");
+        setError(response.message || "Failed to send OTP");
+        setTimeout(() => setError(""), 3000);
+      }
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "An error occurred while sending OTP";
+      setOtpError(errorMessage);
+      setError(errorMessage);
+      console.error("Error sending OTP:", err);
+      setTimeout(() => setError(""), 3000);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  // Handle action confirm (approve/reject with OTP)
+  const handleActionConfirm = async () => {
+    if (!selectedRequest || !actionType) return;
+
+    // Validate OTP
+    if (!otpSent || !otp || otp.length !== 6) {
+      setOtpError("Please enter a valid 6-digit OTP");
+      setError("Please enter a valid 6-digit OTP");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+
+    setActionLoading(true);
+    setOtpError(""); // Clear previous OTP errors
+
+    try {
+      const endpoint =
+        actionType === "approve"
+          ? `api/producer/verified/${selectedRequest.id}/approve`
+          : `api/producer/verified/${selectedRequest.id}/reject`;
+
+      // Prepare payload with OTP and comment
+      const payload = {
+        comment: comment || "",
+        otp: otp
+      };
+
+      const response = await postRequestApi(endpoint, payload);
+
+      if (response.status) {
+        setSuccess(
+          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`
+        );
+        loadData(); // Refresh data
+        handleActionClose(); // Close dialog
+        setTimeout(() => setSuccess(""), 3000);
+      } else {
+        // Handle OTP mismatch specifically
+        setOtpError(response.message);
+        setTimeout(() => setError(""), 3000);
+      }
+    } catch (err) {
+      // Handle API error response
+      let errorMessage = `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`;
+
+      // Check if error response contains OTP mismatch message
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+        if (errorMessage.toLowerCase().includes("otp")) {
+          setOtpError(errorMessage);
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+        if (errorMessage.toLowerCase().includes("otp")) {
+          setOtpError(errorMessage);
+        }
+      }
+
+      setError(errorMessage);
+      console.error("Error processing request:", err);
+      setTimeout(() => setError(""), 5000); // Show error for longer duration
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // Handle action close - reset all states
+  const handleActionClose = () => {
+    setActionDialogOpen(false);
+    setSelectedRequest(null);
+    setActionType(null);
+    setComment("");
+    setOtp(""); // Reset OTP
+    setOtpSent(false); // Reset OTP sent status
+    setOtpLoading(false); // Reset OTP loading
+    setOtpError(""); // Reset OTP error
+  };
+
+  // Handlers for filters
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
   const handleSearchSubmit = () => {
     setCurrentPage(1);
-    // loadData will be triggered by currentPage change
   };
 
   const handlePageChange = (event, value) => {
@@ -254,46 +366,10 @@ const ApprovedListing = () => {
     setSelectedRequest(request);
     setActionType(type);
     setComment("");
+    setOtp(""); // Reset OTP when opening dialog
+    setOtpSent(false); // Reset OTP sent status
+    setOtpError(""); // Reset OTP error
     setActionDialogOpen(true);
-  };
-
-  const handleActionConfirm = async () => {
-    if (!selectedRequest || !actionType) return;
-
-    setActionLoading(true);
-    try {
-      const endpoint =
-        actionType === "approve"
-          ? `api/producer/${selectedRequest.id}/approve`
-          : `api/producer/${selectedRequest.id}/reject`;
-
-      const response = await postRequestApi(endpoint, { comment });
-
-      if (response.status) {
-        setSuccess(
-          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`
-        );
-        loadData();
-        handleActionClose();
-      } else {
-        setError(response.message || `Failed to ${actionType} request`);
-      }
-    } catch (err) {
-      setError(
-        `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`
-      );
-      console.error("Error processing request:", err);
-    } finally {
-      setActionLoading(false);
-      setTimeout(() => setSuccess(""), 3000);
-    }
-  };
-
-  const handleActionClose = () => {
-    setActionDialogOpen(false);
-    setSelectedRequest(null);
-    setActionType(null);
-    setComment("");
   };
 
   // Helper functions
@@ -419,7 +495,6 @@ const ApprovedListing = () => {
         onClearProducer={handleClearProducer}
       />
 
-
       {/* Requests Table */}
       <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
         <CardContent sx={{ p: 0 }}>
@@ -483,6 +558,12 @@ const ApprovedListing = () => {
         comment={comment}
         onCommentChange={(e) => setComment(e.target.value)}
         actionLoading={actionLoading}
+        otpLoading={otpLoading}
+        onSendOtp={handleSendOtp}
+        otpSent={otpSent}
+        otp={otp}
+        onOtpChange={(e) => setOtp(e.target.value)}
+        otpError={otpError}
       />
 
       {/* Details Dialog */}
@@ -498,4 +579,4 @@ const ApprovedListing = () => {
   );
 };
 
-export default ApprovedListing;
+export default VerifiedRequest;

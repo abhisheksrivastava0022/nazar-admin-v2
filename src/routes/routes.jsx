@@ -2,8 +2,8 @@ import Login from "../Auth/Login ";
 import IntermediaryListing from "../Component/Intermediaries/IntermediaryListing";
 import IntermediaryCreateUpdate from "../Component/Intermediaries/IntermediaryCreateUpdate";
 import NotFound from "../Component/NotFound";
-import ApprovedListing from "../Component/Producer/ApprovedListing.";
-import CompletedListing from "../Component/Producer/CompletedListing";
+import VerifiedRequest from "../Component/Producer/VerifiedRequest";
+import ApprovedListing from "../Component/Producer/ApprovedListing";
 import ProducerListing from "../Component/Producer/ProducerListing";
 import ProducerCreateUpdate from "../Component/Producer/ProducterCreateUpdate";
 import RequestListing from "../Component/Producer/RequestListing";
@@ -24,11 +24,11 @@ export const routes = [
       },
       {
         path: "/verified-request",
-        element: <ApprovedListing />,
+        element: <VerifiedRequest />,
       },
       {
-        path: "/completed-request",
-        element: <CompletedListing />,
+        path: "/approved-request",
+        element: <ApprovedListing />,
       },
       {
         path: "/user-request",

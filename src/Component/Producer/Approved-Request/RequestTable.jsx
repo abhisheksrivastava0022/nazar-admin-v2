@@ -174,46 +174,33 @@ const RequestTable = ({
                     </IconButton>
                   </Tooltip>
 
-                  {request.status === 1 && (
-                    <>
-                      <Tooltip title="Verified Request">
-                        <IconButton
-                          size="small"
-                          color="success"
-                          onClick={() => onApprove(request)}
-                          sx={{
-                            bgcolor: "success.lighter",
-                            "&:hover": { bgcolor: "success.light" },
-                          }}
-                        >
-                          <ApproveIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Reject Request">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => onReject(request)}
-                          sx={{
-                            bgcolor: "error.lighter",
-                            "&:hover": { bgcolor: "error.light" },
-                          }}
-                        >
-                          <RejectIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </>
-                  )}
-
-                  {request.status !== 1 && (
-                    <Chip
+                  <Tooltip title="Approved Request">
+                    <IconButton
                       size="small"
-                      label={request.status === 2 ? "Approved" : "Rejected"}
-                      color={request.status === 2 ? "success" : "error"}
-                      variant="outlined"
-                    />
-                  )}
+                      color="success"
+                      onClick={() => onApprove(request)}
+                      sx={{
+                        bgcolor: "success.lighter",
+                        "&:hover": { bgcolor: "success.light" },
+                      }}
+                    >
+                      <ApproveIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Reject Request">
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => onReject(request)}
+                      sx={{
+                        bgcolor: "error.lighter",
+                        "&:hover": { bgcolor: "error.light" },
+                      }}
+                    >
+                      <RejectIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
               </TableCell>
             </TableRow>

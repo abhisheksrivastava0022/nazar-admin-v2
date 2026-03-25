@@ -21,7 +21,7 @@ import RequestTable from "./Approved-Request/RequestTable";
 import ActionDialog from "./Approved-Request/ActionDialog";
 import DetailsDialog from "./Approved-Request/DetailsDialog";
 
-const CompletedListing = () => {
+const ApprovedListing = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -124,7 +124,7 @@ const CompletedListing = () => {
         producer_id: selectedProducer?.id,
       };
 
-      const response = await getRequestApi("api/producer/request", params);
+      const response = await getRequestApi("api/producer/approved-request", params);
 
       if (response.status) {
         setData(response.data || []);
@@ -498,4 +498,4 @@ const CompletedListing = () => {
   );
 };
 
-export default CompletedListing;
+export default ApprovedListing;
