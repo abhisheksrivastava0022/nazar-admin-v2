@@ -305,6 +305,7 @@ const RequestListing = () => {
     3: { label: "Approved", color: "success" },
     4: { label: "Rejected", color: "error" },
     5: { label: "Declined", color: "error" },
+    6: { label: "Compliance", color: "default" },
   };
 
   // const getStatusChip = (status) => {
@@ -439,7 +440,7 @@ const RequestListing = () => {
             onReject={(request) => handleActionClick(request, "reject")}
             formatDate={formatDate}
             statusConfig={statusConfig}
-            // getStatusChip={getStatusChip}
+          // getStatusChip={getStatusChip}
           />
         </CardContent>
 
@@ -501,7 +502,7 @@ const RequestListing = () => {
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
         statusConfig={statusConfig}
-        // getStatusChip={getStatusChip}
+      // getStatusChip={getStatusChip}
       />
     </Container>
   );

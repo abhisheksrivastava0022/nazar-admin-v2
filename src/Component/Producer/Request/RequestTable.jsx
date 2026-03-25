@@ -64,7 +64,7 @@ const RequestTable = ({
             <TableCell>TITLE</TableCell>
             {/* <TableCell>NAME</TableCell> */}
             {/* <TableCell>MODE</TableCell> */}
-            <TableCell>STATUS</TableCell>
+            {/* <TableCell>STATUS</TableCell> */}
             <TableCell>CBFC CERTIFICATE</TableCell>
             <TableCell>EVIDENCE</TableCell>
             <TableCell>Report Date</TableCell>
@@ -103,17 +103,15 @@ const RequestTable = ({
                   {request.mode || "N/A"}
                 </Typography>
               </TableCell> */}
-              <TableCell>
-                {/* {getStatusChip(request.status)} */}
-                {/* {request.status}
-                {getStatusChip(3)} */}
-                <Chip
-                  label={statusConfig[request.status]?.label || "Unknown"}
-                  color={statusConfig[request.status]?.color || "default"}
-                  size="small"
-                  sx={{ fontWeight: 500 }}
-                />
-              </TableCell>
+              {/* <TableCell>
+              
+              <Chip
+                label={statusConfig[request.status]?.label || "Unknown"}
+                color={statusConfig[request.status]?.color || "default"}
+                size="small"
+                sx={{ fontWeight: 500 }}
+              />
+            </TableCell> */}
 
               {/* CBFC Certificate Column */}
               <TableCell>
@@ -218,7 +216,7 @@ const RequestTable = ({
                       color={statusConfig[request.status]?.color || "default"}
                       size="small"
                       variant="outlined"
-                      // sx={{ fontWeight: 500 }}
+                    // sx={{ fontWeight: 500 }}
                     />
                   )}
                 </Stack>
@@ -227,7 +225,7 @@ const RequestTable = ({
           ))}
         </TableBody>
       </Table>
-    </TableContainer>
+    </TableContainer >
   );
 };
 

@@ -15,11 +15,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
 // Import components
-import RequestFilter from "./Approved-Request/RequestFilter";
-import StatisticsCards from "./Approved-Request/StatisticsCards";
-import RequestTable from "./Approved-Request/RequestTable";
-import ActionDialog from "./Approved-Request/ActionDialog";
-import DetailsDialog from "./Approved-Request/DetailsDialog";
+import RequestFilter from "./Compliance-Request/RequestFilter";
+import RequestTable from "./Compliance-Request/RequestTable";
+import ActionDialog from "./Compliance-Request/ActionDialog";
+import DetailsDialog from "./Compliance-Request/DetailsDialog";
 
 const ApprovedListing = () => {
   const navigate = useNavigate();
@@ -91,7 +90,9 @@ const ApprovedListing = () => {
       urlParams.set("producer_id", params.producer_id);
     }
 
-    const newUrl = urlParams.toString() ? `?${urlParams.toString()}` : window.location.pathname;
+    const newUrl = urlParams.toString()
+      ? `?${urlParams.toString()}`
+      : window.location.pathname;
     navigate(newUrl, { replace: true });
   };
 
@@ -124,7 +125,7 @@ const ApprovedListing = () => {
         producer_id: selectedProducer?.id,
       };
 
-      const response = await getRequestApi("api/producer/approved-request", params);
+      const response = await getRequestApi("api/producer/request", params);
 
       if (response.status) {
         setData(response.data || []);
@@ -263,15 +264,15 @@ const ApprovedListing = () => {
     setActionLoading(true);
     try {
       const endpoint =
-        actionType === "approve"
-          ? `api/producer/${selectedRequest.id}/approve`
+        actionType === "verified"
+          ? `api/producer/${selectedRequest.id}/compliance`
           : `api/producer/${selectedRequest.id}/reject`;
 
       const response = await postRequestApi(endpoint, { comment });
 
       if (response.status) {
         setSuccess(
-          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`
+          `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
         );
         loadData();
         handleActionClose();
@@ -280,7 +281,7 @@ const ApprovedListing = () => {
       }
     } catch (err) {
       setError(
-        `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`
+        `An error occurred while ${actionType === "verified" ? "approving" : "rejecting"} the request`,
       );
       console.error("Error processing request:", err);
     } finally {
@@ -297,39 +298,29 @@ const ApprovedListing = () => {
   };
 
   // Helper functions
-  const getStatusChip = (status) => {
-    switch (status) {
-      case 1:
-        return (
-          <Chip
-            label="Pending"
-            color="warning"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      case 2:
-        return (
-          <Chip
-            label="Approved"
-            color="success"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      case 3:
-        return (
-          <Chip
-            label="Rejected"
-            color="error"
-            size="small"
-            sx={{ fontWeight: 500 }}
-          />
-        );
-      default:
-        return <Chip label="Unknown" color="default" size="small" />;
-    }
+  const statusConfig = {
+    1: { label: "Pending", color: "warning" },
+    2: { label: "Verified", color: "info" },
+    3: { label: "Approved", color: "success" },
+    4: { label: "Rejected", color: "error" },
+    5: { label: "Declined", color: "error" },
   };
+
+  // const getStatusChip = (status) => {
+  //   const config = statusConfig[status] || {
+  //     label: "Unknown",
+  //     color: "default",
+  //   };
+
+  //   return (
+  //     <Chip
+  //       label={config.label}
+  //       color={config.color}
+  //       size="small"
+  //       sx={{ fontWeight: 500 }}
+  //     />
+  //   );
+  // };
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -347,8 +338,10 @@ const ApprovedListing = () => {
   const stats = {
     totalRecords,
     pending: data.filter((item) => item.status === 1).length,
-    approved: data.filter((item) => item.status === 2).length,
-    rejected: data.filter((item) => item.status === 3).length,
+    Verified: data.filter((item) => item.status === 2).length,
+    approved: data.filter((item) => item.status === 3).length,
+    rejected: data.filter((item) => item.status === 4).length,
+    rejected_by: data.filter((item) => item.status === 5).length,
   };
 
   return (
@@ -417,7 +410,9 @@ const ApprovedListing = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
         onRefresh={handleRefresh}
         onClearProducer={handleClearProducer}
+        statusConfig={statusConfig}
       />
+
 
 
       {/* Requests Table */}
@@ -428,10 +423,12 @@ const ApprovedListing = () => {
             loading={loading}
             BASE_URL_API={BASE_URL_API}
             onViewDetails={handleViewDetails}
-            onApprove={(request) => handleActionClick(request, "approve")}
+            onVerified={(request) => handleActionClick(request, "verified")}
+            // onApprove={(request) => handleActionClick(request, "approve")}
             onReject={(request) => handleActionClick(request, "reject")}
             formatDate={formatDate}
-            getStatusChip={getStatusChip}
+            statusConfig={statusConfig}
+          // getStatusChip={getStatusChip}
           />
         </CardContent>
 
@@ -492,7 +489,8 @@ const ApprovedListing = () => {
         request={viewRequest}
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
-        getStatusChip={getStatusChip}
+        statusConfig={statusConfig}
+      // getStatusChip={getStatusChip}
       />
     </Container>
   );

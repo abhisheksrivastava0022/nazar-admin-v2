@@ -26,8 +26,7 @@ const ActionDialog = ({
     otpSent,
     otp,
     onOtpChange,
-    otpError, // New prop for OTP error
-
+    otpError,
 }) => {
     // Create an array of refs for OTP inputs
     const otpInputs = useRef([]);
@@ -127,13 +126,17 @@ const ActionDialog = ({
                         actionType === "approve" ? "success.lighter" : "error.lighter",
                 }}
             >
-                <Typography
-                    variant="h6"
-                    fontWeight="bold"
-                    color={actionType === "approve" ? "success.main" : "error.main"}
-                >
-                    {actionType === "approve" ? "Approve Request" : "Reject Request"}
-                </Typography>
+                {/* Fixed: Using Box with Typography instead of nested headings */}
+                <Box>
+                    <Typography
+                        variant="h6"
+                        component="div"
+                        fontWeight="bold"
+                        color={actionType === "approve" ? "success.main" : "error.main"}
+                    >
+                        {actionType === "approve" ? "Approve Request" : "Reject Request"}
+                    </Typography>
+                </Box>
             </DialogTitle>
             <DialogContent sx={{ py: 3 }}>
                 {selectedRequest && (
@@ -158,19 +161,7 @@ const ActionDialog = ({
                                 <strong>Description:</strong> {selectedRequest.description}
                             </Typography>
                         </Box>
-                        {otpError && (
-                            <Alert
-                                severity="error"
-                                sx={{ mb: 2 }}
-                                onClose={() => {
-                                    if (onOtpChange) {
-                                        onOtpChange({ target: { value: "" } });
-                                    }
-                                }}
-                            >
-                                {otpError}
-                            </Alert>
-                        )}
+
                         {/* OTP Section with 6 Textboxes */}
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="subtitle2" gutterBottom>
@@ -204,6 +195,21 @@ const ActionDialog = ({
                                 )}
                             </Box>
 
+                            {/* OTP Error Display */}
+                            {otpError && (
+                                <Alert
+                                    severity="error"
+                                    sx={{ mb: 2 }}
+                                    onClose={() => {
+                                        if (onOtpChange) {
+                                            onOtpChange({ target: { value: "" } });
+                                        }
+                                    }}
+                                >
+                                    {otpError}
+                                </Alert>
+                            )}
+
                             {/* 6 OTP Textboxes */}
                             {otpSent && (
                                 <>
@@ -228,6 +234,7 @@ const ActionDialog = ({
                                                 onChange={(e) => handleOtpChange(index, e.target.value)}
                                                 onKeyDown={(e) => handleKeyPress(index, e)}
                                                 variant="outlined"
+                                                error={!!otpError}
                                                 inputProps={{
                                                     maxLength: 1,
                                                     style: {
