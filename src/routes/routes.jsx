@@ -1,4 +1,6 @@
 import Login from "../Auth/Login ";
+import IntermediaryListing from "../Component/Intermediaries/IntermediaryListing";
+import IntermediaryCreateUpdate from "../Component/Intermediaries/IntermediaryCreateUpdate";
 import NotFound from "../Component/NotFound";
 import ApprovedListing from "../Component/Producer/ApprovedListing.";
 import CompletedListing from "../Component/Producer/CompletedListing";
