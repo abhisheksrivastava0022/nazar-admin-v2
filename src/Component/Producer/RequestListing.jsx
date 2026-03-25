@@ -265,15 +265,15 @@ const RequestListing = () => {
     setActionLoading(true);
     try {
       const endpoint =
-        actionType === "approve"
-          ? `api/producer/${selectedRequest.id}/approve`
+        actionType === "verified"
+          ? `api/producer/${selectedRequest.id}/verified`
           : `api/producer/${selectedRequest.id}/reject`;
 
       const response = await postRequestApi(endpoint, { comment });
 
       if (response.status) {
         setSuccess(
-          `Request ${actionType === "approve" ? "approved" : "rejected"} successfully!`,
+          `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
         );
         loadData();
         handleActionClose();
@@ -282,7 +282,7 @@ const RequestListing = () => {
       }
     } catch (err) {
       setError(
-        `An error occurred while ${actionType === "approve" ? "approving" : "rejecting"} the request`,
+        `An error occurred while ${actionType === "verified" ? "approving" : "rejecting"} the request`,
       );
       console.error("Error processing request:", err);
     } finally {

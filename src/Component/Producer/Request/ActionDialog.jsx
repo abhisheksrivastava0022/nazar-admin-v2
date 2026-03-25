@@ -100,26 +100,26 @@ const ActionDialog = ({
           borderBottom: "1px solid",
           borderColor: "divider",
           bgcolor:
-            actionType === "approve" ? "success.lighter" : "error.lighter",
+            actionType === "verified" ? "success.lighter" : "error.lighter",
         }}
       >
         <Typography
           variant="h6"
           fontWeight="bold"
-          color={actionType === "approve" ? "success.main" : "error.main"}
+          color={actionType === "verified" ? "success.main" : "error.main"}
         >
-          {actionType === "approve" ? "Approve Request" : "Reject Request"}
+          {actionType === "verified" ? "Verified Request" : "Reject Request"}
         </Typography>
       </DialogTitle>
-      <DialogContent sx={{ py: 3 }}>
+      <DialogContent sx={{ mt: 2 }}>
         {selectedRequest && (
           <>
             <Alert
-              severity={actionType === "approve" ? "success" : "error"}
+              severity={actionType === "verified" ? "success" : "error"}
               sx={{ mb: 3 }}
             >
-              {actionType === "approve"
-                ? "Are you sure you want to approve this request?"
+              {actionType === "verified"
+                ? "Are you sure you want to verified this request?"
                 : "Are you sure you want to reject this request?"}
             </Alert>
 
@@ -208,7 +208,7 @@ const ActionDialog = ({
               value={comment}
               onChange={onCommentChange}
               placeholder={
-                actionType === "approve"
+                actionType === "verified"
                   ? "Add any approval comments..."
                   : "Please provide a reason for rejection..."
               }
@@ -231,15 +231,15 @@ const ActionDialog = ({
         <Button
           onClick={handleConfirm}
           variant="contained"
-          color={actionType === "approve" ? "success" : "error"}
+          color={actionType === "verified" ? "success" : "error"}
           sx={{ borderRadius: 2 }}
           disabled={actionLoading}
           startIcon={actionLoading && <CircularProgress size={20} />}
         >
           {actionLoading
             ? "Processing..."
-            : actionType === "approve"
-              ? "Approve"
+            : actionType === "verified"
+              ? "Verified"
               : "Reject"}
         </Button>
       </DialogActions>
