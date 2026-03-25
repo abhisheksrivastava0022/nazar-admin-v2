@@ -10,7 +10,11 @@ import {
     Typography,
     Alert,
     CircularProgress,
+    Grid,
+    FormControlLabel,
+    Checkbox,
 } from "@mui/material";
+import ApiClient from "../../../API/ApiClient";
 
 const ActionDialog = ({
     open,
@@ -28,12 +32,24 @@ const ActionDialog = ({
     onOtpChange,
     otpError,
 }) => {
+    const { postRequestApi } = ApiClient();
     // Create an array of refs for OTP inputs
     const otpInputs = useRef([]);
 
     // Local OTP state as array of 6 digits
     const [otpArray, setOtpArray] = useState(["", "", "", "", "", ""]);
+    const [intermediaries, setintermediaries] = useState(["", "", "", "", "", ""]);
 
+    useEffect(() => {
+        if (selectedRequest?.intermediaries_ids)
+            loadData(selectedRequest.intermediaries_ids);
+    }, [selectedRequest]);
+    const loadData = async (id) => {
+        const response = await postRequestApi("api/intermediary/getintermediary", { id });
+        if (response.status) {
+            setintermediaries(response.data)
+        }
+    }
     // Combine OTP array into a single string for parent component
     useEffect(() => {
         const combinedOtp = otpArray.join("");
@@ -161,7 +177,18 @@ const ActionDialog = ({
                                 <strong>Description:</strong> {selectedRequest.description}
                             </Typography>
                         </Box>
+                        <Grid size={{ md: 12 }}>
+                            <Typography variant="h6" sx={{ mb: 2 }}>
+                                Selected Intermediaries
+                            </Typography>
 
+                            {intermediaries.map((item) => (
+                                <Typography key={item.id} variant="body1" sx={{ mb: 1 }}>
+                                    • {item.name}
+                                </Typography>
+                            ))}
+                            <br />
+                        </Grid>
                         {/* OTP Section with 6 Textboxes */}
                         <Box sx={{ mb: 3 }}>
                             <Typography variant="subtitle2" gutterBottom>

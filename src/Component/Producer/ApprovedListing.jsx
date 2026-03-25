@@ -125,7 +125,7 @@ const ApprovedListing = () => {
         producer_id: selectedProducer?.id,
       };
 
-      const response = await getRequestApi("api/producer/request", params);
+      const response = await getRequestApi("api/producer/approved-request", params);
 
       if (response.status) {
         setData(response.data || []);

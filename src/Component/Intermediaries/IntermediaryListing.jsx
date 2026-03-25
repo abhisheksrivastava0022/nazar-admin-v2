@@ -222,20 +222,8 @@ const IntermediaryListing = () => {
 
   // Format email (since email is stored as JSON)
   const getEmailList = (emailJson) => {
-    if (!emailJson) return [];
-    try {
-      // If email is already an array
-      if (Array.isArray(emailJson)) return emailJson;
-      // If email is a JSON string
-      if (typeof emailJson === 'string') {
-        const parsed = JSON.parse(emailJson);
-        return Array.isArray(parsed) ? parsed : [parsed];
-      }
-      // If email is a single email string
-      return [emailJson];
-    } catch (e) {
-      return [emailJson];
-    }
+    return []
+
   };
 
   // Get primary email (first email in the list)
@@ -486,12 +474,10 @@ const IntermediaryListing = () => {
                           {/* Email Section */}
                           <Box
                             sx={{
-                              display: "flex",
-                              alignItems: "flex-start",
-                              gap: 1,
+
                             }}
                           >
-                            <EmailIcon fontSize="small" color="action" />
+                            {/* <EmailIcon fontSize="small" color="action" /> */}
                             <Box>
                               {getEmailList(intermediary.email).length > 0 ? (
                                 getEmailList(intermediary.email).map((email, idx) => (
@@ -504,9 +490,7 @@ const IntermediaryListing = () => {
                                   </Typography>
                                 ))
                               ) : (
-                                <Typography variant="body2" color="text.secondary">
-                                  No email
-                                </Typography>
+                                <></>
                               )}
                             </Box>
                           </Box>

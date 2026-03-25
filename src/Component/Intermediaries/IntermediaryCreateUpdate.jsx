@@ -17,6 +17,8 @@ import {
     InputAdornment,
     Chip,
     Stack,
+    FormControlLabel,
+    Checkbox,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -96,6 +98,7 @@ const IntermediaryCreateUpdate = () => {
                     phone: intermediary.phone || "",
                     email: emails,
                     contact_person: intermediary.contact_person || "",
+                    selectondefault: intermediary.selectondefault || false,
                 });
             } else {
                 setError(response.message || "Failed to load intermediary data");
@@ -505,6 +508,24 @@ const IntermediaryCreateUpdate = () => {
                                                 {errors.email}
                                             </Typography>
                                         )}
+                                    </Grid>
+                                    <Grid size={{ md: 12 }}>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    name="selectondefault"
+                                                    value={formData.selectondefault == 1 ? true : false}
+                                                    checked={formData.selectondefault == 1 ? true : false}
+                                                    onChange={(e) =>
+                                                        setFormData({
+                                                            ...formData,
+                                                            selectondefault: (e.target.checked) ? 1 : 0,
+                                                        })
+                                                    }
+                                                />
+                                            }
+                                            label="Default selected"
+                                        />
                                     </Grid>
                                 </Grid>
                             </CardContent>

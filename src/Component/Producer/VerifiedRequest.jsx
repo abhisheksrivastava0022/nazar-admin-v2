@@ -18,9 +18,17 @@ import ApiClient from "../../API/ApiClient";
 import RequestFilter from "./Approved-Request/RequestFilter";
 import RequestTable from "./Approved-Request/RequestTable";
 import ActionDialog from "./Approved-Request/ActionDialog";
-import DetailsDialog from "./Approved-Request/DetailsDialog";
+import DetailsDialog from "./Request/DetailsDialog";
 
 const VerifiedRequest = () => {
+  const statusConfig = {
+    1: { label: "Pending", color: "warning" },
+    2: { label: "Verified", color: "info" },
+    3: { label: "Approved", color: "success" },
+    4: { label: "Rejected", color: "error" },
+    5: { label: "Declined", color: "error" },
+    6: { label: "Compliance", color: "default" },
+  };
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -573,7 +581,7 @@ const VerifiedRequest = () => {
         request={viewRequest}
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
-        getStatusChip={getStatusChip}
+        statusConfig={statusConfig}
       />
     </Container>
   );

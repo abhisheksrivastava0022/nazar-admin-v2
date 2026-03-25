@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,20 +16,10 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
+  Chip,
+  OutlinedInput,
 } from "@mui/material";
 import ApiClient from "../../../API/ApiClient";
-
-// Intermediaries data
-const intermediaries = [
-  { id: 1, name: "Facebook" },
-  { id: 2, name: "Google" },
-  { id: 3, name: "YouTube" },
-  { id: 4, name: "Telegram" },
-  { id: 5, name: "Twitter/X" },
-  { id: 6, name: "Instagram" },
-  { id: 7, name: "WhatsApp" },
-  { id: 8, name: "LinkedIn" },
-];
 
 const ActionDialog = ({
   open,
@@ -43,20 +33,27 @@ const ActionDialog = ({
 }) => {
   const { getRequestApi } = ApiClient();
   const [intermediaries, setIntermediaries] = useState([]);
-  const [selectedIntermediary, setSelectedIntermediary] = useState("");
+  const [selectedIntermediaries, setSelectedIntermediaries] = useState([]);
   const [selectedRule, setSelectedRule] = useState("");
 
   const loadData = async () => {
     const response = await getRequestApi("api/intermediary");
     if (response.status) {
       setIntermediaries(response.data);
+      let selectedIntermediary = [];
+      for (const data of response.data) {
+        if (data.selectondefault) {
+          selectedIntermediary.push(data.id);
+        }
+      }
+      setSelectedIntermediaries(selectedIntermediary)
     }
   };
 
   // Reset state when dialog opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (open) {
-      setSelectedIntermediary("");
+      setSelectedIntermediaries([]);
       setSelectedRule("");
       loadData();
     }
@@ -65,12 +62,22 @@ const ActionDialog = ({
   const handleConfirm = () => {
     // Prepare additional data to send with confirmation
     const additionalData = {
-      intermediary_id: selectedIntermediary,
+      intermediary_ids: selectedIntermediaries, // Changed from intermediary_id to intermediary_ids
       rule_id: selectedRule,
     };
 
     // Pass the additional data to onConfirm
     onConfirm(additionalData);
+  };
+
+  const handleIntermediaryChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setSelectedIntermediaries(
+      // On autofill we get a stringified value
+      typeof value === "string" ? value.split(",") : value
+    );
   };
 
   const urlsArray =
@@ -104,7 +111,7 @@ const ActionDialog = ({
           fontWeight="bold"
           color={actionType === "verified" ? "info.main" : "error.main"}
         >
-          {actionType === "verified" ? "Verified Request" : "Reject Request"}
+          {actionType === "verified" ? "Verify Request" : "Reject Request"}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ mt: 2 }}>
@@ -115,8 +122,8 @@ const ActionDialog = ({
               sx={{ mb: 3 }}
             >
               {actionType === "verified"
-                ? "Are you sure you want to verified this request ?"
-                : "Are you sure you want to reject this request ?"}
+                ? "Are you sure you want to verify this request?"
+                : "Are you sure you want to reject this request?"}
             </Alert>
 
             <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
@@ -124,10 +131,12 @@ const ActionDialog = ({
                 Request Details:
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                <strong>URL:</strong>
-                <ol>
+                <strong>URLs:</strong>
+                <ol style={{ marginTop: 8, marginBottom: 8, paddingLeft: 20 }}>
                   {urlsArray.map((url, index) => (
-                    <li key={index}>{url}</li>
+                    <li key={index}>
+                      <Typography variant="body2">{url}</Typography>
+                    </li>
                   ))}
                 </ol>
               </Typography>
@@ -136,29 +145,62 @@ const ActionDialog = ({
               </Typography>
             </Box>
 
-            {actionType === "verified" ? (
+            {actionType === "verified" && (
               <>
-                {/* Intermediary Selection - Single */}
+                {/* Multiple Intermediaries Selection */}
                 <FormControl fullWidth sx={{ mb: 3 }}>
-                  <InputLabel>Intermediary Involved</InputLabel>
+                  <InputLabel id="intermediaries-select-label">
+                    Intermediaries Involved
+                  </InputLabel>
                   <Select
-                    value={selectedIntermediary}
-                    onChange={(e) => setSelectedIntermediary(e.target.value)}
-                    label="Intermediary Involved"
+                    labelId="intermediaries-select-label"
+                    id="intermediaries-select"
+                    multiple
+                    value={selectedIntermediaries}
+                    onChange={handleIntermediaryChange}
+                    input={<OutlinedInput label="Intermediaries Involved" />}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => {
+                          const intermediary = intermediaries.find(
+                            (i) => i.id === value
+                          );
+                          return (
+                            <Chip
+                              key={value}
+                              label={intermediary?.name || value}
+                              size="small"
+                              sx={{ borderRadius: 1 }}
+                            />
+                          );
+                        })}
+                      </Box>
+                    )}
                   >
-                    <MenuItem disabled>
-                      <em>None</em>
-                    </MenuItem>
                     {intermediaries.map((intermediary) => (
                       <MenuItem key={intermediary.id} value={intermediary.id}>
-                        {intermediary.name}
+                        <Checkbox
+                          checked={selectedIntermediaries.indexOf(intermediary.id) > -1}
+                        />
+                        <Typography variant="body2">
+                          {intermediary.name}
+                        </Typography>
                       </MenuItem>
                     ))}
                   </Select>
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                    You can select multiple intermediaries
+                  </Typography>
                 </FormControl>
+
+                {/* Optional: Display selected intermediaries count */}
+                {selectedIntermediaries.length > 0 && (
+                  <Alert severity="info" sx={{ mb: 3 }}>
+                    Selected {selectedIntermediaries.length} intermediary
+                    {selectedIntermediaries.length !== 1 ? "ies" : ""}
+                  </Alert>
+                )}
               </>
-            ) : (
-              <></>
             )}
 
             {/* Comment Field */}
@@ -166,7 +208,7 @@ const ActionDialog = ({
               fullWidth
               label={
                 actionType === "verified"
-                  ? "Add any approval comments..."
+                  ? "Add any verification comments..."
                   : "Please provide a reason for rejection..."
               }
               multiline
@@ -175,7 +217,7 @@ const ActionDialog = ({
               onChange={onCommentChange}
               placeholder={
                 actionType === "verified"
-                  ? "Add any approval comments..."
+                  ? "Add any verification comments..."
                   : "Please provide a reason for rejection..."
               }
               variant="outlined"
@@ -210,7 +252,7 @@ const ActionDialog = ({
           {actionLoading
             ? "Processing..."
             : actionType === "verified"
-              ? "Verified"
+              ? "Verify"
               : "Reject"}
         </Button>
       </DialogActions>

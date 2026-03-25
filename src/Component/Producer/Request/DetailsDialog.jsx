@@ -11,7 +11,13 @@ import {
   Divider,
   Paper,
   IconButton,
-  Chip, // Make sure Chip is imported
+  Chip,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody, // Make sure Chip is imported
 } from "@mui/material";
 import {
   Link as LinkIcon,
@@ -224,16 +230,52 @@ const DetailsDialog = ({
           </Grid>
 
           {/* Admin Comments */}
-          {request.admin_comment && (
-            <Grid size={{ md: 12 }}>
-              <Typography variant="subtitle2" color="primary" gutterBottom>
-                Admin Comments
-              </Typography>
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="body2">{request.admin_comment}</Typography>
-              </Paper>
-            </Grid>
-          )}
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Complaint Status History
+          </Typography>
+
+          <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell><b>ID</b></TableCell>
+                  <TableCell><b>Status</b></TableCell>
+                  <TableCell><b>Comment</b></TableCell>
+                  <TableCell><b>Created At</b></TableCell>
+                  <TableCell><b>Action Taken by</b></TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {request.complaint_statuses.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+
+                    <TableCell>
+
+                      <Chip
+                        label={statusConfig[item.status]?.label || "Unknown"}
+                        color={statusConfig[item.status]?.color || "default"}
+                        size="small"
+                        sx={{ fontWeight: 500 }}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      {item.comment || "-"}
+                    </TableCell>
+
+                    <TableCell>
+                      {new Date(item.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      {item.user.first_name}  {item.user.last_name}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
       </DialogContent>
       <DialogActions>

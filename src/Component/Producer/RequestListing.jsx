@@ -259,7 +259,7 @@ const RequestListing = () => {
     setActionDialogOpen(true);
   };
 
-  const handleActionConfirm = async () => {
+  const handleActionConfirm = async (additionalData) => {
     if (!selectedRequest || !actionType) return;
 
     setActionLoading(true);
@@ -268,8 +268,13 @@ const RequestListing = () => {
         actionType === "verified"
           ? `api/producer/${selectedRequest.id}/verified`
           : `api/producer/${selectedRequest.id}/reject`;
+      const requestBody = { comment };
 
-      const response = await postRequestApi(endpoint, { comment });
+      // Add intermediary_ids if it's a verification action
+      if (actionType === "verified" && additionalData?.intermediary_ids) {
+        requestBody.intermediary_ids = additionalData.intermediary_ids;
+      }
+      const response = await postRequestApi(endpoint, requestBody);
 
       if (response.status) {
         setSuccess(
