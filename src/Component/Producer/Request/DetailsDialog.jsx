@@ -52,7 +52,7 @@ const DetailsDialog = ({
       <DialogTitle>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight="bold">
-            Request Details #{request.id}
+            Request Details NZ-{request.id}
           </Typography>
           <IconButton onClick={onClose} size="small">
             <CloseIcon />
@@ -173,6 +173,20 @@ const DetailsDialog = ({
                     </Button>
                   </Grid>
                 )}
+                {request.court_order && (
+                  <Grid size={{ md: 6 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<DownloadIcon />}
+                      href={`${BASE_URL_API}/${request.court_order}`}
+                      target="_blank"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Download Court Order
+                    </Button>
+                  </Grid>
+                )}
                 {request.evidence && (
                   <Grid size={{ md: 6 }}>
                     <Button
@@ -184,6 +198,20 @@ const DetailsDialog = ({
                       sx={{ borderRadius: 2 }}
                     >
                       Download Evidence
+                    </Button>
+                  </Grid>
+                )}
+                {request.csv_file && (
+                  <Grid size={{ md: 6 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<DownloadIcon />}
+                      href={`${BASE_URL_API}/${request.csv_file}`}
+                      target="_blank"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Download CSV File
                     </Button>
                   </Grid>
                 )}
@@ -238,11 +266,21 @@ const DetailsDialog = ({
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell><b>ID</b></TableCell>
-                  <TableCell><b>Status</b></TableCell>
-                  <TableCell><b>Comment</b></TableCell>
-                  <TableCell><b>Created At</b></TableCell>
-                  <TableCell><b>Action Taken by</b></TableCell>
+                  <TableCell>
+                    <b>ID</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Status</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Comment</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Created At</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Action Taken by</b>
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
@@ -252,7 +290,6 @@ const DetailsDialog = ({
                     <TableCell>{item.id}</TableCell>
 
                     <TableCell>
-
                       <Chip
                         label={statusConfig[item.status]?.label || "Unknown"}
                         color={statusConfig[item.status]?.color || "default"}
@@ -261,15 +298,13 @@ const DetailsDialog = ({
                       />
                     </TableCell>
 
-                    <TableCell>
-                      {item.comment || "-"}
-                    </TableCell>
+                    <TableCell>{item.comment || "-"}</TableCell>
 
                     <TableCell>
                       {new Date(item.createdAt).toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      {item.user.first_name}  {item.user.last_name}
+                      {item.user.first_name} {item.user.last_name}
                     </TableCell>
                   </TableRow>
                 ))}

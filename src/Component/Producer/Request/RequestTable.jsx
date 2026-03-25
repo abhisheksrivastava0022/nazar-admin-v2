@@ -216,7 +216,7 @@ const RequestTable = ({
                       color={statusConfig[request.status]?.color || "default"}
                       size="small"
                       variant="outlined"
-                    // sx={{ fontWeight: 500 }}
+                      // sx={{ fontWeight: 500 }}
                     />
                   )}
                 </Stack>
@@ -225,7 +225,7 @@ const RequestTable = ({
           ))}
         </TableBody>
       </Table>
-    </TableContainer >
+    </TableContainer>
   );
 };
 
