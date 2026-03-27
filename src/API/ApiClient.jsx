@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setUser } from "../action/index";
 const BASE_URL_API = `${import.meta.env.VITE_BASE_URL}/`;
+const VITE_APP_BASE_PREFIX = `${import.meta.env.VITE_APP_BASE_PREFIX}`;
 const ApiClient = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const ApiClient = () => {
       // Parse JSON response if the status code is not 401
       const data = await response.json();
       if (data.status) {
-        //   navigate("/");
+        navigate("/");
       }
       return data;
     } catch (error) {
@@ -34,6 +35,7 @@ const ApiClient = () => {
     }
   };
   const userChecklogin = async (endpoint, options = {}) => {
+
     let apiUrl = `${BASE_URL_API}${endpoint}`;
     try {
       const response = await fetch(apiUrl, {
@@ -46,6 +48,8 @@ const ApiClient = () => {
       });
       if (response.status == 401) {
         // navigate("/login");
+        window.location.href = `${import.meta.env.VITE_APP_BASE_PREFIX}/login`;
+
         return;
       }
       // Parse JSON response if the status code is not 401
