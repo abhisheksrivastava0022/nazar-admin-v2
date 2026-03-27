@@ -82,6 +82,8 @@ const ProducerCreateUpdate = () => {
           email: producer.email || "",
           mobile: producer.mobile || "",
           status: producer.status || 1,
+          address: producer.address || "",
+          production_house: producer.production_house || "",
         });
       } else {
         setError(response.message || "Failed to load producer data");
