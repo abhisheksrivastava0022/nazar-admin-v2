@@ -199,9 +199,9 @@ const ProducerCreateUpdate = () => {
       } else {
         setError(
           response.message ||
-            (isEditMode
-              ? "Failed to update producer"
-              : "Failed to create producer"),
+          (isEditMode
+            ? "Failed to update producer"
+            : "Failed to create producer"),
         );
       }
     } catch (err) {
@@ -413,7 +413,7 @@ const ProducerCreateUpdate = () => {
                     <TextField
                       fullWidth
                       label="Address"
-                      name="Address"
+                      name="address"
                       value={formData.address}
                       onChange={handleInputChange}
                       error={!!errors.address}
