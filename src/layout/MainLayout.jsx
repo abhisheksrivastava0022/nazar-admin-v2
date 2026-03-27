@@ -3,11 +3,13 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet, useNavigate } from "react-router-dom";
 import ApiClient from "../API/ApiClient";
+import { useSelector } from "react-redux";
 const basePath = import.meta.env.VITE_APP_BASE_PREFIX || "/";
 
 const MainLayout = () => {
   const { getRequestApi } = ApiClient();
   const navigate = useNavigate();
+  const user = useSelector((state) => state.user);
 
   const logoutHandler = async () => {
     try {
@@ -43,7 +45,7 @@ const MainLayout = () => {
                       </div>
                       <div>
                         <p className="mb-0">Welcome</p>
-                        <h6>Digital Team</h6>
+                        <h6>{user?.first_name} {user?.last_name}</h6>
                       </div>
                     </div>
                     {/* Menu List */}
@@ -53,33 +55,48 @@ const MainLayout = () => {
                         id="v-tabs"
                         role="tablist"
                       >
-                        <button
-                          class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
-                          data-bs-toggle="pill"
-                          data-bs-target="#tab1"
-                          type="button"
-                          onClick={() => navigate("/user-request")}
-                        >
-                          <i class="bi bi-person-lines-fill"></i> User Request
-                        </button>
-                        <button
-                          class={`nav-link ${location.pathname == "/verified-request" ? "active" : ""}`}
-                          data-bs-toggle="pill"
-                          data-bs-target="#tab2"
-                          type="button"
-                          onClick={() => navigate("/verified-request")}
-                        >
-                          <i class="bi bi-patch-check"></i> Verified Request
-                        </button>
-                        <button
-                          class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
-                          data-bs-toggle="pill"
-                          data-bs-target="#tab3"
-                          type="button"
-                          onClick={() => navigate("/approved-request")}
-                        >
-                          <i class="bi bi-check-circle"></i> Approved Request
-                        </button>
+                        {
+                          user?.role?.includes("ministry_level_1") ?
+                            <button
+                              class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                              data-bs-toggle="pill"
+                              data-bs-target="#tab1"
+                              type="button"
+                              onClick={() => navigate("/user-request")}
+                            >
+                              <i class="bi bi-person-lines-fill"></i> User Request
+                            </button>
+                            : <></>
+                        }
+
+                        {
+                          user?.role?.includes("ministry_level_2") ?
+                            <button
+                              class={`nav-link ${location.pathname == "/verified-request" ? "active" : ""}`}
+                              data-bs-toggle="pill"
+                              data-bs-target="#tab2"
+                              type="button"
+                              onClick={() => navigate("/verified-request")}
+                            >
+                              <i class="bi bi-patch-check"></i> Verified Request
+                            </button>
+                            : <></>
+                        }
+
+                        {
+                          user?.role?.includes("ministry_level_2") ?
+                            <button
+                              class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
+                              data-bs-toggle="pill"
+                              data-bs-target="#tab3"
+                              type="button"
+                              onClick={() => navigate("/approved-request")}
+                            >
+                              <i class="bi bi-check-circle"></i> Approved Request
+                            </button>
+                            : <></>
+                        }
+
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
                           data-bs-toggle="pill"
@@ -99,15 +116,19 @@ const MainLayout = () => {
                         >
                           <i class="bi bi-cassette"></i> Intermediary
                         </button>
-                        <button
-                          class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
-                          data-bs-toggle="pill"
-                          data-bs-target="#tab6"
-                          type="button"
-                          onClick={() => navigate("/user")}
-                        >
-                          <i class="bi bi-person"></i> User
-                        </button>
+                        {
+                          user?.role?.includes("administrator") ?
+                            <button
+                              class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
+                              data-bs-toggle="pill"
+                              data-bs-target="#tab6"
+                              type="button"
+                              onClick={() => navigate("/user")}
+                            >
+                              <i class="bi bi-person"></i> User
+                            </button> : <></>
+                        }
+
 
                         {/* Log Out Btn */}
                         <button
