@@ -38,7 +38,7 @@ const ActionDialog = ({
 
     // Local OTP state as array of 6 digits
     const [otpArray, setOtpArray] = useState(["", "", "", "", "", ""]);
-    const [intermediaries, setintermediaries] = useState(["", "", "", "", "", ""]);
+    const [intermediaries, setintermediaries] = useState([]);
 
     useEffect(() => {
         if (selectedRequest?.intermediaries_ids)

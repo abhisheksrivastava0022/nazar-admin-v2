@@ -81,7 +81,7 @@ const Login = () => {
               <a href="/" class=" mb-3 mb-md-0  ">
                 {" "}
                 <img
-                  src="/images/nazar-white.png"
+                  src="images/nazar-white.png"
                   alt="NAZAR"
                   class="img-fluid"
                 />{" "}
@@ -93,7 +93,7 @@ const Login = () => {
               >
                 {" "}
                 <img
-                  src="/images/mib-logo.svg"
+                  src="images/mib-logo.svg"
                   alt="MIB"
                   class="img-fluid"
                 />{" "}
@@ -105,7 +105,7 @@ const Login = () => {
               >
                 {" "}
                 <img
-                  src="/images/logo1.png"
+                  src="images/logo1.png"
                   alt="NFDC"
                   class="second-logo"
                 />{" "}
@@ -122,7 +122,6 @@ const Login = () => {
                     Infringement
                   </b>
                 </span>
-                {/* <img src="/images/nazar-white.png" class=" text-logo" />  */}
 
                 <p class="mt-3 ">
                   NAZAR is a national platform dedicated to combating digital

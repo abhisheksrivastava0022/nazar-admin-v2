@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import ApiClient from "../API/ApiClient";
 import ApiUser from "../API/ApiUser";
 import { useSelector } from "react-redux";
+const basePath = import.meta.env.VITE_APP_BASE_PREFIX || "/";
 
 const Header = () => {
   // const dispatch = useDispatch();
@@ -109,10 +110,8 @@ const Header = () => {
       <header className="d-flex align-items-center mt-2 py-2 ">
         <a href="/" className="d-block me-3" aria-label="Home">
           <img
-            // src="/logonazar.png"
-            src="/nazar.png"
+            src={`${basePath}/nazar.png`}
             alt="National Anti-Piracy and Zero-Tolerance Action on Rights Infringement"
-            // className="logo-width"
             className="img-fluid"
             style={{ maxHeight: "70px" }}
             loading="lazy"
@@ -125,7 +124,7 @@ const Header = () => {
           aria-label="Ministry of Information & Broadcasting"
         >
           <img
-            src="/mib.png"
+            src={`${basePath}/mib.png`}
             alt="Ministry of Information & Broadcasting"
             className="img-fluid"
             style={{ maxHeight: "70px" }}

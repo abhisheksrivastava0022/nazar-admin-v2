@@ -3,6 +3,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet, useNavigate } from "react-router-dom";
 import ApiClient from "../API/ApiClient";
+const basePath = import.meta.env.VITE_APP_BASE_PREFIX || "/";
 
 const MainLayout = () => {
   const { getRequestApi } = ApiClient();
@@ -122,7 +123,7 @@ const MainLayout = () => {
                     </div>
                     <div className="menu-image">
                       <img
-                        src="/images/menu-img.png"
+                        src={`${basePath}/images/menu-img.png`}
                         alt=""
                         className="img-fluid"
                       />

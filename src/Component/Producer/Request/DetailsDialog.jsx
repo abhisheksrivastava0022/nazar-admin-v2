@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -25,6 +25,7 @@ import {
   Download as DownloadIcon,
   Close as CloseIcon, // Add this import
 } from "@mui/icons-material";
+import ApiClient from "../../../API/ApiClient";
 
 const DetailsDialog = ({
   open,
@@ -36,7 +37,27 @@ const DetailsDialog = ({
   // getStatusChip,
 }) => {
   if (!request) return null;
-
+  const { getRequestApi } = ApiClient();
+  useEffect(() => {
+    if (request.id) {
+      loadStatusHistory()
+      loadcompliance();
+    }
+  }, [request.id])
+  const [history, setHistory] = useState([]);
+  const loadStatusHistory = async () => {
+    const response = await getRequestApi(`api/producer/history/${request.id}`);
+    if (response.status) {
+      setHistory(response.data);
+    }
+  }
+  const [compliance, setCompliance] = useState([]);
+  const loadcompliance = async () => {
+    const response = await getRequestApi(`api/producer/compliance/${request.id}`);
+    if (response.status) {
+      setCompliance(response.data);
+    }
+  }
   return (
     <Dialog
       open={open}
@@ -285,7 +306,7 @@ const DetailsDialog = ({
               </TableHead>
 
               <TableBody>
-                {request.complaint_statuses.map((item) => (
+                {history.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>{item.id}</TableCell>
 
@@ -306,6 +327,49 @@ const DetailsDialog = ({
                     <TableCell>
                       {item.user.first_name} {item.user.last_name}
                     </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Complaince Response
+          </Typography>
+
+          <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <b>ID</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>email</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Comment</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Created At</b>
+                  </TableCell>
+
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {compliance.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+
+
+                    <TableCell>{item.email || "-"}</TableCell>
+                    <TableCell>{item.comment || "-"}</TableCell>
+
+                    <TableCell>
+                      {new Date(item.createdAt).toLocaleString()}
+                    </TableCell>
+
                   </TableRow>
                 ))}
               </TableBody>

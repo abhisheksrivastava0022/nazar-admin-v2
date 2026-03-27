@@ -86,6 +86,7 @@ const VerifiedRequest = () => {
   // Update URL with current filters
   const updateUrlParams = (params) => {
     const urlParams = new URLSearchParams();
+    const currentPath = location.pathname;
 
     // Add all non-default values to URL
     if (params.page && params.page !== 1) {
@@ -104,10 +105,12 @@ const VerifiedRequest = () => {
       urlParams.set("producer_id", params.producer_id);
     }
 
-    const newUrl = urlParams.toString() ? `?${urlParams.toString()}` : window.location.pathname;
+    const newUrl = urlParams.toString()
+      ? `${currentPath}?${urlParams.toString()}`
+      : currentPath;
+
     navigate(newUrl, { replace: true });
   };
-
   // Load producer details from ID (for URL param)
   const loadProducerFromId = async (producerId) => {
     if (!producerId) return null;

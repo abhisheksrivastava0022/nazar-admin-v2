@@ -24,7 +24,7 @@ const ApiClient = () => {
       // Parse JSON response if the status code is not 401
       const data = await response.json();
       if (data.status) {
-        navigate("/");
+        //   navigate("/");
       }
       return data;
     } catch (error) {
@@ -45,7 +45,7 @@ const ApiClient = () => {
         credentials: "include",
       });
       if (response.status == 401) {
-        navigate("/login");
+        // navigate("/login");
         return;
       }
       // Parse JSON response if the status code is not 401

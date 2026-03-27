@@ -73,6 +73,7 @@ const RequestListing = () => {
   // Update URL with current filters
   const updateUrlParams = (params) => {
     const urlParams = new URLSearchParams();
+    const currentPath = location.pathname;
 
     // Add all non-default values to URL
     if (params.page && params.page !== 1) {
@@ -92,8 +93,9 @@ const RequestListing = () => {
     }
 
     const newUrl = urlParams.toString()
-      ? `?${urlParams.toString()}`
-      : window.location.pathname;
+      ? `${currentPath}?${urlParams.toString()}`
+      : currentPath;
+
     navigate(newUrl, { replace: true });
   };
 
