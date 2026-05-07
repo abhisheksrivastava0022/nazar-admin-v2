@@ -71,31 +71,39 @@ const MainLayout = () => {
 
                         {
                           user?.role?.includes("ministry_level_2") ?
-                            <button
-                              class={`nav-link ${location.pathname == "/verified-request" ? "active" : ""}`}
-                              data-bs-toggle="pill"
-                              data-bs-target="#tab2"
-                              type="button"
-                              onClick={() => navigate("/verified-request")}
-                            >
-                              <i class="bi bi-patch-check"></i> Verified Request
-                            </button>
+                            <>
+                              <button
+                                class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                                data-bs-toggle="pill"
+                                data-bs-target="#tab1"
+                                type="button"
+                                onClick={() => navigate("/user-request")}
+                              >
+                                <i class="bi bi-person-lines-fill"></i> Dashboard
+                              </button>
+                              <button
+                                class={`nav-link ${location.pathname == "/verified-request" ? "active" : ""}`}
+                                data-bs-toggle="pill"
+                                data-bs-target="#tab2"
+                                type="button"
+                                onClick={() => navigate("/verified-request")}
+                              >
+                                <i class="bi bi-patch-check"></i> Verified Request
+                              </button>
+                            </>
+
                             : <></>
                         }
 
-                        {
-                          user?.role?.includes("ministry_level_2") ?
-                            <button
-                              class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
-                              data-bs-toggle="pill"
-                              data-bs-target="#tab3"
-                              type="button"
-                              onClick={() => navigate("/approved-request")}
-                            >
-                              <i class="bi bi-check-circle"></i> Approved Request
-                            </button>
-                            : <></>
-                        }
+                        <button
+                          class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab3"
+                          type="button"
+                          onClick={() => navigate("/approved-request")}
+                        >
+                          <i class="bi bi-check-circle"></i> Approved Request
+                        </button>
 
                         <button
                           class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}

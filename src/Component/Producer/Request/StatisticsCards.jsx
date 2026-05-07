@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Grid, Paper, Typography } from "@mui/material";
+import ApiClient from "../../../API/ApiClient";
 
 const StatisticsCards = ({
   totalRecords,
@@ -7,11 +8,16 @@ const StatisticsCards = ({
   Verified,
   approved,
   rejected,
-  rejected_by,
+  declined,
+  compliance,
 }) => {
+  const { getRequestApi } = ApiClient();
+  useEffect(() => {
+
+  }, []);
   return (
     <Grid container spacing={3} sx={{ mb: 4 }}>
-      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+      {/* <Grid size={{ xs: 12, sm: 6, md: 2 }}>
         <Paper sx={{ p: 3, textAlign: "center", bgcolor: "primary.lighter" }}>
           <Typography variant="h4" fontWeight="bold">
             {totalRecords}
@@ -20,7 +26,7 @@ const StatisticsCards = ({
             Total
           </Typography>
         </Paper>
-      </Grid>
+      </Grid> */}
       <Grid size={{ xs: 12, sm: 6, md: 2 }}>
         <Paper sx={{ p: 3, textAlign: "center", bgcolor: "warning.lighter" }}>
           <Typography variant="h4" color="warning.main" fontWeight="bold">
@@ -64,10 +70,20 @@ const StatisticsCards = ({
       <Grid size={{ xs: 12, sm: 6, md: 2 }}>
         <Paper sx={{ p: 3, textAlign: "center", bgcolor: "error.lighter" }}>
           <Typography variant="h4" color="error.main" fontWeight="bold">
-            {rejected_by}
+            {declined}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Declined
+          </Typography>
+        </Paper>
+      </Grid>
+      <Grid size={{ xs: 12, sm: 6, md: 2 }}>
+        <Paper sx={{ p: 3, textAlign: "center", bgcolor: "error.lighter" }}>
+          <Typography variant="h4" color="error.main" fontWeight="bold">
+            {compliance}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Compliace
           </Typography>
         </Paper>
       </Grid>

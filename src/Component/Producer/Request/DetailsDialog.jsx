@@ -333,7 +333,7 @@ const DetailsDialog = ({
             </Table>
           </TableContainer>
 
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          {/* <Typography variant="h6" sx={{ mb: 2 }}>
             Complaince Response
           </Typography>
 
@@ -374,7 +374,7 @@ const DetailsDialog = ({
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer> */}
         </Grid>
       </DialogContent>
       <DialogActions>

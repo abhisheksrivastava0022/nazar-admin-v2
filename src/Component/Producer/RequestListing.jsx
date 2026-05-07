@@ -20,8 +20,11 @@ import StatisticsCards from "./Request/StatisticsCards";
 import RequestTable from "./Request/RequestTable";
 import ActionDialog from "./Request/ActionDialog";
 import DetailsDialog from "./Request/DetailsDialog";
+import { useSelector } from "react-redux";
 
 const RequestListing = () => {
+  const user = useSelector((state) => state.user);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -32,7 +35,7 @@ const RequestListing = () => {
     const params = new URLSearchParams(location.search);
     return {
       page: parseInt(params.get("page")) || 1,
-      limit: parseInt(params.get("limit")) || 10,
+      limit: parseInt(params.get("limit")) || 20,
       search: params.get("search") || "",
       status: params.get("status") || "all",
       producer_id: params.get("producer_id") || null,
@@ -79,7 +82,7 @@ const RequestListing = () => {
     if (params.page && params.page !== 1) {
       urlParams.set("page", params.page);
     }
-    if (params.limit && params.limit !== 10) {
+    if (params.limit && params.limit !== 20) {
       urlParams.set("limit", params.limit);
     }
     if (params.search && params.search.trim() !== "") {
@@ -346,11 +349,12 @@ const RequestListing = () => {
   // Calculate statistics
   const stats = {
     totalRecords,
-    pending: data.filter((item) => item.status === 1).length,
-    Verified: data.filter((item) => item.status === 2).length,
-    approved: data.filter((item) => item.status === 3).length,
-    rejected: data.filter((item) => item.status === 4).length,
-    rejected_by: data.filter((item) => item.status === 5).length,
+    pending: data.filter((item) => item.status == 1).length,
+    Verified: data.filter((item) => item.status == 2).length,
+    approved: data.filter((item) => item.status == 3).length,
+    rejected: data.filter((item) => item.status == 4).length,
+    declined: data.filter((item) => item.status == 5).length,
+    compliance: data.filter((item) => item.status == 6).length,
   };
 
   return (
@@ -401,28 +405,6 @@ const RequestListing = () => {
           </Alert>
         )}
       </Box>
-
-      {/* Filters */}
-      <RequestFilter
-        selectedProducer={selectedProducer}
-        onProducerChange={handleProducerChange}
-        producerSearchQuery={producerSearchQuery}
-        onProducerSearchChange={handleProducerSearchChange}
-        producerOptions={producerOptions}
-        loadingProducers={loadingProducers}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        onSearchSubmit={handleSearchSubmit}
-        statusFilter={statusFilter}
-        onStatusFilterChange={handleStatusFilterChange}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        onRefresh={handleRefresh}
-        onClearProducer={handleClearProducer}
-        statusConfig={statusConfig}
-      />
-
-      {/* Statistics Cards */}
       {!loading && data.length > 0 && (
         <StatisticsCards
           totalRecords={stats.totalRecords}
@@ -430,65 +412,90 @@ const RequestListing = () => {
           Verified={stats.Verified}
           approved={stats.approved}
           rejected={stats.rejected}
-          rejected_by={stats.rejected_by}
+          declined={stats.declined}
+          compliance={stats.compliance}
         />
       )}
+      {/* Filters */}
+      {
+        user?.role?.includes("ministry_level_1") ?
+          <>
 
-      {/* Requests Table */}
-      <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-        <CardContent sx={{ p: 0 }}>
-          <RequestTable
-            data={data}
-            loading={loading}
-            BASE_URL_API={BASE_URL_API}
-            onViewDetails={handleViewDetails}
-            onVerified={(request) => handleActionClick(request, "verified")}
-            // onApprove={(request) => handleActionClick(request, "approve")}
-            onReject={(request) => handleActionClick(request, "reject")}
-            formatDate={formatDate}
-            statusConfig={statusConfig}
-          // getStatusChip={getStatusChip}
-          />
-        </CardContent>
 
-        {/* Pagination */}
-        {data.length > 0 && (
-          <Box
-            sx={{
-              p: 3,
-              borderTop: "1px solid",
-              borderColor: "divider",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
-              {Math.min(currentPage * rowsPerPage, totalRecords)} of{" "}
-              {totalRecords} requests
-            </Typography>
-
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              size="medium"
-              showFirstButton
-              showLastButton
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  borderRadius: 2,
-                },
-              }}
+            <RequestFilter
+              selectedProducer={selectedProducer}
+              onProducerChange={handleProducerChange}
+              producerSearchQuery={producerSearchQuery}
+              onProducerSearchChange={handleProducerSearchChange}
+              producerOptions={producerOptions}
+              loadingProducers={loadingProducers}
+              searchQuery={searchQuery}
+              onSearchChange={handleSearchChange}
+              onSearchSubmit={handleSearchSubmit}
+              statusFilter={statusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              onRefresh={handleRefresh}
+              onClearProducer={handleClearProducer}
+              statusConfig={statusConfig}
             />
-          </Box>
-        )}
-      </Card>
+            <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+              <CardContent sx={{ p: 0 }}>
+                <RequestTable
+                  data={data}
+                  loading={loading}
+                  BASE_URL_API={BASE_URL_API}
+                  onViewDetails={handleViewDetails}
+                  onVerified={(request) => handleActionClick(request, "verified")}
+                  // onApprove={(request) => handleActionClick(request, "approve")}
+                  onReject={(request) => handleActionClick(request, "reject")}
+                  formatDate={formatDate}
+                  statusConfig={statusConfig}
+                // getStatusChip={getStatusChip}
+                />
+              </CardContent>
 
+              {/* Pagination */}
+              {data.length > 0 && (
+                <Box
+                  sx={{
+                    p: 3,
+                    borderTop: "1px solid",
+                    borderColor: "divider",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 2,
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
+                    {Math.min(currentPage * rowsPerPage, totalRecords)} of{" "}
+                    {totalRecords} requests
+                  </Typography>
+
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    size="medium"
+                    showFirstButton
+                    showLastButton
+                    sx={{
+                      "& .MuiPaginationItem-root": {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+                </Box>
+              )}
+            </Card>
+          </> :
+          <></>
+      }
       {/* Action Dialog */}
       <ActionDialog
         open={actionDialogOpen}

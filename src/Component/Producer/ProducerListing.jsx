@@ -46,10 +46,20 @@ import {
   ArrowBack as ArrowBackIcon,
 } from "@mui/icons-material";
 import ApiClient from "../../API/ApiClient";
+import CSVImporter from "./CSVImporter"; // adjust path as needed
 
 const ProducerListing = () => {
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+
+  // 3. Add success handler
+  const handleImportSuccess = (response) => {
+    setSuccess(`Successfully imported ${response.importedCount || 0} producers`);
+    loadData(); // Refresh the list
+    setTimeout(() => setSuccess(""), 3000);
+  };
+
   const navigate = useNavigate();
-  const { getRequestApi, postRequestApi } = ApiClient();
+  const { getRequestApi, postRequestApi, ApiUploadFile } = ApiClient();
 
   // State management
   const [data, setData] = useState([]);
@@ -229,6 +239,7 @@ const ProducerListing = () => {
   return (
     <Container maxWidth="xl" style={{ background: "white" }}>
       {/* Header */}
+
       <Box sx={{ mb: 4 }}>
         <Box
           sx={{
@@ -285,7 +296,21 @@ const ProducerListing = () => {
           </Alert>
         )}
       </Box>
+      <Button
+        variant="outlined"
+        // startIcon={<UploadIcon />}
+        onClick={() => setImportDialogOpen(true)}
+        sx={{ borderRadius: 2, textTransform: "none" }}
+      >
+        Import CSV
+      </Button>
 
+      <CSVImporter
+        open={importDialogOpen}
+        onClose={() => setImportDialogOpen(false)}
+        onSuccess={handleImportSuccess}
+        ApiUploadFile={ApiUploadFile}
+      />
       {/* Action Bar */}
       <Paper
         elevation={2}
