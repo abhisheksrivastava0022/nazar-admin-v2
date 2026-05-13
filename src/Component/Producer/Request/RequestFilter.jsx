@@ -144,7 +144,7 @@ const RequestFilter = ({
         </Grid>
 
         {/* Status Filter */}
-        <Grid size={{ md: 2 }}>
+        {/* <Grid size={{ md: 2 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Status</InputLabel>
             <Select
@@ -161,7 +161,7 @@ const RequestFilter = ({
               ))}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid> */}
 
         {/* Rows Per Page */}
         <Grid size={{ md: 2 }}>
@@ -182,7 +182,7 @@ const RequestFilter = ({
         </Grid>
 
         {/* Refresh Button */}
-        <Grid size={{ md: 1 }} sx={{ display: "flex", gap: 1 }}>
+        <Grid size={{ md: 2 }} sx={{ display: "flex", gap: 1 }}>
           <Tooltip title="Refresh">
             <IconButton
               onClick={onRefresh}

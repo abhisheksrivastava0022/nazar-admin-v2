@@ -40,24 +40,55 @@ const DetailsDialog = ({
   const { getRequestApi } = ApiClient();
   useEffect(() => {
     if (request.id) {
-      loadStatusHistory()
+      loadStatusHistory();
       loadcompliance();
     }
-  }, [request.id])
+  }, [request.id]);
   const [history, setHistory] = useState([]);
   const loadStatusHistory = async () => {
     const response = await getRequestApi(`api/producer/history/${request.id}`);
     if (response.status) {
       setHistory(response.data);
     }
-  }
+  };
   const [compliance, setCompliance] = useState([]);
   const loadcompliance = async () => {
-    const response = await getRequestApi(`api/producer/compliance/${request.id}`);
+    const response = await getRequestApi(
+      `api/producer/compliance/${request.id}`,
+    );
     if (response.status) {
       setCompliance(response.data);
     }
-  }
+  };
+
+  const downloadUrls = (urlsData, title = "urls") => {
+    try {
+      // string ko array me convert karo
+      const urls = JSON.parse(urlsData);
+
+      // CSV content
+      const csvContent =
+        "data:text/csv;charset=utf-8," + ["URL", ...urls].join("\n");
+
+      // Blob create
+      const encodedUri = encodeURI(csvContent);
+
+      // Download link create
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${title}.csv`);
+
+      document.body.appendChild(link);
+
+      // Download trigger
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("CSV download error:", error);
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -110,6 +141,36 @@ const DetailsDialog = ({
                     {/* {getStatusChip(request.status)} */}
                   </Box>
                 </Grid>
+                {request?.producer_movie.cbfc_certificate_number ? (
+                  <>
+                    <Grid size={{ md: 12 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Certificate Number
+                      </Typography>
+                      <Typography variant="body1">
+                        {request?.producer_movie.cbfc_certificate_number ||
+                          "N/A"}
+                      </Typography>
+                    </Grid>
+                  </>
+                ) : (
+                  <></>
+                )}
+                {request?.producer_movie.application_cert_id ? (
+                  <>
+                    <Grid size={{ md: 12 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        Application Number
+                      </Typography>
+                      <Typography variant="body1">
+                        {request?.producer_movie.application_cert_id || "N/A"}
+                      </Typography>
+                    </Grid>
+                  </>
+                ) : (
+                  <></>
+                )}
+
                 <Grid size={{ md: 12 }}>
                   <Typography variant="caption" color="text.secondary">
                     Title
@@ -169,6 +230,44 @@ const DetailsDialog = ({
                     {request.mode || "N/A"}
                   </Typography>
                 </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+
+          {/* Downloard */}
+          <Grid size={{ md: 12 }}>
+            <Typography variant="subtitle2" color="primary" gutterBottom>
+              Url's
+            </Typography>
+            <Paper variant="outlined" sx={{ p: 2 }}>
+              <Grid container spacing={2}>
+                {request.urls ? (
+                  <Grid size={{ md: 6 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<DownloadIcon />}
+                      // href={`${BASE_URL_API}/${request.cbfc_certificate}`}
+                      onClick={() => downloadUrls(request.urls, request.title)}
+                      target="_blank"
+                      sx={{ borderRadius: 2 }}
+                    >
+                      Download Url's
+                    </Button>
+                  </Grid>
+                ) : (
+                  <>
+                    <Grid size={{ md: 12 }}>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        align="center"
+                      >
+                        No url's available
+                      </Typography>
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </Paper>
           </Grid>
@@ -279,7 +378,7 @@ const DetailsDialog = ({
           </Grid>
 
           {/* Admin Comments */}
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          {/* <Typography variant="h6" sx={{ mb: 2 }}>
             Complaint Status History
           </Typography>
 
@@ -331,7 +430,7 @@ const DetailsDialog = ({
                 ))}
               </TableBody>
             </Table>
-          </TableContainer>
+          </TableContainer> */}
 
           {/* <Typography variant="h6" sx={{ mb: 2 }}>
             Complaince Response

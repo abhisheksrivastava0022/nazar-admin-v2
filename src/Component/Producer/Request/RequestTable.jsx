@@ -55,6 +55,34 @@ const RequestTable = ({
     );
   }
 
+  const downloadUrls = (urlsData, title = "urls") => {
+    try {
+      // string ko array me convert karo
+      const urls = JSON.parse(urlsData);
+
+      // CSV content
+      const csvContent =
+        "data:text/csv;charset=utf-8," + ["URL", ...urls].join("\n");
+
+      // Blob create
+      const encodedUri = encodeURI(csvContent);
+
+      // Download link create
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${title}.csv`);
+
+      document.body.appendChild(link);
+
+      // Download trigger
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("CSV download error:", error);
+    }
+  };
+
   return (
     <TableContainer>
       <Table>
@@ -65,11 +93,12 @@ const RequestTable = ({
             {/* <TableCell>NAME</TableCell> */}
             {/* <TableCell>MODE</TableCell> */}
             {/* <TableCell>STATUS</TableCell> */}
-            <TableCell>CBFC CERTIFICATE</TableCell>
+            {/* <TableCell>CBFC CERTIFICATE</TableCell> */}
+            <TableCell>URL's</TableCell>
             <TableCell>EVIDENCE</TableCell>
             <TableCell>Report Date</TableCell>
             <TableCell align="center">View</TableCell>
-            <TableCell align="center">Actions</TableCell>
+            {/* <TableCell align="center">Actions</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -114,7 +143,7 @@ const RequestTable = ({
             </TableCell> */}
 
               {/* CBFC Certificate Column */}
-              <TableCell>
+              {/* <TableCell>
                 {request.cbfc_certificate ? (
                   <Button
                     size="small"
@@ -129,6 +158,25 @@ const RequestTable = ({
                 ) : (
                   <Typography variant="body2" color="text.secondary">
                     No certificate
+                  </Typography>
+                )}
+              </TableCell> */}
+
+              <TableCell>
+                {request.urls ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    onClick={() => downloadUrls(request.urls, request.title)}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    Download
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No Urls
                   </Typography>
                 )}
               </TableCell>
@@ -176,7 +224,7 @@ const RequestTable = ({
                   </IconButton>
                 </Tooltip>
               </TableCell>
-              <TableCell align="center">
+              {/* <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   {request.status === 1 && (
                     <>
@@ -220,7 +268,7 @@ const RequestTable = ({
                     />
                   )}
                 </Stack>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>
