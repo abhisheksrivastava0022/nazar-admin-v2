@@ -47,19 +47,30 @@ import {
 } from "@mui/icons-material";
 import ApiClient from "../../API/ApiClient";
 import CSVImporter from "./CSVImporter"; // adjust path as needed
+import MovieFilterIcon from "@mui/icons-material/MovieFilter";
 
 const ProducerListing = () => {
   const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // 3. Add success handler
   const handleImportSuccess = (response) => {
-    setSuccess(`Successfully imported ${response.importedCount || 0} producers`);
+    setSuccess(
+      `Successfully imported ${response.importedCount || 0} producers`,
+    );
     loadData(); // Refresh the list
     setTimeout(() => setSuccess(""), 3000);
   };
 
   const navigate = useNavigate();
   const { getRequestApi, postRequestApi, ApiUploadFile } = ApiClient();
+
+  const [formData, setFormData] = useState({
+    id: "",
+    title: "",
+    cbfc_certificate_number: "",
+    application_id: "",
+  });
+  const [filmError, setFilmError] = useState("");
 
   // State management
   const [data, setData] = useState([]);
@@ -81,6 +92,11 @@ const ProducerListing = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedProducer, setSelectedProducer] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // const [filmData, setFilmData] = useState([]);
+  const [filmDialogOpen, setfilmDialogOpen] = useState(false);
+  const [addFilm, setAddFilm] = useState(false);
+  const [updateFilm, setUpdateFilm] = useState(false);
 
   // Load producers data
   const loadData = async () => {
@@ -159,6 +175,11 @@ const ProducerListing = () => {
     navigate(`/producer/update/${producer.id}`);
   };
 
+  const viewMovies = (producer) => {
+    setSelectedProducer(producer);
+    setfilmDialogOpen(true);
+  };
+
   // Handle delete
   const handleDeleteClick = (producer) => {
     setSelectedProducer(producer);
@@ -234,6 +255,163 @@ const ProducerListing = () => {
   // Get initials for avatar
   const getInitials = (firstName, lastName) => {
     return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+  };
+
+  const handleAddFilm = () => {
+    setAddFilm(true);
+    setUpdateFilm(false);
+
+    setFormData({
+      id: "",
+      title: "",
+      cbfc_certificate_number: "",
+      application_id: "",
+    });
+  };
+
+  const handleFilmDilogeClose = () => {
+    setfilmDialogOpen(false);
+    setAddFilm(false);
+    setUpdateFilm(false);
+
+    setFormData({});
+
+    setFilmError({});
+  };
+
+  // Handle input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear validation error
+    if (filmError[name]) {
+      setFilmError((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+
+    // Clear global error alert
+    if (error) {
+      setError("");
+    }
+  };
+
+  const handleFilm = async () => {
+    if (!selectedProducer) return;
+
+    // Validation
+    let errors = {};
+
+    if (!formData.title) {
+      errors.title = "Film title is required";
+    }
+
+    if (!formData.cbfc_certificate_number && !formData.application_id) {
+      errors.cbfc_certificate_number =
+        "Either CBFC Certificate Number or Application ID is required";
+
+      errors.application_id =
+        "Either Application ID or CBFC Certificate Number is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFilmError(errors);
+      return;
+    }
+
+    try {
+      console.log(formData);
+
+      const response = await postRequestApi(
+        `api/producer/${selectedProducer.id}/add-movie`,
+        formData,
+      );
+
+      if (response.status) {
+        setSuccess("Film added successfully!");
+
+        loadData();
+
+        handleFilmDilogeClose();
+      } else {
+        setError(response.message || "Failed to add film");
+      }
+    } catch (err) {
+      console.error("Error adding film:", err);
+      setError("An error occurred while adding the film");
+    } finally {
+      setTimeout(() => setSuccess(""), 3000);
+    }
+  };
+
+  const handleUpdateFilm = async () => {
+    if (!selectedProducer) return;
+
+    if (!formData.id) {
+      return;
+    }
+
+    // Validation
+    let errors = {};
+
+    if (!formData.title) {
+      errors.title = "Film title is required";
+    }
+
+    if (!formData.cbfc_certificate_number && !formData.application_id) {
+      errors.cbfc_certificate_number =
+        "Either CBFC Certificate Number or Application ID is required";
+
+      errors.application_id =
+        "Either Application ID or CBFC Certificate Number is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFilmError(errors);
+      return;
+    }
+
+    try {
+      const response = await postRequestApi(
+        `api/producer/${selectedProducer.id}/update-movie`,
+        formData,
+      );
+
+      if (response.status) {
+        setSuccess("Film Update successfully!");
+
+        loadData();
+
+        handleFilmDilogeClose();
+      } else {
+        setError(response.message || "Failed to add film");
+      }
+    } catch (err) {
+      console.error("Error adding film:", err);
+      setError("An error occurred while adding the film");
+    } finally {
+      setTimeout(() => setSuccess(""), 3000);
+    }
+  };
+
+  const handleEditFilm = (film) => {
+    setfilmDialogOpen(true);
+    setAddFilm(true);
+    setUpdateFilm(true);
+
+    setFormData({
+      id: film.id,
+      title: film.title,
+      cbfc_certificate_number: film.cbfc_certificate_number,
+      application_id: film.application_id,
+    });
+    // console.log(film);
   };
 
   return (
@@ -442,6 +620,7 @@ const ProducerListing = () => {
                     <TableCell width="15%">Status</TableCell>
                     <TableCell width="15%">Created Date</TableCell>
                     <TableCell width="15%">Actions</TableCell>
+                    <TableCell width="15%">Films</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -579,6 +758,25 @@ const ProducerListing = () => {
                           </Tooltip>
                         </Stack>
                       </TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={1}>
+                          <Tooltip title="Add Movies">
+                            <IconButton
+                              onClick={() => viewMovies(producer)}
+                              color="primary"
+                              size="small"
+                              sx={{
+                                backgroundColor: "primary.lighter",
+                                "&:hover": {
+                                  backgroundColor: "primary.light",
+                                },
+                              }}
+                            >
+                              <MovieFilterIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -674,6 +872,262 @@ const ProducerListing = () => {
             startIcon={deleteLoading && <CircularProgress size={20} />}
           >
             {deleteLoading ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Films Details */}
+
+      <Dialog
+        open={filmDialogOpen}
+        onClose={handleFilmDilogeClose}
+        fullWidth
+        maxWidth="lg"
+        PaperProps={{
+          elevation: 4,
+          sx: {
+            borderRadius: 3,
+            overflow: "hidden",
+          },
+        }}
+      >
+        {/* Header */}
+        <DialogTitle
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            py: 2,
+            px: 3,
+          }}
+        >
+          <Box>
+            <Typography variant="h6" fontWeight="bold">
+              {selectedProducer?.first_name} {selectedProducer?.last_name} Films
+            </Typography>
+
+            <Typography variant="body2" color="text.secondary">
+              Manage producer films and application details
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddFilm}
+          >
+            Add Film
+          </Button>
+        </DialogTitle>
+
+        {/* Content */}
+        <DialogContent sx={{ p: 0 }}>
+          {/* Add Film Form */}
+          {addFilm ? (
+            <>
+              <Box
+                sx={{
+                  p: 3,
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                  backgroundColor: "grey.50",
+                }}
+              >
+                <Typography variant="subtitle1" fontWeight="600" mb={2}>
+                  {updateFilm ? "Update" : "Add New"} Film
+                </Typography>
+
+                <Grid container spacing={2}>
+                  <Grid size={{ xs: 12, md: 12 }}>
+                    {error && (
+                      <Alert
+                        severity="error"
+                        sx={{ mb: 3 }}
+                        onClose={() => setError("")}
+                        elevation={2}
+                      >
+                        {error}
+                      </Alert>
+                    )}
+                  </Grid>
+                  {/* <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      label="id"
+                      name="id"
+                      value={formData.id}
+                    />
+                  </Grid> */}
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      label="Film Title"
+                      name="title"
+                      placeholder="Enter film title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      error={!!filmError.title}
+                      helperText={filmError.title}
+                    />
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      label="CBFC Certificate No."
+                      name="cbfc_certificate_number"
+                      placeholder="Certificate number"
+                      value={formData.cbfc_certificate_number}
+                      onChange={handleInputChange}
+                      error={!!filmError.cbfc_certificate_number}
+                      helperText={filmError.cbfc_certificate_number}
+                    />
+                  </Grid>
+
+                  <Grid size={{ xs: 12, md: 3 }}>
+                    <TextField
+                      fullWidth
+                      label="Application ID"
+                      name="application_id"
+                      placeholder="Application ID"
+                      value={formData.application_id}
+                      onChange={handleInputChange}
+                      error={!!filmError.application_id}
+                      helperText={filmError.application_id}
+                    />
+                  </Grid>
+
+                  <Grid
+                    size={{ xs: 12, md: 3 }}
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={updateFilm ? handleUpdateFilm : handleFilm}
+                      sx={{ height: 56 }}
+                      color={updateFilm ? "warning" : "success"}
+                    >
+                      {updateFilm ? "Update" : "Add"} Film
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {/* Table */}
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "grey.100" }}>
+                  <TableCell>
+                    <Typography fontWeight="bold">Film Title</Typography>
+                  </TableCell>
+
+                  <TableCell>
+                    <Typography fontWeight="bold">
+                      CBFC Certificate Number
+                    </Typography>
+                  </TableCell>
+
+                  <TableCell>
+                    <Typography fontWeight="bold">Application ID</Typography>
+                  </TableCell>
+
+                  <TableCell>
+                    <Typography fontWeight="bold">Action</Typography>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {selectedProducer?.producer_movies.length > 0 ? (
+                  selectedProducer.producer_movies.map((film) => (
+                    <TableRow
+                      key={film.id}
+                      hover
+                      sx={{
+                        transition: "0.2s",
+                        "&:hover": {
+                          backgroundColor: "action.hover",
+                        },
+                      }}
+                    >
+                      {/* Film Info */}
+                      <TableCell>
+                        <Typography fontWeight="600">
+                          {film.title || "N/A"}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {film.cbfc_certificate_number || ""}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" color="text.secondary">
+                          {film.application_id || ""}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={1}>
+                          <Tooltip title="Edit Film">
+                            <IconButton
+                              onClick={() => handleEditFilm(film)}
+                              color="primary"
+                              size="small"
+                              sx={{
+                                backgroundColor: "primary.lighter",
+                                "&:hover": {
+                                  backgroundColor: "primary.light",
+                                },
+                              }}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      <Box py={5}>
+                        <Typography variant="body1" color="text.secondary">
+                          No films found
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+
+        {/* Footer */}
+        <DialogActions
+          sx={{
+            p: 2,
+            borderTop: "1px solid",
+            borderColor: "divider",
+          }}
+        >
+          <Button
+            onClick={handleFilmDilogeClose}
+            variant="outlined"
+            sx={{ borderRadius: 2 }}
+            disabled={deleteLoading}
+          >
+            Close
           </Button>
         </DialogActions>
       </Dialog>

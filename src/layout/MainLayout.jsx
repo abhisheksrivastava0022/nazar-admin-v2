@@ -96,8 +96,17 @@ const MainLayout = () => {
                           <></>
                         )}
 
+                        <button
+                          class={`nav-link ${location.pathname == "/send-request" ? "active" : ""}`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab3"
+                          type="button"
+                          onClick={() => navigate("/send-request")}
+                        >
+                          <i class="bi bi-check-circle"></i> Send Request
+                        </button>
                         {/* <button
-                          class={`nav-link ${location.pathname == "/completed-request" ? "active" : ""}`}
+                          class={`nav-link ${location.pathname == "/approved-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab3"
                           type="button"

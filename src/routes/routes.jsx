@@ -12,6 +12,7 @@ import UserCreate from "../Component/User/UserCreate";
 import UserList from "../Component/User/UserList";
 import UserUpdate from "../Component/User/UserUpdate";
 import MainLayout from "../layout/MainLayout";
+import SendList from "../Component/Producer/SendToSehaog/SendList";
 
 export const routes = [
   {
@@ -25,6 +26,10 @@ export const routes = [
       {
         path: "/verified-request",
         element: <VerifiedRequest />,
+      },
+      {
+        path: "/send-request",
+        element: <SendList />,
       },
       {
         path: "/approved-request",

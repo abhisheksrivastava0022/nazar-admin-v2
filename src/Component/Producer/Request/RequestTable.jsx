@@ -29,7 +29,7 @@ const RequestTable = ({
   onViewDetails,
   onVerified,
   // onApprove,
-  onReject,
+  // onReject,
   formatDate,
   // getStatusChip,
   statusConfig,
@@ -98,7 +98,7 @@ const RequestTable = ({
             <TableCell>EVIDENCE</TableCell>
             <TableCell>Report Date</TableCell>
             <TableCell align="center">View</TableCell>
-            {/* <TableCell align="center">Actions</TableCell> */}
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -269,6 +269,37 @@ const RequestTable = ({
                   )}
                 </Stack>
               </TableCell> */}
+              <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  {request.status === 1 && (
+                    <>
+                      <Tooltip title="Send">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={() => onVerified(request)}
+                          sx={{
+                            bgcolor: "info.lighter",
+                            "&:hover": { bgcolor: "info.light" },
+                          }}
+                        >
+                          <ApproveIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </>
+                  )}
+
+                  {request.status !== 1 && (
+                    <Chip
+                      label={statusConfig[request.status]?.label || "Unknown"}
+                      color={statusConfig[request.status]?.color || "default"}
+                      size="small"
+                      variant="outlined"
+                      // sx={{ fontWeight: 500 }}
+                    />
+                  )}
+                </Stack>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

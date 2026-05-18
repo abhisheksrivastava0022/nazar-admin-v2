@@ -269,22 +269,29 @@ const RequestListing = () => {
 
     setActionLoading(true);
     try {
+      // const endpoint =
+      //   actionType === "verified"
+      //     ? `api/producer/${selectedRequest.id}/verified`
+      //     : `api/producer/${selectedRequest.id}/reject`; // send-to-sehyoug
       const endpoint =
-        actionType === "verified"
-          ? `api/producer/${selectedRequest.id}/verified`
-          : `api/producer/${selectedRequest.id}/reject`;
+        actionType === "send"
+          ? `api/producer/${selectedRequest.id}/send-to-sehyoug`
+          : ""; // send-to-sehyoug
       const requestBody = { comment };
 
       // Add intermediary_ids if it's a verification action
-      if (actionType === "verified" && additionalData?.intermediary_ids) {
-        requestBody.intermediary_ids = additionalData.intermediary_ids;
-      }
+      // if (actionType === "verified" && additionalData?.intermediary_ids) {
+      //   requestBody.intermediary_ids = additionalData.intermediary_ids;
+      // }
       const response = await postRequestApi(endpoint, requestBody);
 
       if (response.status) {
         setSuccess(
-          `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
+          `Request ${actionType === "send" ? "send" : "rejected"} successfully!`,
         );
+        // setSuccess(
+        //   `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
+        // );
         loadData();
         handleActionClose();
       } else {
@@ -292,7 +299,7 @@ const RequestListing = () => {
       }
     } catch (err) {
       setError(
-        `An error occurred while ${actionType === "verified" ? "approving" : "rejecting"} the request`,
+        `An error occurred while ${actionType === "send" ? "Send" : "rejecting"} the request`,
       );
       console.error("Error processing request:", err);
     } finally {
@@ -316,6 +323,7 @@ const RequestListing = () => {
     4: { label: "Rejected", color: "error" },
     5: { label: "Declined", color: "error" },
     6: { label: "Compliance", color: "default" },
+    7: { label: "Send to Sehyog", color: "success" },
   };
 
   // const getStatusChip = (status) => {
@@ -355,6 +363,7 @@ const RequestListing = () => {
     rejected: data.filter((item) => item.status == 4).length,
     declined: data.filter((item) => item.status == 5).length,
     compliance: data.filter((item) => item.status == 6).length,
+    send: data.filter((item) => item.status == 7).length,
   };
 
   return (
@@ -444,9 +453,10 @@ const RequestListing = () => {
                 loading={loading}
                 BASE_URL_API={BASE_URL_API}
                 onViewDetails={handleViewDetails}
-                onVerified={(request) => handleActionClick(request, "verified")}
+                onVerified={(request) => handleActionClick(request, "send")}
+                // onVerified={(request) => handleActionClick(request, "verified")}
                 // onApprove={(request) => handleActionClick(request, "approve")}
-                onReject={(request) => handleActionClick(request, "reject")}
+                // onReject={(request) => handleActionClick(request, "reject")}
                 formatDate={formatDate}
                 statusConfig={statusConfig}
                 // getStatusChip={getStatusChip}

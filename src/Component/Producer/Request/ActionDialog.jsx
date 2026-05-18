@@ -46,7 +46,7 @@ const ActionDialog = ({
           selectedIntermediary.push(data.id);
         }
       }
-      setSelectedIntermediaries(selectedIntermediary)
+      setSelectedIntermediaries(selectedIntermediary);
     }
   };
 
@@ -76,7 +76,7 @@ const ActionDialog = ({
     } = event;
     setSelectedIntermediaries(
       // On autofill we get a stringified value
-      typeof value === "string" ? value.split(",") : value
+      typeof value === "string" ? value.split(",") : value,
     );
   };
 
@@ -103,13 +103,15 @@ const ActionDialog = ({
           borderBottom: "1px solid",
           borderColor: "divider",
           bgcolor:
-            actionType === "verified" ? "success.lighter" : "error.lighter",
+            // actionType === "verified" ? "success.lighter" : "error.lighter",
+            actionType === "send" ? "success.lighter" : "error.lighter",
         }}
       >
         <Typography
           variant="h6"
           fontWeight="bold"
-          color={actionType === "verified" ? "info.main" : "error.main"}
+          // color={actionType === "verified" ? "info.main" : "error.main"}
+          color={actionType === "send" ? "info.main" : "error.main"}
         >
           {actionType === "verified" ? "Verify Request" : "Reject Request"}
         </Typography>
@@ -118,10 +120,12 @@ const ActionDialog = ({
         {selectedRequest && (
           <>
             <Alert
-              severity={actionType === "verified" ? "info" : "error"}
+              // severity={actionType === "verified" ? "info" : "error"}
+              severity={actionType === "send" ? "info" : "error"}
               sx={{ mb: 3 }}
             >
-              {actionType === "verified"
+              {/* {actionType === "verified" */}
+              {actionType === "send"
                 ? "Are you sure you want to verify this request?"
                 : "Are you sure you want to reject this request?"}
             </Alert>
@@ -145,9 +149,8 @@ const ActionDialog = ({
               </Typography>
             </Box>
 
-            {actionType === "verified" && (
+            {/* {actionType === "verified" && (
               <>
-                {/* Multiple Intermediaries Selection */}
                 <FormControl fullWidth sx={{ mb: 3 }}>
                   <InputLabel id="intermediaries-select-label">
                     Intermediaries Involved
@@ -163,7 +166,7 @@ const ActionDialog = ({
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((value) => {
                           const intermediary = intermediaries.find(
-                            (i) => i.id === value
+                            (i) => i.id === value,
                           );
                           return (
                             <Chip
@@ -180,7 +183,9 @@ const ActionDialog = ({
                     {intermediaries.map((intermediary) => (
                       <MenuItem key={intermediary.id} value={intermediary.id}>
                         <Checkbox
-                          checked={selectedIntermediaries.indexOf(intermediary.id) > -1}
+                          checked={
+                            selectedIntermediaries.indexOf(intermediary.id) > -1
+                          }
                         />
                         <Typography variant="body2">
                           {intermediary.name}
@@ -188,12 +193,15 @@ const ActionDialog = ({
                       </MenuItem>
                     ))}
                   </Select>
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 0.5 }}
+                  >
                     You can select multiple intermediaries
                   </Typography>
                 </FormControl>
 
-                {/* Optional: Display selected intermediaries count */}
                 {selectedIntermediaries.length > 0 && (
                   <Alert severity="info" sx={{ mb: 3 }}>
                     Selected {selectedIntermediaries.length} intermediary
@@ -201,13 +209,14 @@ const ActionDialog = ({
                   </Alert>
                 )}
               </>
-            )}
+            )} */}
 
             {/* Comment Field */}
             <TextField
               fullWidth
               label={
-                actionType === "verified"
+                // actionType === "verified"
+                actionType === "send"
                   ? "Add any verification comments..."
                   : "Please provide a reason for rejection..."
               }
@@ -216,7 +225,8 @@ const ActionDialog = ({
               value={comment}
               onChange={onCommentChange}
               placeholder={
-                actionType === "verified"
+                // actionType === "verified"
+                actionType === "send"
                   ? "Add any verification comments..."
                   : "Please provide a reason for rejection..."
               }
@@ -244,15 +254,16 @@ const ActionDialog = ({
         <Button
           onClick={handleConfirm}
           variant="contained"
-          color={actionType === "verified" ? "info" : "error"}
+          // color={actionType === "verified" ? "info" : "error"}
+          color={actionType === "send" ? "info" : "error"}
           sx={{ borderRadius: 2 }}
           disabled={actionLoading}
           startIcon={actionLoading && <CircularProgress size={20} />}
         >
           {actionLoading
             ? "Processing..."
-            : actionType === "verified"
-              ? "Verify"
+            : actionType === "send"
+              ? "Send"
               : "Reject"}
         </Button>
       </DialogActions>
