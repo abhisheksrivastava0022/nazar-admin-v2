@@ -113,7 +113,8 @@ const ActionDialog = ({
           // color={actionType === "verified" ? "info.main" : "error.main"}
           color={actionType === "send" ? "info.main" : "error.main"}
         >
-          {actionType === "verified" ? "Verify Request" : "Reject Request"}
+          {actionType === "send" ? "Send Request" : "Reject Request"}
+          {/* {actionType === "verified" ? "Verify Request" : "Reject Request"} */}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ mt: 2 }}>
@@ -126,7 +127,7 @@ const ActionDialog = ({
             >
               {/* {actionType === "verified" */}
               {actionType === "send"
-                ? "Are you sure you want to verify this request?"
+                ? "Are you sure you want to Send this request?"
                 : "Are you sure you want to reject this request?"}
             </Alert>
 
