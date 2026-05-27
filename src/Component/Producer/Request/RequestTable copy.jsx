@@ -1,0 +1,343 @@
+import React from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Button,
+  Tooltip,
+  IconButton,
+  Chip,
+  Stack,
+  Box,
+  CircularProgress,
+} from "@mui/material";
+import {
+  Visibility as ViewIcon,
+  Download as DownloadIcon,
+  CheckCircle as ApproveIcon,
+  Cancel as RejectIcon,
+} from "@mui/icons-material";
+import InfoIcon from "@mui/icons-material/Info";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+const RequestTable = ({
+  data,
+  loading,
+  BASE_URL_API,
+  onViewDetails,
+  onVerified,
+  // onApprove,
+  // onReject,
+  formatDate,
+  // getStatusChip,
+  statusConfig,
+}) => {
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", p: 4 }}>
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          No requests found
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Try adjusting your filters
+        </Typography>
+      </Box>
+    );
+  }
+
+  const downloadUrls = (urlsData, title = "urls") => {
+    try {
+      // string ko array me convert karo
+      const urls = JSON.parse(urlsData);
+
+      // CSV content
+      const csvContent =
+        "data:text/csv;charset=utf-8," + ["URL", ...urls].join("\n");
+
+      // Blob create
+      const encodedUri = encodeURI(csvContent);
+
+      // Download link create
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${title}.csv`);
+
+      document.body.appendChild(link);
+
+      // Download trigger
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("CSV download error:", error);
+    }
+  };
+
+  return (
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow sx={{ backgroundColor: "grey.50" }}>
+            <TableCell>CASE ID</TableCell>
+            <TableCell>TITLE</TableCell>
+            {/* <TableCell>NAME</TableCell> */}
+            {/* <TableCell>MODE</TableCell> */}
+            {/* <TableCell>STATUS</TableCell> */}
+            {/* <TableCell>CBFC CERTIFICATE</TableCell> */}
+            <TableCell>URL's</TableCell>
+            <TableCell>EVIDENCE</TableCell>
+            <TableCell>Report Date</TableCell>
+            <TableCell align="center">View</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {data.map((request) => (
+            <TableRow
+              key={request.id}
+              hover
+              sx={{
+                "&:hover": {
+                  backgroundColor: "action.hover",
+                },
+              }}
+            >
+              <TableCell>
+                <Typography variant="body2" fontWeight="medium">
+                  #{request.id}
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="body2" fontWeight="medium">
+                  {request.title || "N/A"}
+                </Typography>
+              </TableCell>
+              {/* <TableCell>
+                <Typography variant="body2" fontWeight="medium">
+                  {request.producer?.first_name} {request.producer?.last_name}
+                </Typography>
+              </TableCell> */}
+              {/* <TableCell>
+                <Typography variant="body2" fontWeight="medium">
+                  {request.mode || "N/A"}
+                </Typography>
+              </TableCell> */}
+              {/* <TableCell>
+              
+              <Chip
+                label={statusConfig[request.status]?.label || "Unknown"}
+                color={statusConfig[request.status]?.color || "default"}
+                size="small"
+                sx={{ fontWeight: 500 }}
+              />
+            </TableCell> */}
+
+              {/* CBFC Certificate Column */}
+              {/* <TableCell>
+                {request.cbfc_certificate ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    href={`${BASE_URL_API}/${request.cbfc_certificate}`}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    Download
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No certificate
+                  </Typography>
+                )}
+              </TableCell> */}
+
+              <TableCell>
+                {request.urls ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    onClick={() => downloadUrls(request.urls, request.title)}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    Download
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No Urls
+                  </Typography>
+                )}
+              </TableCell>
+
+              {/* Evidence Column */}
+              <TableCell>
+                {request.evidence ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={<DownloadIcon />}
+                    href={`${BASE_URL_API}/${request.evidence}`}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    Download
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No evidence
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                <Tooltip title={formatDate(request.createdAt)}>
+                  <Typography variant="body2" color="text.secondary">
+                    {new Date(request.createdAt).toLocaleDateString()}
+                  </Typography>
+                </Tooltip>
+              </TableCell>
+
+              <TableCell align="center">
+                <Tooltip title="View Details">
+                  <IconButton
+                    size="small"
+                    color="info"
+                    onClick={() => onViewDetails(request)}
+                    sx={{
+                      bgcolor: "info.lighter",
+                      "&:hover": { bgcolor: "info.light" },
+                    }}
+                  >
+                    <ViewIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
+              {/* <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  {request.status === 1 && (
+                    <>
+                      <Tooltip title="Verified Request">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={() => onVerified(request)}
+                          sx={{
+                            bgcolor: "info.lighter",
+                            "&:hover": { bgcolor: "info.light" },
+                          }}
+                        >
+                          <ApproveIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Reject Request">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => onReject(request)}
+                          sx={{
+                            bgcolor: "error.lighter",
+                            "&:hover": { bgcolor: "error.light" },
+                          }}
+                        >
+                          <RejectIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </>
+                  )}
+
+                  {request.status !== 1 && (
+                    <Chip
+                      label={statusConfig[request.status]?.label || "Unknown"}
+                      color={statusConfig[request.status]?.color || "default"}
+                      size="small"
+                      variant="outlined"
+                      // sx={{ fontWeight: 500 }}
+                    />
+                  )}
+                </Stack>
+              </TableCell> */}
+              <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  {request.status !== 7 && (
+                    <>
+                      {/* <Tooltip title="Send">
+                        <IconButton
+                          size="small"
+                          color="info"
+                          onClick={() => onVerified(request)}
+                          sx={{
+                            bgcolor: "info.lighter",
+                            "&:hover": { bgcolor: "info.light" },
+                          }}
+                        >
+                          <ApproveIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="More Clarification Required">
+                        <IconButton
+                          size="small"
+                          color="warning"
+                          // onClick={() => onReject(request)}
+                          sx={{
+                            bgcolor: "warning.lighter",
+                            "&:hover": { bgcolor: "warning.light" },
+                          }}
+                        >
+                          <InfoIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Reject Request">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          // onClick={() => onReject(request)}
+                          sx={{
+                            bgcolor: "error.lighter",
+                            "&:hover": { bgcolor: "error.light" },
+                          }}
+                        >
+                          <RejectIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip> */}
+
+                      {/* <TableCell align="right"> */}
+                      <MoreVertIcon />
+                      {/* </TableCell> */}
+                    </>
+                  )}
+
+                  {request.status === 7 && (
+                    <Chip
+                      label={statusConfig[request.status]?.label || "Unknown"}
+                      color={statusConfig[request.status]?.color || "default"}
+                      size="small"
+                      variant="outlined"
+                      // sx={{ fontWeight: 500 }}
+                    />
+                  )}
+                </Stack>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
+
+export default RequestTable;

@@ -21,6 +21,12 @@ import {
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
 } from "@mui/icons-material";
+import InfoIcon from "@mui/icons-material/Info";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ActionMenu from "../../Utils/ActionMenu";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const RequestTable = ({
   data,
@@ -28,10 +34,7 @@ const RequestTable = ({
   BASE_URL_API,
   onViewDetails,
   onVerified,
-  // onApprove,
-  // onReject,
   formatDate,
-  // getStatusChip,
   statusConfig,
 }) => {
   if (loading) {
@@ -90,14 +93,11 @@ const RequestTable = ({
           <TableRow sx={{ backgroundColor: "grey.50" }}>
             <TableCell>CASE ID</TableCell>
             <TableCell>TITLE</TableCell>
-            {/* <TableCell>NAME</TableCell> */}
-            {/* <TableCell>MODE</TableCell> */}
-            {/* <TableCell>STATUS</TableCell> */}
-            {/* <TableCell>CBFC CERTIFICATE</TableCell> */}
             <TableCell>URL's</TableCell>
             <TableCell>EVIDENCE</TableCell>
             <TableCell>Report Date</TableCell>
             <TableCell align="center">View</TableCell>
+            <TableCell align="center">Status</TableCell>
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -122,45 +122,6 @@ const RequestTable = ({
                   {request.title || "N/A"}
                 </Typography>
               </TableCell>
-              {/* <TableCell>
-                <Typography variant="body2" fontWeight="medium">
-                  {request.producer?.first_name} {request.producer?.last_name}
-                </Typography>
-              </TableCell> */}
-              {/* <TableCell>
-                <Typography variant="body2" fontWeight="medium">
-                  {request.mode || "N/A"}
-                </Typography>
-              </TableCell> */}
-              {/* <TableCell>
-              
-              <Chip
-                label={statusConfig[request.status]?.label || "Unknown"}
-                color={statusConfig[request.status]?.color || "default"}
-                size="small"
-                sx={{ fontWeight: 500 }}
-              />
-            </TableCell> */}
-
-              {/* CBFC Certificate Column */}
-              {/* <TableCell>
-                {request.cbfc_certificate ? (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    startIcon={<DownloadIcon />}
-                    href={`${BASE_URL_API}/${request.cbfc_certificate}`}
-                    target="_blank"
-                    sx={{ borderRadius: 2 }}
-                  >
-                    Download
-                  </Button>
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No certificate
-                  </Typography>
-                )}
-              </TableCell> */}
 
               <TableCell>
                 {request.urls ? (
@@ -224,79 +185,88 @@ const RequestTable = ({
                   </IconButton>
                 </Tooltip>
               </TableCell>
-              {/* <TableCell align="center">
+
+              <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
-                  {request.status === 1 && (
-                    <>
-                      <Tooltip title="Verified Request">
-                        <IconButton
-                          size="small"
-                          color="info"
-                          onClick={() => onVerified(request)}
-                          sx={{
-                            bgcolor: "info.lighter",
-                            "&:hover": { bgcolor: "info.light" },
-                          }}
-                        >
-                          <ApproveIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+                  {request.status && (
+                    <ActionMenu
+                      items={Object.values(statusConfig)
+                        .filter((status) => {
+                          const allowedStatuses = {
+                            1: [
+                              // "pending",
+                              // "verified",
+                              // "approved",
+                              "rejected",
+                              // "declined",
+                              // "compliance",
+                              "send_to_sehyog",
+                              "clarification_required",
+                              // "information_received",
+                              // "resolved",
+                            ],
 
-                      <Tooltip title="Reject Request">
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => onReject(request)}
-                          sx={{
-                            bgcolor: "error.lighter",
-                            "&:hover": { bgcolor: "error.light" },
-                          }}
-                        >
-                          <RejectIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </>
-                  )}
+                            2: [],
 
-                  {request.status !== 1 && (
-                    <Chip
-                      label={statusConfig[request.status]?.label || "Unknown"}
-                      color={statusConfig[request.status]?.color || "default"}
-                      size="small"
-                      variant="outlined"
-                      // sx={{ fontWeight: 500 }}
+                            3: [],
+
+                            4: [],
+
+                            5: [],
+
+                            6: [],
+
+                            7: ["rejected", "clarification_required"],
+
+                            8: [],
+
+                            9: [
+                              "clarification_required",
+                              "rejected",
+                              "resolved",
+                              "send_to_sehyog",
+                            ],
+
+                            10: [],
+                          };
+
+                          return allowedStatuses[request.status]?.includes(
+                            status.slug,
+                          );
+                        })
+                        .map((status) => ({
+                          label: status.label,
+
+                          onClick: () => onVerified(request, status.slug),
+                        }))}
                     />
                   )}
                 </Stack>
-              </TableCell> */}
+              </TableCell>
               <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
-                  {request.status === 1 && (
-                    <>
-                      <Tooltip title="Send">
-                        <IconButton
-                          size="small"
-                          color="info"
-                          onClick={() => onVerified(request)}
-                          sx={{
-                            bgcolor: "info.lighter",
-                            "&:hover": { bgcolor: "info.light" },
-                          }}
-                        >
-                          <ApproveIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </>
-                  )}
-
-                  {request.status !== 1 && (
+                  {request.status ? (
                     <Chip
                       label={statusConfig[request.status]?.label || "Unknown"}
-                      color={statusConfig[request.status]?.color || "default"}
                       size="small"
-                      variant="outlined"
-                      // sx={{ fontWeight: 500 }}
+                      variant="filled"
+                      sx={{
+                        backgroundColor:
+                          statusConfig[request.status]?.bg || "#E0E0E0",
+
+                        color: statusConfig[request.status]?.text || "#000",
+
+                        fontWeight: 600,
+                        borderRadius: "8px",
+                        minWidth: "120px",
+
+                        "& .MuiChip-label": {
+                          px: 1,
+                        },
+                      }}
                     />
+                  ) : (
+                    ""
                   )}
                 </Stack>
               </TableCell>

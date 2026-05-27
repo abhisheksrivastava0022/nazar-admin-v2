@@ -17,10 +17,13 @@ import ApiClient from "../../API/ApiClient";
 // Import components
 import RequestFilter from "./Compliance-Request/RequestFilter";
 import RequestTable from "./Compliance-Request/RequestTable";
-import ActionDialog from "./Compliance-Request/ActionDialog";
+// import ActionDialog from "./Compliance-Request/ActionDialog";
 import DetailsDialog from "./Request/DetailsDialog";
+import ActionDialog from "./Request/ActionDialog";
+import useStatusConfig from "../Utils/StatusConfig";
 
 const ApprovedListing = () => {
+  const statusConfig = useStatusConfig();
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -127,7 +130,10 @@ const ApprovedListing = () => {
         producer_id: selectedProducer?.id,
       };
 
-      const response = await getRequestApi("api/producer/approved-request", params);
+      const response = await getRequestApi(
+        "api/producer/approved-request",
+        params,
+      );
 
       if (response.status) {
         setData(response.data || []);
@@ -299,15 +305,6 @@ const ApprovedListing = () => {
     setComment("");
   };
 
-  // Helper functions
-  const statusConfig = {
-    1: { label: "Pending", color: "warning" },
-    2: { label: "Verified", color: "info" },
-    3: { label: "Approved", color: "success" },
-    4: { label: "Rejected", color: "error" },
-    5: { label: "Declined", color: "error" },
-  };
-
   // const getStatusChip = (status) => {
   //   const config = statusConfig[status] || {
   //     label: "Unknown",
@@ -415,8 +412,6 @@ const ApprovedListing = () => {
         statusConfig={statusConfig}
       />
 
-
-
       {/* Requests Table */}
       <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
         <CardContent sx={{ p: 0 }}>
@@ -430,7 +425,7 @@ const ApprovedListing = () => {
             onReject={(request) => handleActionClick(request, "reject")}
             formatDate={formatDate}
             statusConfig={statusConfig}
-          // getStatusChip={getStatusChip}
+            // getStatusChip={getStatusChip}
           />
         </CardContent>
 
@@ -482,6 +477,7 @@ const ApprovedListing = () => {
         comment={comment}
         onCommentChange={(e) => setComment(e.target.value)}
         actionLoading={actionLoading}
+        statusConfig={statusConfig}
       />
 
       {/* Details Dialog */}
@@ -492,7 +488,7 @@ const ApprovedListing = () => {
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
         statusConfig={statusConfig}
-      // getStatusChip={getStatusChip}
+        // getStatusChip={getStatusChip}
       />
     </Container>
   );

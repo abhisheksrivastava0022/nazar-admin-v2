@@ -21,6 +21,17 @@ import {
 } from "@mui/material";
 import ApiClient from "../../../API/ApiClient";
 
+const intermediaries = [
+  { id: 1, name: "Facebook" },
+  { id: 2, name: "Google" },
+  { id: 3, name: "YouTube" },
+  { id: 4, name: "Telegram" },
+  { id: 5, name: "Twitter/X" },
+  { id: 6, name: "Instagram" },
+  { id: 7, name: "WhatsApp" },
+  { id: 8, name: "LinkedIn" },
+];
+
 const ActionDialog = ({
   open,
   onClose,
@@ -30,6 +41,7 @@ const ActionDialog = ({
   comment,
   onCommentChange,
   actionLoading,
+  statusConfig,
 }) => {
   const { getRequestApi } = ApiClient();
   const [intermediaries, setIntermediaries] = useState([]);
@@ -102,33 +114,74 @@ const ActionDialog = ({
         sx={{
           borderBottom: "1px solid",
           borderColor: "divider",
+
           bgcolor:
-            // actionType === "verified" ? "success.lighter" : "error.lighter",
-            actionType === "send" ? "success.lighter" : "error.lighter",
+            Object.values(statusConfig).find((item) => item.slug === actionType)
+              ?.bg || "#F9FAFB",
         }}
       >
         <Typography
           variant="h6"
           fontWeight="bold"
-          // color={actionType === "verified" ? "info.main" : "error.main"}
-          color={actionType === "send" ? "info.main" : "error.main"}
+          color={
+            Object.values(statusConfig).find((item) => item.slug === actionType)
+              ?.text || "#111827"
+          }
         >
-          {actionType === "send" ? "Send Request" : "Reject Request"}
-          {/* {actionType === "verified" ? "Verify Request" : "Reject Request"} */}
+          {`${
+            Object.values(statusConfig).find((item) => item.slug === actionType)
+              ?.label || "Update"
+          } Request`}
         </Typography>
       </DialogTitle>
       <DialogContent sx={{ mt: 2 }}>
         {selectedRequest && (
           <>
-            <Alert
-              // severity={actionType === "verified" ? "info" : "error"}
+            {/* <Alert
               severity={actionType === "send" ? "info" : "error"}
               sx={{ mb: 3 }}
             >
-              {/* {actionType === "verified" */}
               {actionType === "send"
                 ? "Are you sure you want to Send this request?"
                 : "Are you sure you want to reject this request?"}
+            </Alert> */}
+
+            <Alert
+              severity={
+                actionType === "rejected"
+                  ? "error"
+                  : actionType === "clarification_required"
+                    ? "warning"
+                    : "info"
+              }
+              sx={{
+                mb: 3,
+                borderRadius: 2,
+                alignItems: "center",
+
+                bgcolor:
+                  Object.values(statusConfig).find(
+                    (item) => item.slug === actionType,
+                  )?.bg || "#F9FAFB",
+
+                color:
+                  Object.values(statusConfig).find(
+                    (item) => item.slug === actionType,
+                  )?.text || "#111827",
+
+                "& .MuiAlert-icon": {
+                  color:
+                    Object.values(statusConfig).find(
+                      (item) => item.slug === actionType,
+                    )?.text || "#111827",
+                },
+              }}
+            >
+              {`Are you sure you want to mark this request as "${
+                Object.values(statusConfig).find(
+                  (item) => item.slug === actionType,
+                )?.label || "Updated"
+              }"?`}
             </Alert>
 
             <Box sx={{ mb: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
@@ -150,88 +203,30 @@ const ActionDialog = ({
               </Typography>
             </Box>
 
-            {/* {actionType === "verified" && (
-              <>
-                <FormControl fullWidth sx={{ mb: 3 }}>
-                  <InputLabel id="intermediaries-select-label">
-                    Intermediaries Involved
-                  </InputLabel>
-                  <Select
-                    labelId="intermediaries-select-label"
-                    id="intermediaries-select"
-                    multiple
-                    value={selectedIntermediaries}
-                    onChange={handleIntermediaryChange}
-                    input={<OutlinedInput label="Intermediaries Involved" />}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                        {selected.map((value) => {
-                          const intermediary = intermediaries.find(
-                            (i) => i.id === value,
-                          );
-                          return (
-                            <Chip
-                              key={value}
-                              label={intermediary?.name || value}
-                              size="small"
-                              sx={{ borderRadius: 1 }}
-                            />
-                          );
-                        })}
-                      </Box>
-                    )}
-                  >
-                    {intermediaries.map((intermediary) => (
-                      <MenuItem key={intermediary.id} value={intermediary.id}>
-                        <Checkbox
-                          checked={
-                            selectedIntermediaries.indexOf(intermediary.id) > -1
-                          }
-                        />
-                        <Typography variant="body2">
-                          {intermediary.name}
-                        </Typography>
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ mt: 0.5 }}
-                  >
-                    You can select multiple intermediaries
-                  </Typography>
-                </FormControl>
-
-                {selectedIntermediaries.length > 0 && (
-                  <Alert severity="info" sx={{ mb: 3 }}>
-                    Selected {selectedIntermediaries.length} intermediary
-                    {selectedIntermediaries.length !== 1 ? "ies" : ""}
-                  </Alert>
-                )}
-              </>
-            )} */}
-
             {/* Comment Field */}
             <TextField
               fullWidth
-              label={
-                // actionType === "verified"
-                actionType === "send"
-                  ? "Add any verification comments..."
-                  : "Please provide a reason for rejection..."
-              }
               multiline
               rows={3}
               value={comment}
               onChange={onCommentChange}
-              placeholder={
-                // actionType === "verified"
-                actionType === "send"
-                  ? "Add any verification comments..."
-                  : "Please provide a reason for rejection..."
-              }
               variant="outlined"
+              label={`Add comments for ${
+                Object.values(statusConfig).find(
+                  (item) => item.slug === actionType,
+                )?.label || "this action"
+              }`}
+              placeholder={`Enter comments related to "${
+                Object.values(statusConfig).find(
+                  (item) => item.slug === actionType,
+                )?.label || "this action"
+              }"...`}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                  backgroundColor: "#fff",
+                },
+              }}
             />
           </>
         )}
@@ -255,17 +250,52 @@ const ActionDialog = ({
         <Button
           onClick={handleConfirm}
           variant="contained"
-          // color={actionType === "verified" ? "info" : "error"}
-          color={actionType === "send" ? "info" : "error"}
-          sx={{ borderRadius: 2 }}
           disabled={actionLoading}
-          startIcon={actionLoading && <CircularProgress size={20} />}
+          startIcon={
+            actionLoading ? (
+              <CircularProgress
+                size={18}
+                sx={{
+                  color: "inherit",
+                }}
+              />
+            ) : null
+          }
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            fontWeight: 600,
+            px: 3,
+            py: 1,
+
+            backgroundColor:
+              Object.values(statusConfig).find(
+                (item) => item.slug === actionType,
+              )?.text || "#1976d2",
+
+            color: "#fff",
+
+            "&:hover": {
+              opacity: 0.9,
+              backgroundColor:
+                Object.values(statusConfig).find(
+                  (item) => item.slug === actionType,
+                )?.text || "#1565c0",
+            },
+
+            "&:disabled": {
+              opacity: 0.7,
+              color: "#fff",
+            },
+          }}
         >
           {actionLoading
             ? "Processing..."
-            : actionType === "send"
-              ? "Send"
-              : "Reject"}
+            : `Mark as ${
+                Object.values(statusConfig).find(
+                  (item) => item.slug === actionType,
+                )?.label || "Update"
+              }`}
         </Button>
       </DialogActions>
     </Dialog>

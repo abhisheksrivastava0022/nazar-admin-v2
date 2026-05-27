@@ -21,6 +21,7 @@ import {
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
 } from "@mui/icons-material";
+import ActionMenu from "../Utils/ActionMenu";
 
 const SendList = ({
   data,
@@ -28,10 +29,8 @@ const SendList = ({
   BASE_URL_API,
   onViewDetails,
   onVerified,
-  // onApprove,
-  onReject,
   formatDate,
-  // getStatusChip,
+
   statusConfig,
 }) => {
   if (loading) {
@@ -42,7 +41,7 @@ const SendList = ({
     );
   }
 
-  if (data.length === 0) {
+  if (data?.length === 0) {
     return (
       <Box sx={{ textAlign: "center", p: 4 }}>
         <Typography variant="h6" color="text.secondary" gutterBottom>
@@ -55,6 +54,34 @@ const SendList = ({
     );
   }
 
+  const downloadUrls = (urlsData, title = "urls") => {
+    try {
+      // string ko array me convert karo
+      const urls = JSON.parse(urlsData);
+
+      // CSV content
+      const csvContent =
+        "data:text/csv;charset=utf-8," + ["URL", ...urls].join("\n");
+
+      // Blob create
+      const encodedUri = encodeURI(csvContent);
+
+      // Download link create
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `${title}.csv`);
+
+      document.body.appendChild(link);
+
+      // Download trigger
+      link.click();
+
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("CSV download error:", error);
+    }
+  };
+
   return (
     <TableContainer>
       <Table>
@@ -62,17 +89,15 @@ const SendList = ({
           <TableRow sx={{ backgroundColor: "grey.50" }}>
             <TableCell>CASE ID</TableCell>
             <TableCell>TITLE</TableCell>
-            {/* <TableCell>NAME</TableCell> */}
-            {/* <TableCell>MODE</TableCell> */}
-            {/* <TableCell>CBFC CERTIFICATE</TableCell> */}
+            <TableCell>URL's</TableCell>
             <TableCell>EVIDENCE</TableCell>
             <TableCell>Report Date</TableCell>
             <TableCell align="center">View</TableCell>
-            {/* <TableCell align="center">Actions</TableCell> */}
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((request) => (
+          {data?.map((request) => (
             <TableRow
               key={request.id}
               hover
@@ -92,25 +117,14 @@ const SendList = ({
                   {request.title || "N/A"}
                 </Typography>
               </TableCell>
-              {/* <TableCell>
-                <Typography variant="body2" fontWeight="medium">
-                  {request.producer?.first_name} {request.producer?.last_name}
-                </Typography>
-              </TableCell> */}
-              {/* <TableCell>
-                <Typography variant="body2" fontWeight="medium">
-                  {request.mode || "N/A"}
-                </Typography>
-              </TableCell> */}
 
-              {/* CBFC Certificate Column */}
-              {/* <TableCell>
-                {request.cbfc_certificate ? (
+              <TableCell>
+                {request.urls ? (
                   <Button
                     size="small"
                     variant="outlined"
                     startIcon={<DownloadIcon />}
-                    href={`${BASE_URL_API}/${request.cbfc_certificate}`}
+                    onClick={() => downloadUrls(request.urls, request.title)}
                     target="_blank"
                     sx={{ borderRadius: 2 }}
                   >
@@ -118,10 +132,10 @@ const SendList = ({
                   </Button>
                 ) : (
                   <Typography variant="body2" color="text.secondary">
-                    No certificate
+                    No Urls
                   </Typography>
                 )}
-              </TableCell> */}
+              </TableCell>
 
               {/* Evidence Column */}
               <TableCell>
@@ -166,21 +180,36 @@ const SendList = ({
                   </IconButton>
                 </Tooltip>
               </TableCell>
-              {/* <TableCell align="center">
-                <Tooltip title="Verified Request">
-                  <IconButton
-                    size="small"
-                    color="info"
-                    onClick={() => onVerified(request)}
-                    sx={{
-                      bgcolor: "info.lighter",
-                      "&:hover": { bgcolor: "info.light" },
-                    }}
-                  >
-                    <ApproveIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              </TableCell> */}
+              <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  {request.status && (
+                    <ActionMenu
+                      items={Object.values(statusConfig)
+                        .filter(
+                          (status) =>
+                            [
+                              // "pending",
+                              // "verified",
+                              // "approved",
+                              "rejected",
+                              // "declined",
+                              // "compliance",
+                              // "send_to_sehyog",
+                              "clarification_required",
+                              // "information_received",
+                              "resolved",
+                            ].includes(status.slug) &&
+                            status.slug !== statusConfig[request.status]?.slug,
+                        )
+                        .map((status) => ({
+                          label: status.label,
+
+                          onClick: () => onVerified(request, status.slug),
+                        }))}
+                    />
+                  )}
+                </Stack>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

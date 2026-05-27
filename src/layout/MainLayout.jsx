@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ const MainLayout = () => {
   const logoutHandler = async () => {
     try {
       const data = await getRequestApi("api/user/logout");
+
       if (data?.status) {
         // console.log(data);
         setTimeout(() => navigate("/login"), 1000);
@@ -23,6 +24,36 @@ const MainLayout = () => {
     } catch {
       alert("An error occurred. Please try again.");
     }
+  };
+
+  const [count, setCount] = useState([]);
+
+  const loadData = async () => {
+    try {
+      const res = await getRequestApi("api/producer/status-count");
+
+      if (res?.status) {
+        setCount(res?.data || []);
+      } else {
+        setCount([]); // fallback
+      }
+    } catch (error) {
+      console.warn(error);
+      setCount([]); // important fallback
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    setCount({ count });
+  }, []);
+
+  const getStatusCount = (statusId) => {
+    if (!Array.isArray(count)) return 0;
+
+    const item = count.find((i) => Number(i.status) === Number(statusId));
+
+    return item?.count || 0;
   };
 
   return (
@@ -58,15 +89,25 @@ const MainLayout = () => {
                         role="tablist"
                       >
                         {user?.role?.includes("ministry_level_1") ? (
-                          <button
-                            class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
-                            data-bs-toggle="pill"
-                            data-bs-target="#tab1"
-                            type="button"
-                            onClick={() => navigate("/user-request")}
-                          >
-                            <i class="bi bi-person-lines-fill"></i> User Request
-                          </button>
+                          <>
+                            <button
+                              className={`nav-link ${
+                                location.pathname.includes("user-request")
+                                  ? "active"
+                                  : ""
+                              }`}
+                              data-bs-toggle="pill"
+                              data-bs-target="#tab1"
+                              type="button"
+                              onClick={() => navigate("/user-request")}
+                            >
+                              <i class="bi bi-person-lines-fill"></i> User
+                              Request
+                              <span className="badge bg-secondary ms-2">
+                                {getStatusCount(0)}
+                              </span>
+                            </button>
+                          </>
                         ) : (
                           <></>
                         )}
@@ -74,7 +115,11 @@ const MainLayout = () => {
                         {user?.role?.includes("ministry_level_2") ? (
                           <>
                             <button
-                              class={`nav-link ${location.pathname == "/user-request" ? "active" : ""}`}
+                              className={`nav-link ${
+                                location.pathname.includes("user-request")
+                                  ? "active"
+                                  : ""
+                              }`}
                               data-bs-toggle="pill"
                               data-bs-target="#tab1"
                               type="button"
@@ -97,14 +142,124 @@ const MainLayout = () => {
                         )}
 
                         <button
-                          class={`nav-link ${location.pathname == "/send-request" ? "active" : ""}`}
+                          className={`nav-link ${
+                            location.pathname.includes("pending-request")
+                              ? "active"
+                              : ""
+                          }`}
+                          type="button"
+                          onClick={() => navigate("/pending-request")}
+                        >
+                          <i className="bi bi-hourglass-split"></i>
+                          Pending Required
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(0)}
+                          </span>
+                        </button>
+
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("send-request")
+                              ? "active"
+                              : ""
+                          }`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab3"
                           type="button"
                           onClick={() => navigate("/send-request")}
                         >
-                          <i class="bi bi-check-circle"></i> Send Request
+                          <i className="bi bi-send-check"></i> Sent to Sehyog{" "}
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(7)}
+                          </span>
                         </button>
+
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("clarification-request")
+                              ? "active"
+                              : ""
+                          }`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab1"
+                          type="button"
+                          onClick={() => navigate("/clarification-request")}
+                        >
+                          <i className="bi bi-question-circle"></i>
+                          Clarification Required
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(8)}
+                          </span>
+                        </button>
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("information-received")
+                              ? "active"
+                              : ""
+                          }`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab1"
+                          type="button"
+                          onClick={() => navigate("/information-received")}
+                        >
+                          <i className="bi bi-info-circle"></i>
+                          Information Received
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(9)}
+                          </span>
+                        </button>
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("resolved")
+                              ? "active"
+                              : ""
+                          }`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab1"
+                          type="button"
+                          onClick={() => navigate("/resolved")}
+                        >
+                          <i className="bi bi-check2-circle"></i>
+                          Resolved
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(10)}
+                          </span>
+                        </button>
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("compliance")
+                              ? "active"
+                              : ""
+                          }`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab1"
+                          type="button"
+                          onClick={() => navigate("/compliance")}
+                        >
+                          <i className="bi bi-shield-check"></i>
+                          Compliance
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(6)}
+                          </span>
+                        </button>
+                        <button
+                          className={`nav-link ${
+                            location.pathname.includes("rejected")
+                              ? "active"
+                              : ""
+                          }`}
+                          data-bs-toggle="pill"
+                          data-bs-target="#tab1"
+                          type="button"
+                          onClick={() => navigate("/rejected")}
+                        >
+                          <i className="bi bi-x-circle"></i>
+                          Rejected
+                          <span className="badge bg-secondary ms-2">
+                            {getStatusCount(4)}
+                          </span>
+                        </button>
+
                         {/* <button
                           class={`nav-link ${location.pathname == "/approved-request" ? "active" : ""}`}
                           data-bs-toggle="pill"
@@ -116,7 +271,11 @@ const MainLayout = () => {
                         </button> */}
 
                         <button
-                          class={`nav-link ${location.pathname == "/producer" ? "active" : ""}`}
+                          className={`nav-link ${
+                            location.pathname.includes("producer")
+                              ? "active"
+                              : ""
+                          }`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab4"
                           type="button"
@@ -126,7 +285,11 @@ const MainLayout = () => {
                         </button>
 
                         <button
-                          class={`nav-link ${location.pathname == "/intermediary" ? "active" : ""}`}
+                          className={`nav-link ${
+                            location.pathname.includes("intermediary")
+                              ? "active"
+                              : ""
+                          }`}
                           data-bs-toggle="pill"
                           data-bs-target="#tab5"
                           type="button"
@@ -136,7 +299,9 @@ const MainLayout = () => {
                         </button>
                         {user?.role?.includes("administrator") ? (
                           <button
-                            class={`nav-link ${location.pathname == "/user" ? "active" : ""}`}
+                            className={`nav-link ${
+                              location.pathname.includes("user") ? "active" : ""
+                            }`}
                             data-bs-toggle="pill"
                             data-bs-target="#tab6"
                             type="button"

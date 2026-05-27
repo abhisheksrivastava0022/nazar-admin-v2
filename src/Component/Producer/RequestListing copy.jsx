@@ -11,16 +11,20 @@ import {
   Chip,
   debounce,
 } from "@mui/material";
-
-import ApiClient from "../../../API/ApiClient";
-import RequestFilter from "../Compliance-Request/RequestFilter";
-
 import { useNavigate, useLocation } from "react-router-dom";
-import SendTable from "./SendTable";
-import ActionDialog from "../Compliance-Request/ActionDialog";
-import DetailsDialog from "../Request/DetailsDialog";
+import ApiClient from "../../API/ApiClient";
 
-const SendList = () => {
+// Import components
+import RequestFilter from "./Request/RequestFilter";
+import StatisticsCards from "./Request/StatisticsCards";
+import RequestTable from "./Request/RequestTable";
+import ActionDialog from "./Request/ActionDialog";
+import DetailsDialog from "./Request/DetailsDialog";
+import { useSelector } from "react-redux";
+
+const RequestListing = () => {
+  const user = useSelector((state) => state.user);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { getRequestApi, postRequestApi } = ApiClient();
@@ -31,7 +35,7 @@ const SendList = () => {
     const params = new URLSearchParams(location.search);
     return {
       page: parseInt(params.get("page")) || 1,
-      limit: parseInt(params.get("limit")) || 10,
+      limit: parseInt(params.get("limit")) || 20,
       search: params.get("search") || "",
       status: params.get("status") || "all",
       producer_id: params.get("producer_id") || null,
@@ -78,7 +82,7 @@ const SendList = () => {
     if (params.page && params.page !== 1) {
       urlParams.set("page", params.page);
     }
-    if (params.limit && params.limit !== 10) {
+    if (params.limit && params.limit !== 20) {
       urlParams.set("limit", params.limit);
     }
     if (params.search && params.search.trim() !== "") {
@@ -123,8 +127,7 @@ const SendList = () => {
         page: currentPage,
         limit: rowsPerPage,
         search: searchQuery,
-        // status: statusFilter !== "all" ? statusFilter : undefined,
-        status: 7,
+        status: statusFilter !== "all" ? statusFilter : undefined,
         producer_id: selectedProducer?.id,
       };
 
@@ -254,29 +257,41 @@ const SendList = () => {
     setDetailsDialogOpen(true);
   };
 
-  const handleActionClick = (request, type) => {
+  const handleActionClick = (request) => {
     setSelectedRequest(request);
-    setActionType(type);
+    setActionType(request);
     setComment("");
     setActionDialogOpen(true);
   };
 
-  const handleActionConfirm = async () => {
+  const handleActionConfirm = async (additionalData) => {
     if (!selectedRequest || !actionType) return;
 
     setActionLoading(true);
     try {
+      // const endpoint =
+      //   actionType === "verified"
+      //     ? `api/producer/${selectedRequest.id}/verified`
+      //     : `api/producer/${selectedRequest.id}/reject`; // send-to-sehyoug
       const endpoint =
-        actionType === "verified"
-          ? `api/producer/${selectedRequest.id}/compliance`
-          : `api/producer/${selectedRequest.id}/reject`;
+        actionType === "send"
+          ? `api/producer/${selectedRequest.id}/send-to-sehyoug`
+          : ""; // send-to-sehyoug
+      const requestBody = { comment };
 
-      const response = await postRequestApi(endpoint, { comment });
+      // Add intermediary_ids if it's a verification action
+      // if (actionType === "verified" && additionalData?.intermediary_ids) {
+      //   requestBody.intermediary_ids = additionalData.intermediary_ids;
+      // }
+      const response = await postRequestApi(endpoint, requestBody);
 
       if (response.status) {
         setSuccess(
-          `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
+          `Request ${actionType === "send" ? "send" : "rejected"} successfully!`,
         );
+        // setSuccess(
+        //   `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
+        // );
         loadData();
         handleActionClose();
       } else {
@@ -284,7 +299,7 @@ const SendList = () => {
       }
     } catch (err) {
       setError(
-        `An error occurred while ${actionType === "verified" ? "approving" : "rejecting"} the request`,
+        `An error occurred while ${actionType === "send" ? "Send" : "rejecting"} the request`,
       );
       console.error("Error processing request:", err);
     } finally {
@@ -302,11 +317,16 @@ const SendList = () => {
 
   // Helper functions
   const statusConfig = {
-    1: { label: "Pending", color: "warning" },
+    1: { label: "Pending", color: "warning" }, //
     2: { label: "Verified", color: "info" },
     3: { label: "Approved", color: "success" },
-    4: { label: "Rejected", color: "error" },
+    4: { label: "Rejected", color: "error" }, //
     5: { label: "Declined", color: "error" },
+    6: { label: "Compliance", color: "default" }, //
+    7: { label: "Send to Sehyog", color: "success" }, //
+    8: { label: "More Clarification Required ", color: "warning" }, //
+    9: { label: "Information Receved", color: "info" }, //
+    10: { label: "Resolved ", color: "success" }, //
   };
 
   // const getStatusChip = (status) => {
@@ -340,11 +360,13 @@ const SendList = () => {
   // Calculate statistics
   const stats = {
     totalRecords,
-    pending: data.filter((item) => item.status === 1).length,
-    Verified: data.filter((item) => item.status === 2).length,
-    approved: data.filter((item) => item.status === 3).length,
-    rejected: data.filter((item) => item.status === 4).length,
-    rejected_by: data.filter((item) => item.status === 5).length,
+    pending: data.filter((item) => item.status == 1).length,
+    Verified: data.filter((item) => item.status == 2).length,
+    approved: data.filter((item) => item.status == 3).length,
+    rejected: data.filter((item) => item.status == 4).length,
+    declined: data.filter((item) => item.status == 5).length,
+    compliance: data.filter((item) => item.status == 6).length,
+    send: data.filter((item) => item.status == 7).length,
   };
 
   return (
@@ -364,12 +386,10 @@ const SendList = () => {
         >
           <Box>
             <Typography variant="h4" fontWeight="bold" color="primary">
-              Complaints Submitted to Sahyog
+              Complaint Management System
             </Typography>
-
             <Typography variant="subtitle1" color="text.secondary">
-              View, review, and manage all incoming complaint requests
-              efficiently.
+              Review and manage incoming requests
             </Typography>
           </Box>
         </Box>
@@ -397,82 +417,99 @@ const SendList = () => {
           </Alert>
         )}
       </Box>
-
+      {/* {!loading && data.length > 0 && (
+        <StatisticsCards
+          totalRecords={stats.totalRecords}
+          pending={stats.pending}
+          Verified={stats.Verified}
+          approved={stats.approved}
+          rejected={stats.rejected}
+          declined={stats.declined}
+          compliance={stats.compliance}
+        />
+      )} */}
       {/* Filters */}
-      <RequestFilter
-        selectedProducer={selectedProducer}
-        onProducerChange={handleProducerChange}
-        producerSearchQuery={producerSearchQuery}
-        onProducerSearchChange={handleProducerSearchChange}
-        producerOptions={producerOptions}
-        loadingProducers={loadingProducers}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        onSearchSubmit={handleSearchSubmit}
-        statusFilter={statusFilter}
-        onStatusFilterChange={handleStatusFilterChange}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        onRefresh={handleRefresh}
-        onClearProducer={handleClearProducer}
-        statusConfig={statusConfig}
-      />
-
-      {/* Requests Table */}
-      <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
-        <CardContent sx={{ p: 0 }}>
-          <SendTable
-            data={data}
-            loading={loading}
-            BASE_URL_API={BASE_URL_API}
-            onViewDetails={handleViewDetails}
-            onVerified={(request) => handleActionClick(request, "verified")}
-            // onApprove={(request) => handleActionClick(request, "approve")}
-            onReject={(request) => handleActionClick(request, "reject")}
-            formatDate={formatDate}
+      {user?.role?.includes("ministry_level_1") ? (
+        <>
+          <RequestFilter
+            selectedProducer={selectedProducer}
+            onProducerChange={handleProducerChange}
+            producerSearchQuery={producerSearchQuery}
+            onProducerSearchChange={handleProducerSearchChange}
+            producerOptions={producerOptions}
+            loadingProducers={loadingProducers}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onSearchSubmit={handleSearchSubmit}
+            statusFilter={statusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleRowsPerPageChange}
+            onRefresh={handleRefresh}
+            onClearProducer={handleClearProducer}
             statusConfig={statusConfig}
-            // getStatusChip={getStatusChip}
           />
-        </CardContent>
+          <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+            <CardContent sx={{ p: 0 }}>
+              <RequestTable
+                data={data}
+                loading={loading}
+                BASE_URL_API={BASE_URL_API}
+                onViewDetails={handleViewDetails}
+                onVerified={(request, action) =>
+                  handleActionClick(request, action)
+                }
+                // onVerified={(request) => handleActionClick(request, "send")}
+                // onVerified={(request) => handleActionClick(request, "verified")}
+                // onApprove={(request) => handleActionClick(request, "approve")}
+                // onReject={(request) => handleActionClick(request, "reject")}
+                formatDate={formatDate}
+                statusConfig={statusConfig}
+                // getStatusChip={getStatusChip}
+              />
+            </CardContent>
 
-        {/* Pagination */}
-        {data.length > 0 && (
-          <Box
-            sx={{
-              p: 3,
-              borderTop: "1px solid",
-              borderColor: "divider",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
-              {Math.min(currentPage * rowsPerPage, totalRecords)} of{" "}
-              {totalRecords} requests
-            </Typography>
+            {/* Pagination */}
+            {data.length > 0 && (
+              <Box
+                sx={{
+                  p: 3,
+                  borderTop: "1px solid",
+                  borderColor: "divider",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Showing {(currentPage - 1) * rowsPerPage + 1} to{" "}
+                  {Math.min(currentPage * rowsPerPage, totalRecords)} of{" "}
+                  {totalRecords} requests
+                </Typography>
 
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              size="medium"
-              showFirstButton
-              showLastButton
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  borderRadius: 2,
-                },
-              }}
-            />
-          </Box>
-        )}
-      </Card>
-
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  color="primary"
+                  size="medium"
+                  showFirstButton
+                  showLastButton
+                  sx={{
+                    "& .MuiPaginationItem-root": {
+                      borderRadius: 2,
+                    },
+                  }}
+                />
+              </Box>
+            )}
+          </Card>
+        </>
+      ) : (
+        <></>
+      )}
       {/* Action Dialog */}
       <ActionDialog
         open={actionDialogOpen}
@@ -499,4 +536,4 @@ const SendList = () => {
   );
 };
 
-export default SendList;
+export default RequestListing;

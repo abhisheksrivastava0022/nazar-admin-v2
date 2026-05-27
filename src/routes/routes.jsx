@@ -12,7 +12,8 @@ import UserCreate from "../Component/User/UserCreate";
 import UserList from "../Component/User/UserList";
 import UserUpdate from "../Component/User/UserUpdate";
 import MainLayout from "../layout/MainLayout";
-import SendList from "../Component/Producer/SendToSehaog/SendList";
+import PendingList from "../Component/Pending/PendingList";
+import SendList from "../Component/SendToSehaog/SendList";
 
 export const routes = [
   {
@@ -22,6 +23,34 @@ export const routes = [
       {
         index: true,
         element: <RequestListing />,
+      },
+      {
+        path: "/user-request",
+        element: <RequestListing />,
+      },
+      {
+        path: "/pending-request",
+        element: <PendingList filterStatus={1} />,
+      },
+      {
+        path: "/clarification-request",
+        element: <PendingList filterStatus={8} />,
+      },
+      {
+        path: "/information-received",
+        element: <PendingList filterStatus={9} />,
+      },
+      {
+        path: "/resolved",
+        element: <PendingList filterStatus={10} />,
+      },
+      {
+        path: "/compliance",
+        element: <PendingList filterStatus={6} />,
+      },
+      {
+        path: "/rejected",
+        element: <PendingList filterStatus={4} />,
       },
       {
         path: "/verified-request",
@@ -34,10 +63,6 @@ export const routes = [
       {
         path: "/approved-request",
         element: <ApprovedListing />,
-      },
-      {
-        path: "/user-request",
-        element: <RequestListing />,
       },
       {
         path: "/producer",
