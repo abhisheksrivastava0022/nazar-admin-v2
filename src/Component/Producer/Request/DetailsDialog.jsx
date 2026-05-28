@@ -12,6 +12,12 @@ import {
   IconButton,
   Chip,
   Stack,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 
 import {
@@ -29,8 +35,23 @@ const DetailsDialog = ({
   formatDate,
   statusConfig,
 }) => {
-  if (!request) return null;
 
+
+
+  if (!request) return null;
+  const { getRequestApi } = ApiClient();
+  useEffect(() => {
+    if (request.id) {
+      loadStatusHistory()
+    }
+  }, [request.id])
+  const [history, setHistory] = useState([]);
+  const loadStatusHistory = async () => {
+    const response = await getRequestApi(`api/producer/history/${request.id}`);
+    if (response.status) {
+      setHistory(response.data);
+    }
+  }
   const downloadUrls = (urlsData, title = "urls") => {
     try {
       const urls = JSON.parse(urlsData);
@@ -480,6 +501,62 @@ const DetailsDialog = ({
               </Grid>
             </CardBox>
           </Grid>
+
+          {/* Admin Comments */}
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Complaint Status History
+          </Typography>
+
+          <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <b>ID</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Status</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Comment</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Created At</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Action Taken by</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {history.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.id}</TableCell>
+
+                    <TableCell>
+                      <Chip
+                        label={statusConfig[item.status]?.label || "Unknown"}
+                        color={statusConfig[item.status]?.color || "default"}
+                        size="small"
+                        sx={{ fontWeight: 500 }}
+                      />
+                    </TableCell>
+
+                    <TableCell>{item.comment || "-"}</TableCell>
+
+                    <TableCell>
+                      {new Date(item.createdAt).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      {item?.user?.first_name} {item?.user?.last_name}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
         </Grid>
       </DialogContent>
 
