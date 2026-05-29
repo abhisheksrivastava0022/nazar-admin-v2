@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 const basePath = import.meta.env.VITE_APP_BASE_PREFIX || "/";
 
 const MainLayout = () => {
+  const countRef = useRef();
   const { getRequestApi } = ApiClient();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -43,10 +44,11 @@ const MainLayout = () => {
     }
   };
 
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     loadData();
-    setCount({ count });
-  }, []);
+  }, [refresh]);
 
   const getStatusCount = (statusId) => {
     if (!Array.isArray(count)) return 0;
@@ -55,6 +57,8 @@ const MainLayout = () => {
 
     return item?.count || 0;
   };
+
+  const number = 1;
 
   return (
     <>
@@ -153,7 +157,7 @@ const MainLayout = () => {
                           <i className="bi bi-hourglass-split"></i>
                           Pending Required
                           <span className="badge bg-secondary ms-2">
-                            {getStatusCount(0)}
+                            {getStatusCount(1)}
                           </span>
                         </button>
 
@@ -336,7 +340,7 @@ const MainLayout = () => {
                 </div>
                 <div className="col-md-9 g-0">
                   {/* Calling Component By using Outlet */}
-                  <Outlet />
+                  <Outlet context={{ setRefresh }} />
                 </div>
               </div>
             </div>

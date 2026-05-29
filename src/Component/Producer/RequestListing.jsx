@@ -11,7 +11,7 @@ import {
   Chip,
   debounce,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
 // Import components
@@ -25,6 +25,8 @@ import useStatusConfig from "../Utils/StatusConfig";
 import HandleProducerAction from "../Utils/HandleProducerAction";
 
 const RequestListing = () => {
+  const { setRefresh } = useOutletContext();
+
   const user = useSelector((state) => state.user);
 
   const navigate = useNavigate();
@@ -351,10 +353,11 @@ const RequestListing = () => {
     });
 
     if (response.status) {
-      alert(response.message);
+      // alert(response.message);
       setSuccess(response.message);
 
       loadData();
+      setRefresh((prev) => !prev);
 
       handleActionClose();
     } else {

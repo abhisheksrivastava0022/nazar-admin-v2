@@ -12,7 +12,7 @@ import {
   debounce,
 } from "@mui/material";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 
 import PendingTable from "./PendingTable";
 import ApiClient from "../../API/ApiClient";
@@ -23,6 +23,7 @@ import DetailsDialog from "../Producer/Request/DetailsDialog";
 import ActionDialog from "../Producer/Request/ActionDialog";
 
 const PendingList = ({ filterStatus }) => {
+  const { setRefresh } = useOutletContext();
   const statusConfig = useStatusConfig();
   const navigate = useNavigate();
   const location = useLocation();
@@ -280,10 +281,11 @@ const PendingList = ({ filterStatus }) => {
     });
 
     if (response.status) {
-      alert(response.message);
+      // alert(response.message);
       setSuccess(response.message);
 
       loadData();
+      setRefresh((prev) => !prev);
 
       handleActionClose();
     } else {

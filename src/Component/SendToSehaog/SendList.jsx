@@ -12,7 +12,7 @@ import {
   debounce,
 } from "@mui/material";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import SendTable from "./SendTable";
 
 import ApiClient from "../../API/ApiClient";
@@ -23,6 +23,7 @@ import HandleProducerAction from "../Utils/HandleProducerAction";
 import ActionDialog from "../Producer/Request/ActionDialog";
 
 const SendList = () => {
+  const { setRefresh } = useOutletContext();
   const statusConfig = useStatusConfig();
   const navigate = useNavigate();
   const location = useLocation();
@@ -280,11 +281,12 @@ const SendList = () => {
     });
 
     if (response.status) {
-      alert(response.message);
+      // alert(response.message);
       setSuccess(response.message);
 
       loadData();
 
+      setRefresh((prev) => !prev);
       handleActionClose();
     } else {
       setError(response.message);
