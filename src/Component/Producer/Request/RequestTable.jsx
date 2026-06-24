@@ -216,7 +216,11 @@ const RequestTable = ({
 
                             6: [],
 
-                            7: ["rejected", "clarification_required"],
+                            7: [
+                              "resolved",
+                              "rejected",
+                              "clarification_required",
+                            ],
 
                             8: [],
 
