@@ -93,11 +93,18 @@ const RequestTable = ({
           <TableRow sx={{ backgroundColor: "grey.50" }}>
             <TableCell>CASE ID</TableCell>
             <TableCell>TITLE</TableCell>
-            <TableCell>URL's</TableCell>
-            <TableCell>EVIDENCE</TableCell>
-            <TableCell>Report Date</TableCell>
-            <TableCell align="center">View</TableCell>
-            <TableCell align="center">Status</TableCell>
+            <TableCell>TOTAL COMPLAINTS</TableCell>
+            <TableCell>PROCESS COMPLAINTS</TableCell>
+            <TableCell>TOTAL URLS</TableCell>
+            <TableCell>PROCESS URLS</TableCell>
+            <TableCell>TAKEDOWN URLS</TableCell>
+            <TableCell>CLARIFICATION URLS</TableCell>
+            <TableCell>REJECTED URLS</TableCell>
+            {/* <TableCell>URL's</TableCell> */}
+            {/* <TableCell>EVIDENCE</TableCell> */}
+            {/* <TableCell>Report Date</TableCell> */}
+            {/* <TableCell align="center">View</TableCell> */}
+            {/* <TableCell align="center">Status</TableCell> */}
             <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -123,7 +130,7 @@ const RequestTable = ({
                 </Typography>
               </TableCell>
 
-              <TableCell>
+              {/* <TableCell>
                 {request.urls ? (
                   <Button
                     size="small"
@@ -140,10 +147,10 @@ const RequestTable = ({
                     No Urls
                   </Typography>
                 )}
-              </TableCell>
+              </TableCell> */}
 
               {/* Evidence Column */}
-              <TableCell>
+              {/* <TableCell>
                 {request.evidence ? (
                   <Button
                     size="small"
@@ -160,15 +167,141 @@ const RequestTable = ({
                     No evidence
                   </Typography>
                 )}
+              </TableCell> */}
+
+              <TableCell>
+                {request.total_complaint ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.total_complaint}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No Complaints
+                  </Typography>
+                )}
               </TableCell>
 
               <TableCell>
+                {request.proccess_complaint ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.proccess_complaint}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No process Complaints
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {request.total_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.total_url}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No URLs
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {request.proccessed_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.proccessed_url}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No process URLs
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {request.takedown_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.takedown_url}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No takedown URLs
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {request.clarification_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.clarification_url}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No clarification URLs
+                  </Typography>
+                )}
+              </TableCell>
+
+              <TableCell>
+                {request.rejected_url ? (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    // startIcon={<DownloadIcon />}
+                    target="_blank"
+                    sx={{ borderRadius: 2 }}
+                  >
+                    {request.rejected_url}
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No rejected URLs
+                  </Typography>
+                )}
+              </TableCell>
+
+              {/* <TableCell>
                 <Tooltip title={formatDate(request.createdAt)}>
                   <Typography variant="body2" color="text.secondary">
                     {new Date(request.createdAt).toLocaleDateString()}
                   </Typography>
                 </Tooltip>
-              </TableCell>
+              </TableCell> */}
 
               <TableCell align="center">
                 <Tooltip title="View Details">
@@ -186,7 +319,7 @@ const RequestTable = ({
                 </Tooltip>
               </TableCell>
 
-              <TableCell align="center">
+              {/* <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   {request.status && (
                     <ActionMenu
@@ -246,8 +379,9 @@ const RequestTable = ({
                     />
                   )}
                 </Stack>
-              </TableCell>
-              <TableCell align="center">
+              </TableCell> */}
+
+              {/* <TableCell align="center">
                 <Stack direction="row" spacing={1} justifyContent="center">
                   {request.status ? (
                     <Chip
@@ -273,7 +407,7 @@ const RequestTable = ({
                     ""
                   )}
                 </Stack>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>

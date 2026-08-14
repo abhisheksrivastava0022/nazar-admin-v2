@@ -62,7 +62,7 @@ const MainLayout = () => {
 
   return (
     <>
-      <div className="container mb-4">
+      <div className=" mb-4">
         <Header />
         <div className="mt-3">
           <div className="card">
@@ -145,7 +145,7 @@ const MainLayout = () => {
                           <></>
                         )}
 
-                        <button
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("pending-request")
                               ? "active"
@@ -159,9 +159,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(1)}
                           </span>
-                        </button>
+                        </button> */}
 
-                        <button
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("send-request")
                               ? "active"
@@ -176,9 +176,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(7)}
                           </span>
-                        </button>
+                        </button> */}
 
-                        <button
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("clarification-request")
                               ? "active"
@@ -194,8 +194,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(8)}
                           </span>
-                        </button>
-                        <button
+                        </button> */}
+
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("information-received")
                               ? "active"
@@ -211,8 +212,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(9)}
                           </span>
-                        </button>
-                        <button
+                        </button> */}
+
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("resolved")
                               ? "active"
@@ -228,8 +230,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(10)}
                           </span>
-                        </button>
-                        <button
+                        </button> */}
+
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("compliance")
                               ? "active"
@@ -245,8 +248,9 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(6)}
                           </span>
-                        </button>
-                        <button
+                        </button> */}
+
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("rejected")
                               ? "active"
@@ -262,7 +266,7 @@ const MainLayout = () => {
                           <span className="badge bg-secondary ms-2">
                             {getStatusCount(4)}
                           </span>
-                        </button>
+                        </button> */}
 
                         {/* <button
                           class={`nav-link ${location.pathname == "/approved-request" ? "active" : ""}`}
@@ -274,7 +278,7 @@ const MainLayout = () => {
                           <i class="bi bi-check-circle"></i> Approved Request
                         </button> */}
 
-                        <button
+                        {/* <button
                           className={`nav-link ${
                             location.pathname.includes("producer")
                               ? "active"
@@ -286,7 +290,7 @@ const MainLayout = () => {
                           onClick={() => navigate("/producer")}
                         >
                           <i class="bi bi-people"></i> Producer
-                        </button>
+                        </button> */}
 
                         <button
                           className={`nav-link ${
@@ -301,6 +305,7 @@ const MainLayout = () => {
                         >
                           <i class="bi bi-cassette"></i> Intermediary
                         </button>
+
                         {user?.role?.includes("administrator") ? (
                           <button
                             className={`nav-link ${

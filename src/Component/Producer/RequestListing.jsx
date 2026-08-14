@@ -259,8 +259,9 @@ const RequestListing = () => {
   };
 
   const handleViewDetails = (request) => {
-    setViewRequest(request);
-    setDetailsDialogOpen(true);
+    // setViewRequest(request);
+    // setDetailsDialogOpen(true);
+    navigate(`/request-complaint-details/${request.id}`);
   };
 
   const handleActionClick = (request, action) => {
@@ -269,73 +270,6 @@ const RequestListing = () => {
     setComment("");
     setActionDialogOpen(true);
   };
-
-  // const handleActionConfirm = async (additionalData) => {
-  //   if (!selectedRequest || !actionType) return;
-
-  //   setActionLoading(true);
-  //   try {
-  //     // const endpointMap = {
-  //     //   send_to_sehyog: `api/producer/${selectedRequest.id}/send-to-sehyoug`,
-  //     //   clarification_required: `api/producer/${selectedRequest.id}/more-clarification-required`,
-  //     //   rejected: `api/producer/${selectedRequest.id}/reject`,
-  //     //   verified: `api/producer/${selectedRequest.id}/verified`,
-  //     // };
-
-  //     const endpointMap = {
-  //       // pending: `api/producer/${selectedRequest.id}/pending`,
-
-  //       // verified: `api/producer/${selectedRequest.id}/verified`,
-
-  //       // approved: `api/producer/${selectedRequest.id}/approved`,
-
-  //       rejected: `api/producer/${selectedRequest.id}/reject`,
-
-  //       // declined: `api/producer/${selectedRequest.id}/declined`,
-
-  //       // compliance: `api/producer/${selectedRequest.id}/compliance`,
-
-  //       send_to_sehyog: `api/producer/${selectedRequest.id}/send-to-sehyoug`,
-
-  //       clarification_required: `api/producer/${selectedRequest.id}/more-clarification-required`,
-
-  //       // information_received: `api/producer/${selectedRequest.id}/information-received`,
-
-  //       // resolved: `api/producer/${selectedRequest.id}/resolved`,
-  //     };
-
-  //     const endpoint = endpointMap[actionType];
-
-  //     const requestBody = { comment };
-
-  //     // Add intermediary_ids if it's a verification action
-  //     // if (actionType === "verified" && additionalData?.intermediary_ids) {
-  //     //   requestBody.intermediary_ids = additionalData.intermediary_ids;
-  //     // }
-  //     const response = await postRequestApi(endpoint, requestBody);
-
-  //     if (response.status) {
-  //       const actionLabel =
-  //         Object.values(statusConfig).find((item) => item.slug === actionType)
-  //           ?.label || actionType;
-
-  //       setSuccess(`Request ${actionLabel} successfully!`);
-
-  //       loadData();
-  //       handleActionClose();
-  //     } else {
-  //       setError(response.message || `Failed to ${actionType} request`);
-  //     }
-  //   } catch (err) {
-  //     setError(
-  //       `An error occurred while ${actionType === "send" ? "Send" : "rejecting"} the request`,
-  //     );
-  //     console.error("Error processing request:", err);
-  //   } finally {
-  //     setActionLoading(false);
-  //     setTimeout(() => setSuccess(""), 3000);
-  //   }
-  // };
 
   const handleActionConfirm = async () => {
     setActionLoading(true);
@@ -475,7 +409,7 @@ const RequestListing = () => {
             </CardContent>
 
             {/* Pagination */}
-            {data.length > 0 && (
+            {/* {data.length > 0 && (
               <Box
                 sx={{
                   p: 3,
@@ -509,14 +443,14 @@ const RequestListing = () => {
                   }}
                 />
               </Box>
-            )}
+            )} */}
           </Card>
         </>
       ) : (
         <></>
       )}
       {/* Action Dialog */}
-      <ActionDialog
+      {/* <ActionDialog
         open={actionDialogOpen}
         onClose={handleActionClose}
         onConfirm={handleActionConfirm}
@@ -526,17 +460,17 @@ const RequestListing = () => {
         onCommentChange={(e) => setComment(e.target.value)}
         actionLoading={actionLoading}
         statusConfig={statusConfig}
-      />
+      /> */}
 
       {/* Details Dialog */}
-      <DetailsDialog
+      {/* <DetailsDialog
         open={detailsDialogOpen}
         onClose={() => setDetailsDialogOpen(false)}
         request={viewRequest}
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
         statusConfig={statusConfig}
-      />
+      /> */}
     </Container>
   );
 };

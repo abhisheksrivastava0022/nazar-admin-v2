@@ -11,7 +11,7 @@ import {
   Chip,
   debounce,
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
 // Import components
@@ -21,8 +21,12 @@ import RequestTable from "./Request/RequestTable";
 import ActionDialog from "./Request/ActionDialog";
 import DetailsDialog from "./Request/DetailsDialog";
 import { useSelector } from "react-redux";
+import useStatusConfig from "../Utils/StatusConfig";
+import HandleProducerAction from "../Utils/HandleProducerAction";
 
 const RequestListing = () => {
+  const { setRefresh } = useOutletContext();
+
   const user = useSelector((state) => state.user);
 
   const navigate = useNavigate();
@@ -72,6 +76,8 @@ const RequestListing = () => {
   // View details dialog
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [viewRequest, setViewRequest] = useState(null);
+
+  const statusConfig = useStatusConfig();
 
   // Update URL with current filters
   const updateUrlParams = (params) => {
@@ -257,55 +263,109 @@ const RequestListing = () => {
     setDetailsDialogOpen(true);
   };
 
-  const handleActionClick = (request) => {
+  const handleActionClick = (request, action) => {
     setSelectedRequest(request);
-    setActionType(request);
+    setActionType(action);
     setComment("");
     setActionDialogOpen(true);
   };
 
-  const handleActionConfirm = async (additionalData) => {
-    if (!selectedRequest || !actionType) return;
+  // const handleActionConfirm = async (additionalData) => {
+  //   if (!selectedRequest || !actionType) return;
 
+  //   setActionLoading(true);
+  //   try {
+  //     // const endpointMap = {
+  //     //   send_to_sehyog: `api/producer/${selectedRequest.id}/send-to-sehyoug`,
+  //     //   clarification_required: `api/producer/${selectedRequest.id}/more-clarification-required`,
+  //     //   rejected: `api/producer/${selectedRequest.id}/reject`,
+  //     //   verified: `api/producer/${selectedRequest.id}/verified`,
+  //     // };
+
+  //     const endpointMap = {
+  //       // pending: `api/producer/${selectedRequest.id}/pending`,
+
+  //       // verified: `api/producer/${selectedRequest.id}/verified`,
+
+  //       // approved: `api/producer/${selectedRequest.id}/approved`,
+
+  //       rejected: `api/producer/${selectedRequest.id}/reject`,
+
+  //       // declined: `api/producer/${selectedRequest.id}/declined`,
+
+  //       // compliance: `api/producer/${selectedRequest.id}/compliance`,
+
+  //       send_to_sehyog: `api/producer/${selectedRequest.id}/send-to-sehyoug`,
+
+  //       clarification_required: `api/producer/${selectedRequest.id}/more-clarification-required`,
+
+  //       // information_received: `api/producer/${selectedRequest.id}/information-received`,
+
+  //       // resolved: `api/producer/${selectedRequest.id}/resolved`,
+  //     };
+
+  //     const endpoint = endpointMap[actionType];
+
+  //     const requestBody = { comment };
+
+  //     // Add intermediary_ids if it's a verification action
+  //     // if (actionType === "verified" && additionalData?.intermediary_ids) {
+  //     //   requestBody.intermediary_ids = additionalData.intermediary_ids;
+  //     // }
+  //     const response = await postRequestApi(endpoint, requestBody);
+
+  //     if (response.status) {
+  //       const actionLabel =
+  //         Object.values(statusConfig).find((item) => item.slug === actionType)
+  //           ?.label || actionType;
+
+  //       setSuccess(`Request ${actionLabel} successfully!`);
+
+  //       loadData();
+  //       handleActionClose();
+  //     } else {
+  //       setError(response.message || `Failed to ${actionType} request`);
+  //     }
+  //   } catch (err) {
+  //     setError(
+  //       `An error occurred while ${actionType === "send" ? "Send" : "rejecting"} the request`,
+  //     );
+  //     console.error("Error processing request:", err);
+  //   } finally {
+  //     setActionLoading(false);
+  //     setTimeout(() => setSuccess(""), 3000);
+  //   }
+  // };
+
+  const handleActionConfirm = async () => {
     setActionLoading(true);
-    try {
-      // const endpoint =
-      //   actionType === "verified"
-      //     ? `api/producer/${selectedRequest.id}/verified`
-      //     : `api/producer/${selectedRequest.id}/reject`; // send-to-sehyoug
-      const endpoint =
-        actionType === "send"
-          ? `api/producer/${selectedRequest.id}/send-to-sehyoug`
-          : ""; // send-to-sehyoug
-      const requestBody = { comment };
 
-      // Add intermediary_ids if it's a verification action
-      // if (actionType === "verified" && additionalData?.intermediary_ids) {
-      //   requestBody.intermediary_ids = additionalData.intermediary_ids;
-      // }
-      const response = await postRequestApi(endpoint, requestBody);
+    const response = await HandleProducerAction({
+      selectedRequest,
 
-      if (response.status) {
-        setSuccess(
-          `Request ${actionType === "send" ? "send" : "rejected"} successfully!`,
-        );
-        // setSuccess(
-        //   `Request ${actionType === "verified" ? "verified" : "rejected"} successfully!`,
-        // );
-        loadData();
-        handleActionClose();
-      } else {
-        setError(response.message || `Failed to ${actionType} request`);
-      }
-    } catch (err) {
-      setError(
-        `An error occurred while ${actionType === "send" ? "Send" : "rejecting"} the request`,
-      );
-      console.error("Error processing request:", err);
-    } finally {
-      setActionLoading(false);
-      setTimeout(() => setSuccess(""), 3000);
+      actionType,
+
+      comment,
+
+      postRequestApi,
+
+      statusConfig,
+    });
+
+    if (response.status) {
+      // alert(response.message);
+      setSuccess(response.message);
+
+      loadData();
+      setRefresh((prev) => !prev);
+
+      handleActionClose();
+    } else {
+      setError(response.message);
+      handleActionClose();
     }
+
+    setActionLoading(false);
   };
 
   const handleActionClose = () => {
@@ -316,34 +376,6 @@ const RequestListing = () => {
   };
 
   // Helper functions
-  const statusConfig = {
-    1: { label: "Pending", color: "warning" }, //
-    2: { label: "Verified", color: "info" },
-    3: { label: "Approved", color: "success" },
-    4: { label: "Rejected", color: "error" }, //
-    5: { label: "Declined", color: "error" },
-    6: { label: "Compliance", color: "default" }, //
-    7: { label: "Send to Sehyog", color: "success" }, //
-    8: { label: "More Clarification Required ", color: "warning" }, //
-    9: { label: "Information Receved", color: "info" }, //
-    10: { label: "Resolved ", color: "success" }, //
-  };
-
-  // const getStatusChip = (status) => {
-  //   const config = statusConfig[status] || {
-  //     label: "Unknown",
-  //     color: "default",
-  //   };
-
-  //   return (
-  //     <Chip
-  //       label={config.label}
-  //       color={config.color}
-  //       size="small"
-  //       sx={{ fontWeight: 500 }}
-  //     />
-  //   );
-  // };
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -355,18 +387,6 @@ const RequestListing = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  // Calculate statistics
-  const stats = {
-    totalRecords,
-    pending: data.filter((item) => item.status == 1).length,
-    Verified: data.filter((item) => item.status == 2).length,
-    approved: data.filter((item) => item.status == 3).length,
-    rejected: data.filter((item) => item.status == 4).length,
-    declined: data.filter((item) => item.status == 5).length,
-    compliance: data.filter((item) => item.status == 6).length,
-    send: data.filter((item) => item.status == 7).length,
   };
 
   return (
@@ -417,17 +437,7 @@ const RequestListing = () => {
           </Alert>
         )}
       </Box>
-      {/* {!loading && data.length > 0 && (
-        <StatisticsCards
-          totalRecords={stats.totalRecords}
-          pending={stats.pending}
-          Verified={stats.Verified}
-          approved={stats.approved}
-          rejected={stats.rejected}
-          declined={stats.declined}
-          compliance={stats.compliance}
-        />
-      )} */}
+
       {/* Filters */}
       {user?.role?.includes("ministry_level_1") ? (
         <>
@@ -459,13 +469,8 @@ const RequestListing = () => {
                 onVerified={(request, action) =>
                   handleActionClick(request, action)
                 }
-                // onVerified={(request) => handleActionClick(request, "send")}
-                // onVerified={(request) => handleActionClick(request, "verified")}
-                // onApprove={(request) => handleActionClick(request, "approve")}
-                // onReject={(request) => handleActionClick(request, "reject")}
                 formatDate={formatDate}
                 statusConfig={statusConfig}
-                // getStatusChip={getStatusChip}
               />
             </CardContent>
 
@@ -520,6 +525,7 @@ const RequestListing = () => {
         comment={comment}
         onCommentChange={(e) => setComment(e.target.value)}
         actionLoading={actionLoading}
+        statusConfig={statusConfig}
       />
 
       {/* Details Dialog */}
@@ -530,7 +536,6 @@ const RequestListing = () => {
         BASE_URL_API={BASE_URL_API}
         formatDate={formatDate}
         statusConfig={statusConfig}
-        // getStatusChip={getStatusChip}
       />
     </Container>
   );

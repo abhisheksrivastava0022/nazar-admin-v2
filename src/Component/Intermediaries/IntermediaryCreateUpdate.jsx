@@ -26,6 +26,7 @@ import {
   Save as SaveIcon,
   Business as BusinessIcon,
   Email as EmailIcon,
+  Domain as DomainIcon,
   Phone as PhoneIcon,
   Cancel as CancelIcon,
   Person as PersonIcon,
@@ -47,6 +48,7 @@ const IntermediaryCreateUpdate = () => {
     phone: "",
     email: [], // Array of emails
     contact_person: "",
+    accept_default_domain: [], // Array of accepted domains
   });
 
   // UI state
@@ -58,6 +60,9 @@ const IntermediaryCreateUpdate = () => {
   // Email management state
   const [newEmail, setNewEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  const [newDomain, setNewDomain] = useState("");
+  const [domainError, setDomainError] = useState("");
 
   // Validation errors
   const [errors, setErrors] = useState({});
@@ -90,6 +95,26 @@ const IntermediaryCreateUpdate = () => {
             }
           } catch (e) {
             emails = [intermediary.email];
+            console.error("Error parsing email JSON:", e);
+          }
+        }
+
+        // Parse accepted domains if they are stored as a JSON string
+        let accept_default_domain = [];
+        if (intermediary.accept_default_domain) {
+          try {
+            if (Array.isArray(intermediary.accept_default_domain)) {
+              accept_default_domain = intermediary.accept_default_domain;
+            } else if (typeof intermediary.accept_default_domain === "string") {
+              accept_default_domain = JSON.parse(
+                intermediary.accept_default_domain,
+              );
+            } else {
+              accept_default_domain = [intermediary.accept_default_domain];
+            }
+          } catch (e) {
+            accept_default_domain = [intermediary.accept_default_domain];
+            console.error("Error parsing accepted domains JSON:", e);
           }
         }
 
@@ -98,6 +123,7 @@ const IntermediaryCreateUpdate = () => {
           phone: intermediary.phone || "",
           email: emails,
           contact_person: intermediary.contact_person || "",
+          accept_default_domain: accept_default_domain,
           selectondefault: intermediary.selectondefault || false,
         });
       } else {
@@ -181,6 +207,61 @@ const IntermediaryCreateUpdate = () => {
     }
   };
 
+  const handleAddDomain = () => {
+    const domain = newDomain.trim();
+
+    if (!domain) {
+      setDomainError("Domain is required");
+      return;
+    }
+
+    const existingDomains = Array.isArray(formData.accept_default_domain)
+      ? formData.accept_default_domain
+      : [];
+
+    // Check duplicate
+    if (existingDomains.includes(domain)) {
+      setDomainError("Domain already exists");
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      accept_default_domain: [
+        ...(Array.isArray(prev.accept_default_domain)
+          ? prev.accept_default_domain
+          : []),
+        domain,
+      ],
+    }));
+
+    setNewDomain("");
+    setDomainError("");
+
+    if (errors.accept_default_domain) {
+      setErrors((prev) => ({
+        ...prev,
+        accept_default_domain: "",
+      }));
+    }
+  };
+
+  const handleRemoveDomain = (domainToRemove) => {
+    setFormData((prev) => ({
+      ...prev,
+      accept_default_domain: prev.accept_default_domain.filter(
+        (domain) => domain !== domainToRemove,
+      ),
+    }));
+  };
+
+  const handleDomainKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddDomain();
+    }
+  };
+
   // Validate form
   const validateForm = () => {
     const newErrors = {};
@@ -202,6 +283,11 @@ const IntermediaryCreateUpdate = () => {
     // Email validation - at least one email required
     if (formData.email.length === 0) {
       newErrors.email = "At least one email is required";
+    }
+
+    if (formData.accept_default_domain.length === 0) {
+      newErrors.accept_default_domain =
+        "At least one accepted domain is required";
     }
 
     setErrors(newErrors);
@@ -522,6 +608,96 @@ const IntermediaryCreateUpdate = () => {
                       </Typography>
                     )}
                   </Grid>
+
+                  {/* Accepted Domains Section */}
+                  <Grid size={{ md: 12 }}>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Accepted Domains
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Add one or more accepted domains for this intermediary
+                      </Typography>
+                    </Box>
+
+                    {/* Domain List */}
+                    {formData?.accept_default_domain?.length > 0 && (
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ mb: 2, flexWrap: "wrap", gap: 1 }}
+                      >
+                        {formData?.accept_default_domain?.map(
+                          (domain, index) => (
+                            <Chip
+                              key={index}
+                              label={domain}
+                              onDelete={() => handleRemoveDomain(domain)}
+                              color="secondary"
+                              variant="outlined"
+                              deleteIcon={<DeleteIcon />}
+                              sx={{ borderRadius: 2 }}
+                            />
+                          ),
+                        )}
+                      </Stack>
+                    )}
+
+                    {/* Add Domain Input */}
+                    <Box
+                      sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}
+                    >
+                      <TextField
+                        fullWidth
+                        size="small"
+                        placeholder="Enter accepted domain"
+                        value={newDomain}
+                        onChange={(e) => {
+                          setNewDomain(e.target.value);
+                          setDomainError("");
+                        }}
+                        onKeyPress={handleDomainKeyPress}
+                        error={!!domainError}
+                        helperText={domainError}
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <DomainIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                        sx={{
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: 2,
+                          },
+                        }}
+                      />
+                      <Button
+                        variant="outlined"
+                        onClick={handleAddDomain}
+                        startIcon={<AddIcon />}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: "none",
+                          minWidth: "100px",
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </Box>
+
+                    {errors.accept_default_domain && (
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ mt: 1, display: "block" }}
+                      >
+                        {errors.accept_default_domain}
+                      </Typography>
+                    )}
+                  </Grid>
+
+                  {/* Default Selected Checkbox */}
                   <Grid size={{ md: 12 }}>
                     <FormControlLabel
                       control={

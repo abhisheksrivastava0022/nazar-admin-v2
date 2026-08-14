@@ -14,6 +14,7 @@ import UserUpdate from "../Component/User/UserUpdate";
 import MainLayout from "../layout/MainLayout";
 import PendingList from "../Component/Pending/PendingList";
 import SendList from "../Component/SendToSehaog/SendList";
+import RequestComplaintDetails from "../Component/Producer/Request/RequestComplaintDetails";
 
 export const routes = [
   {
@@ -27,6 +28,10 @@ export const routes = [
       {
         path: "/user-request",
         element: <RequestListing />,
+      },
+      {
+        path: "/request-complaint-details/:id",
+        element: <RequestComplaintDetails />,
       },
       {
         path: "/pending-request",
