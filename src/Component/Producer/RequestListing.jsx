@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   Container,
-  Alert,
+  Alert, 
   Pagination,
   Chip,
   debounce,
@@ -337,15 +337,18 @@ const RequestListing = () => {
             alignItems: "center",
             mb: 3,
           }}
-        >
-          <Box>
+        ><div className="page-heading">
+          <Box >
+            
             <Typography variant="h4" fontWeight="bold" color="primary">
               Complaint Management System
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
               Review and manage incoming requests
-            </Typography>
+            </Typography> 
+           
           </Box>
+          </div>
         </Box>
 
         {/* Alerts */}
@@ -393,7 +396,7 @@ const RequestListing = () => {
             onClearProducer={handleClearProducer}
             statusConfig={statusConfig}
           />
-          <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+         <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
             <CardContent sx={{ p: 0 }}>
               <RequestTable
                 data={data}

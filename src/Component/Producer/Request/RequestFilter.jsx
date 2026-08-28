@@ -56,8 +56,7 @@ const RequestFilter = ({
       sx={{
         p: 3,
         mb: 4,
-        borderRadius: 2,
-        backgroundColor: "background.paper",
+      
       }}
     >
       <Grid container spacing={2} alignItems="center">

@@ -62,14 +62,14 @@ const MainLayout = () => {
 
   return (
     <>
-      <div className=" mb-4">
+      <div className="container-fluid mb-4">
         <Header />
         <div className="mt-3">
-          <div className="card">
+          <div className="">
             <div className="">
               {/* Main content area */}
               <div className="row">
-                <div className="col-md-3 g-0">
+                <div className="col-md-3">
                   <div className="menu-header">
                     {/* User Detail's */}
                     <div className="user-detail">
@@ -334,22 +334,22 @@ const MainLayout = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="menu-image">
+                    {/* <div className="menu-image">
                       <img
                         src={`${basePath}/images/menu-img.png`}
                         alt=""
                         className="img-fluid"
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
-                <div className="col-md-9 g-0">
+                <div className="col-md-9">
                   {/* Calling Component By using Outlet */}
                   <Outlet context={{ setRefresh }} />
                 </div>
               </div>
             </div>
-            <div className="card-footer">
+            <div className="mt-4">
               {/* Footer actions or information */}
               <Footer />
             </div>

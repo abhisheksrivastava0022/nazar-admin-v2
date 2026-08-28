@@ -415,7 +415,9 @@ const ProducerListing = () => {
   };
 
   return (
-    <Container maxWidth="xl" style={{ background: "white" }}>
+     <Container maxWidth="xl"
+          sx={{ py: 4, bgcolor: "background.default", minHeight: "100vh" }}
+          >
       {/* Header */}
 
       <Box sx={{ mb: 4 }}>
@@ -448,7 +450,16 @@ const ProducerListing = () => {
                 Manage all producers in the system
               </Typography>
             </Box>
+             
           </Box>
+           <Button
+        variant="outlined"
+        // startIcon={<UploadIcon />}
+        onClick={() => setImportDialogOpen(true)}
+        sx={{ borderRadius: 2, textTransform: "none" }}
+      >
+        Import CSV
+      </Button>
         </Box>
 
         {/* Alerts */}
@@ -474,14 +485,7 @@ const ProducerListing = () => {
           </Alert>
         )}
       </Box>
-      <Button
-        variant="outlined"
-        // startIcon={<UploadIcon />}
-        onClick={() => setImportDialogOpen(true)}
-        sx={{ borderRadius: 2, textTransform: "none" }}
-      >
-        Import CSV
-      </Button>
+    
 
       <CSVImporter
         open={importDialogOpen}

@@ -377,7 +377,9 @@ const IntermediaryCreateUpdate = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 1, background: "white" }}>
+    <Container maxWidth="xl"
+         sx={{ py: 4, bgcolor: "background.default", minHeight: "100vh" }}
+         >
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
@@ -429,14 +431,14 @@ const IntermediaryCreateUpdate = () => {
         <Grid container spacing={3}>
           {/* Main Form */}
           <Grid item xs={12} md={8}>
-            <Card elevation={3} sx={{ borderRadius: 2 }}>
-              <CardHeader
+            <Card  >
+              <CardHeader className="form-title"
                 title="Basic Information"
                 subheader="Enter the intermediary's details"
                 sx={{
-                  backgroundColor: "primary.lighter",
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
+                 
+                
+                 
                 }}
                 titleTypographyProps={{
                   variant: "h6",
@@ -723,17 +725,11 @@ const IntermediaryCreateUpdate = () => {
 
           {/* Form Actions */}
           <Grid size={{ md: 12 }}>
-            <Paper
-              elevation={2}
-              sx={{
-                p: 3,
-                borderRadius: 2,
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 2,
-              }}
+            <div className="text-end mt-0 col-md-12"
+             
+             
             >
-              <Button
+              <Button className=" btn-outline-danger"
                 variant="outlined"
                 onClick={handleCancel}
                 startIcon={<CancelIcon />}
@@ -745,7 +741,7 @@ const IntermediaryCreateUpdate = () => {
               >
                 Cancel
               </Button>
-
+&nbsp;&nbsp;
               <Button
                 type="submit"
                 variant="contained"
@@ -768,7 +764,7 @@ const IntermediaryCreateUpdate = () => {
                     ? "Update Intermediary"
                     : "Create Intermediary"}
               </Button>
-            </Paper>
+            </div>
           </Grid>
         </Grid>
       </form>

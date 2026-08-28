@@ -55,24 +55,30 @@ body {
 
 .nav-link i {
   font-size: 18px;
+    border-radius: 5px!important; padding: 10px ;
+   
 }
 
 .nav-link {
-  margin-bottom: 0;
-  border-bottom: 1px solid #b1b1b1;
+ 
   text-align: start;
   color: black;
-  border-radius: none !important;
+  
+  border-radius: 5px!important; padding: 10px !important;
+  margin-bottom: 10px!important; 
 }
+.nav-link .bg-secondary{  background:#0b4eca!important; float: right;}
 
 .nav-pills .nav-link.active {
   /* color: black; */
-  color: #1d3f8a;
-  background: white;
+  color: #0b4eca;
+  background:#f2f5fb;
   /* border: dashed 1px #1d3f8a; */
   border-right: none;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 600; 
+   border-radius: 5px!important; padding: 10px 15px!important ;
+
 }
 
 /* .nav-link.logout-btn {
@@ -239,15 +245,17 @@ body {
 
 /* New css*/
 .login-bg {
-  background:
-    linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url(../images/login-bg.jpg) center center no-repeat;
-  background-size: cover;
+  background: linear-gradient(
+        115deg,
+        #111d41 0%,
+        #1c3261 50%,
+        #3a608b 100%
+    );
   display: flex;
   color: #fff;
   justify-content: center;
   padding: 20px 0 100px 0;
-  height: 100vh;
+ 
 }
 
 .content-div-text {
@@ -278,12 +286,12 @@ body {
 .logo-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
+  align-items: center; column-gap: 20px;
+ 
 }
 
 .logo-header img {
-  height: 70px;
+  height: 60px;
 }
 
 .otp-title {
@@ -293,12 +301,14 @@ body {
 .otp-card {
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 15px;
-  border: dashed 1px #626262;
+  border: dashed 1px #626262; color: #fff;
 }
 
 .otp-card p {
   color: #fff !important;
 }
+.otp-card button{ border-radius: 25px!important; padding: 15px;}
+.otp-card svg{ color: #fff;}
 
 .login-method-selector .active {
   border: 0px !important;
@@ -357,7 +367,7 @@ body {
 } */
 
 .yellow-text {
-  color: #f3a600;
+  color: #f6c444;
 }
 
 @media screen and (min-device-width: 320px) and (max-device-width: 767px) {
@@ -482,8 +492,11 @@ body {
 
 .menu-header {
   text-align: center;
-  border-right: 1px solid #b1b1b1;
+  
   height: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+
 
   /* position: fixed; */
   & .user-detail {
@@ -497,6 +510,7 @@ body {
     flex-direction: column;
     line-height: normal;
     margin-bottom: 30px;
+   border-radius: 10px 10px 0 0; 
 
     & i {
       font-size: 50px;
@@ -508,7 +522,7 @@ body {
   & .menu-list {
     color: black;
 
-    padding-left: 50px;
+    padding-left: 35px;
     padding-right: 35px;
     margin-bottom: 50px;
   }
@@ -578,7 +592,7 @@ body {
 }
 
 .menu-list .nav-pills.nav-link {
-  border-radius: none !important;
+  padding: 15px;
 }
 
 .menu-list button {
@@ -772,3 +786,21 @@ input:-webkit-autofill {
 .login-bg .MuiInputLabel-root.Mui-focused {
   color: white !important;
 }
+.page-heading{  width: 100%;}
+h4{ font-size: 20px!important; color: #000e37!important;;}
+h6{ font-size: 14px!important;}
+th{ color: #fff!important; }
+.MuiTableRow-head { background-color: #06224d!important;}
+.MuiContainer-root{ border-radius: 10px;}
+.MuiTable-root .MuiButton-colorPrimary{ background-color: #f6f9fd!important; font-weight: 600!important; color: #1976d2!important; font-size: 14px!important;}
+.MuiAvatar-colorDefault { background-color: #f6f9fd!important; font-weight: 600!important; color: #1976d2!important; font-size: 16px!important;}
+.btn-outline-danger { border-color: #dc3545!important; color: #dc3545!important; }
+.btn-outline-danger:hover { border-color: #dc3545!important; color: #fff!important; background: #dc3545!important }
+
+.MuiTypography-subtitle2{font-weight: 600!important;}
+.form-title{ background-color: #06224d!important; border-radius: 10px 10px 0 0; color: #fff;}
+.form-title .MuiCardHeader-title{ color: #fff!important;}
+.form-title .MuiCardHeader-subheader{ color: #c7e9f8!important;}
+.MuiChip-deleteIcon{color: #dc3545!important;}
+th .MuiButtonBase-root {background-color: #f2f5fb!important; }
+td, th{ padding: 10px 16px!important;}

@@ -233,7 +233,9 @@ const IntermediaryListing = () => {
   };
 
   return (
-    <Container maxWidth="xl" style={{ background: "white" }}>
+    <Container maxWidth="xl"
+      sx={{ py: 4, bgcolor: "background.default", minHeight: "100vh" }}
+      >
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Box
@@ -257,6 +259,7 @@ const IntermediaryListing = () => {
             >
               <ArrowBackIcon />
             </IconButton>
+
             <Box>
               <Typography variant="h4" fontWeight="bold" color="primary">
                 Intermediaries Management

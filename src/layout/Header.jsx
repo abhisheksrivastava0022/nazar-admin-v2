@@ -112,7 +112,7 @@ const Header = () => {
             src={`${basePath}/nazar.png`}
             alt="National Anti-Piracy and Zero-Tolerance Action on Rights Infringement"
             className="img-fluid"
-            style={{ maxHeight: "70px" }}
+            style={{ maxHeight: "60px" }}
             loading="lazy"
           />
         </a>
@@ -126,7 +126,7 @@ const Header = () => {
             src={`${basePath}/mib.png`}
             alt="Ministry of Information & Broadcasting"
             className="img-fluid"
-            style={{ maxHeight: "70px" }}
+            style={{ maxHeight: "60px" }}
             loading="lazy"
           />
         </a>
