@@ -11,7 +11,7 @@ import {
   Chip,
   debounce,
 } from "@mui/material";
-import { useNavigate, useLocation, useOutletContext } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
 // Import components
@@ -25,7 +25,7 @@ import useStatusConfig from "../Utils/StatusConfig";
 import HandleProducerAction from "../Utils/HandleProducerAction";
 
 const RequestListing = () => {
-  const { setRefresh } = useOutletContext();
+  // const { setRefresh } = useOutletContext();
 
   const user = useSelector((state) => state.user);
 
@@ -262,6 +262,7 @@ const RequestListing = () => {
     // setViewRequest(request);
     // setDetailsDialogOpen(true);
     navigate(`/request-complaint-details/${request.id}`);
+    // navigate(`request-complaint-details/${request.id}`);
   };
 
   const handleActionClick = (request, action) => {

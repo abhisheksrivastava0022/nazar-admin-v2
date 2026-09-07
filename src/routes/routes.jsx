@@ -11,11 +11,13 @@ import ChangePassword from "../Component/User/ChangePassword";
 import UserCreate from "../Component/User/UserCreate";
 import UserList from "../Component/User/UserList";
 import UserUpdate from "../Component/User/UserUpdate";
-import MainLayout from "../layout/MainLayout";
+// import MainLayout from "../layout/MainLayout copy";
+import MainLayout from "../layout/MainLayout copy";
 import PendingList from "../Component/Pending/PendingList";
 import SendList from "../Component/SendToSehaog/SendList";
 // import RequestComplaintDetails from "../Component/Producer/Request/RequestComplaintDetails";
 import RequestComplaintDetails from "../Component/Producer/Request/RequestComplaintDetails copy";
+import RenderOutlet from "../RenderOutlet";
 
 export const routes = [
   {
@@ -30,6 +32,7 @@ export const routes = [
         path: "/user-request",
         element: <RequestListing />,
       },
+
       {
         path: "/request-complaint-details/:id",
         element: <RequestComplaintDetails />,
@@ -103,10 +106,16 @@ export const routes = [
         element: <ChangePassword />,
       },
 
-      {
-        path: "/history",
-        element: <History />,
-      },
+      // {
+      //   path: "/history",
+      //   element: <History />,
+      // children: [
+      //   {
+      //     path: "details",
+      //     element: <Mask />,
+      //   },
+      // ],
+      // },
 
       {
         path: "/intermediary",

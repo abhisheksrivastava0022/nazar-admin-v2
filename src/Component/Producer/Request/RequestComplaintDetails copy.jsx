@@ -17,6 +17,7 @@ import ProcessedComplaint from "./ComplaintsDetails/ProcessedComplaint";
 import MoreClarificationsRequired from "./ComplaintsDetails/MoreClarificationsRequired";
 import TakedownComplaint from "./ComplaintsDetails/TakedownComplaint";
 import Rejected from "./ComplaintsDetails/Rejected";
+import TotalComplants from "./ComplaintsDetails/TotalComplants";
 
 const RequestComplaintDetails = () => {
   const { id } = useParams();
@@ -121,6 +122,10 @@ const RequestComplaintDetails = () => {
               }}
             >
               <Tab
+                label={`Total Complaints (${data?.total_complaint_urls ?? 0})`}
+              />
+
+              <Tab
                 label={`Pending URLs (${data?.pending_complaint_urls ?? 0})`}
               />
 
@@ -145,14 +150,18 @@ const RequestComplaintDetails = () => {
               <Tab
                 label={`Rejected URLs (${data?.rejected_complaint_urls ?? 0})`}
               />
-
-              <Tab
-                label={`Total Complaints (${data?.total_complaint_urls ?? 0})`}
-              />
             </Tabs>
           </Box>
           <Box sx={{ p: 3 }}>
             {tabValue === 0 ? (
+              <>
+                <TotalComplants
+                  data={data}
+                  intermediaryData={intermediaryData}
+                />
+              </>
+            ) : null}
+            {tabValue === 1 ? (
               <Typography>
                 <PendingUrls
                   data={data}
@@ -162,7 +171,7 @@ const RequestComplaintDetails = () => {
                 />
               </Typography>
             ) : null}
-            {tabValue === 1 ? (
+            {tabValue === 2 ? (
               <>
                 <ProcessedComplaint
                   data={data}
@@ -170,7 +179,7 @@ const RequestComplaintDetails = () => {
                 />
               </>
             ) : null}
-            {tabValue === 2 ? (
+            {tabValue === 3 ? (
               <>
                 <MoreClarificationsRequired
                   data={data}
@@ -178,7 +187,7 @@ const RequestComplaintDetails = () => {
                 />
               </>
             ) : null}
-            {tabValue === 3 ? (
+            {tabValue === 4 ? (
               <>
                 <TakedownComplaint
                   data={data}
@@ -186,19 +195,9 @@ const RequestComplaintDetails = () => {
                 />
               </>
             ) : null}
-            {tabValue === 4 ? (
-              <>
-                <Rejected data={data} intermediaryData={intermediaryData} />
-              </>
-            ) : null}
             {tabValue === 5 ? (
               <>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Total Complaints
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Total complaints: {data?.total_complaints}
-                </Typography>
+                <Rejected data={data} intermediaryData={intermediaryData} />
               </>
             ) : null}
           </Box>

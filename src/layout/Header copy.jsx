@@ -1,70 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import ApiClient from "../API/ApiClient";
 import ApiUser from "../API/ApiUser";
 import { useSelector } from "react-redux";
 const basePath = import.meta.env.VITE_APP_BASE_PREFIX || "/";
 
 const Header = () => {
-  // const dispatch = useDispatch();
-
-  // const { getRequestApiwithLogin } = ApiClient();
-  // const userData = useSelector((state) => state.user);
-
-  // const token = localStorage.getItem("token");
-  // const [showprofile, setShowprofile] = useState(null);
-  // const [showFormFor, setShowFormFor] = useState(null);
-  // const [
-  //   delegate_accredation_admin_access,
-  //   setDelegate_accredation_admin_access,
-  // ] = useState(null);
-
-  // useEffect(() => {
-  //   if (userData?.data) {
-  //     const data = userData.data;
-  //     if (data.delegate_other_details && data.delegate) {
-  //       // navigate('/profile');
-  //       setShowprofile("profile");
-  //     } else if (data.delegate) {
-  //       if (data.delegate_accredation.admin_access) {
-  //         setDelegate_accredation_admin_access(true);
-  //       }
-
-  //       setShowprofile("profile-delegate");
-  //     } else if (data.delegate_other_details) {
-  //       const details = data.delegate_other_details.event_edition_form;
-  //       setShowFormFor({
-  //         url: details.type == 2 ? "delegate-registration" : "delegate-form",
-  //         name: `Please complete your ${details.form_name}`,
-  //       });
-  //     }
-  //   }
-  // }, [userData]);
-
-  // useEffect(() => {
-  //   loadUserData();
-  // }, [token]);
-  // const loadUserData = async () => {
-  //   console.log({ token });
-  //   if (token) {
-  //     const response = await getRequestApiwithLogin("delegate/profile");
-
-  //     if (response.status) {
-  //       dispatch(setUser(response.data));
-  //     }
-  //   }
-  // };
-
-  // const navigate = useNavigate();
-  // const hangleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   navigate("/");
-  // };
-
-  const { userChecklogin, getRequestApi } = ApiClient();
+  const { userChecklogin } = ApiClient();
 
   const { updateMeta } = ApiUser();
-  const navigate = useNavigate();
 
   const [workingWebsite, setWorkingWebsite] = useState(
     localStorage.getItem("website_id"),
@@ -101,30 +44,74 @@ const Header = () => {
 
   return (
     <>
-      <header className="d-flex align-items-center mt-2 py-2 ">
-        <a href="/" className="d-block me-3" aria-label="Home">
-          <img
-            src={`${basePath}/nazar.png`}
-            alt="National Anti-Piracy and Zero-Tolerance Action on Rights Infringement"
-            className="img-fluid"
-            style={{ maxHeight: "60px" }}
-            loading="lazy"
-          />
-        </a>
+      <header className="bg-white shadow-sm rounded-3 px-4 py-2 mb-3 border-bottom border-2 border-primary">
+        <div className="d-flex justify-content-between">
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <a href="/" className="d-block me-3" aria-label="Home">
+              <img
+                src={`${basePath}/nazar.png`}
+                alt="National Anti-Piracy and Zero-Tolerance Action on Rights Infringement"
+                className="img-fluid"
+                style={{ maxHeight: "60px" }}
+                loading="lazy"
+              />
+            </a>
+            <div
+              className="vr d-none d-sm-block"
+              style={{ height: "40px" }}
+            ></div>
 
-        <a
-          href="/"
-          className="parhari d-block"
-          aria-label="Ministry of Information & Broadcasting"
-        >
-          <img
-            src={`${basePath}/mib.png`}
-            alt="Ministry of Information & Broadcasting"
-            className="img-fluid"
-            style={{ maxHeight: "60px" }}
-            loading="lazy"
-          />
-        </a>
+            <a
+              href="/"
+              className="parhari d-block"
+              aria-label="Ministry of Information & Broadcasting"
+            >
+              <img
+                src={`${basePath}/mib.png`}
+                alt="Ministry of Information & Broadcasting"
+                className="img-fluid"
+                style={{ maxHeight: "60px" }}
+                loading="lazy"
+              />
+            </a>
+          </div>
+          <div className="d-flex align-items-center gap-3 flex-wrap">
+            <a
+              href="/"
+              className="parhari d-block"
+              aria-label="Ministry of Information & Broadcasting"
+            >
+              <img
+                src={`${basePath}/images/nfdc.png`}
+                // src="/public/images/nfdc.png"
+                alt="Ministry of Information & Broadcasting"
+                className="img-fluid"
+                style={{ maxHeight: "60px" }}
+                loading="lazy"
+              />
+            </a>
+
+            <div
+              className="vr d-none d-sm-block"
+              style={{ height: "40px" }}
+            ></div>
+
+            <a
+              href="/"
+              className="parhari d-block"
+              aria-label="Ministry of Information & Broadcasting"
+            >
+              <img
+                src={`${basePath}/images/i4cpng.png`}
+                // src="/public/images/i4cpng.png"
+                alt="Ministry of Information & Broadcasting"
+                className="img-fluid"
+                style={{ maxHeight: "60px" }}
+                loading="lazy"
+              />
+            </a>
+          </div>
+        </div>
       </header>
     </>
   );
