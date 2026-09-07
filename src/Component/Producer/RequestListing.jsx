@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   Container,
-  Alert, 
+  Alert,
   Pagination,
   Chip,
   debounce,
@@ -271,36 +271,35 @@ const RequestListing = () => {
     setActionDialogOpen(true);
   };
 
-  const handleActionConfirm = async () => {
-    setActionLoading(true);
+  // const handleActionConfirm = async () => {
+  //   setActionLoading(true);
 
-    const response = await HandleProducerAction({
-      selectedRequest,
+  //   const response = await HandleProducerAction({
+  //     selectedRequest,
 
-      actionType,
+  //     actionType,
 
-      comment,
+  //     comment,
 
-      postRequestApi,
+  //     postRequestApi,
 
-      statusConfig,
-    });
+  //     statusConfig,
+  //   });
 
-    if (response.status) {
-      // alert(response.message);
-      setSuccess(response.message);
+  //   if (response.status) {
+  //     setSuccess(response.message);
 
-      loadData();
-      setRefresh((prev) => !prev);
+  //     loadData();
+  //     setRefresh((prev) => !prev);
 
-      handleActionClose();
-    } else {
-      setError(response.message);
-      handleActionClose();
-    }
+  //     handleActionClose();
+  //   } else {
+  //     setError(response.message);
+  //     handleActionClose();
+  //   }
 
-    setActionLoading(false);
-  };
+  //   setActionLoading(false);
+  // };
 
   const handleActionClose = () => {
     setActionDialogOpen(false);
@@ -329,27 +328,42 @@ const RequestListing = () => {
       sx={{ py: 4, bgcolor: "background.default", minHeight: "100vh" }}
     >
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
-        ><div className="page-heading">
-          <Box >
-            
-            <Typography variant="h4" fontWeight="bold" color="primary">
-              Complaint Management System
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              Review and manage incoming requests
-            </Typography> 
-           
-          </Box>
+      <Box sx={{ mb: 3 }}>
+        <div className="border-bottom border-2 border-primary pb-1 ">
+          <div className="row">
+            <div className="col-md-6">
+              <h4 className="fw-bold text-primary mb-0 fs-5 fs-sm-4">
+                Complaint Management System
+              </h4>
+            </div>
+            <div className="col-md-6">
+              {user?.role?.includes("ministry_level_1") ? (
+                <>
+                  <RequestFilter
+                    selectedProducer={selectedProducer}
+                    onProducerChange={handleProducerChange}
+                    producerSearchQuery={producerSearchQuery}
+                    onProducerSearchChange={handleProducerSearchChange}
+                    producerOptions={producerOptions}
+                    loadingProducers={loadingProducers}
+                    searchQuery={searchQuery}
+                    onSearchChange={handleSearchChange}
+                    onSearchSubmit={handleSearchSubmit}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={handleStatusFilterChange}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    onRefresh={handleRefresh}
+                    onClearProducer={handleClearProducer}
+                    statusConfig={statusConfig}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
-        </Box>
+        </div>
 
         {/* Alerts */}
         {error && (
@@ -378,7 +392,7 @@ const RequestListing = () => {
       {/* Filters */}
       {user?.role?.includes("ministry_level_1") ? (
         <>
-          <RequestFilter
+          {/* <RequestFilter
             selectedProducer={selectedProducer}
             onProducerChange={handleProducerChange}
             producerSearchQuery={producerSearchQuery}
@@ -395,8 +409,8 @@ const RequestListing = () => {
             onRefresh={handleRefresh}
             onClearProducer={handleClearProducer}
             statusConfig={statusConfig}
-          />
-         <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
+          /> */}
+          <Card elevation={3} sx={{ borderRadius: 2, overflow: "hidden" }}>
             <CardContent sx={{ p: 0 }}>
               <RequestTable
                 data={data}

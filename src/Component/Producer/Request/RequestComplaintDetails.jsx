@@ -1,210 +1,261 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import ApiClient from "../../../API/ApiClient";
-import {
-  Box,
-  Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
-import PendingUrls from "./ComplaintsDetails/PendingUrls";
-import ProcessedComplaint from "./ComplaintsDetails/ProcessedComplaint";
-import MoreClarificationsRequired from "./ComplaintsDetails/MoreClarificationsRequired";
-import TakedownComplaint from "./ComplaintsDetails/TakedownComplaint";
-import Rejected from "./ComplaintsDetails/Rejected";
+import { Container } from "@mui/material";
+import { NavLink, Outlet, useParams } from "react-router-dom";
+
+const TABS = [
+  {
+    key: "complaints",
+    label: "Complaints",
+    icon: "bi bi-exclamation-circle",
+    subTabs: [
+      {
+        key: "total",
+        label: "Total Complaints",
+        count: 120,
+      },
+      {
+        key: "pending",
+        label: "Pending",
+        count: 20,
+      },
+    ],
+  },
+  {
+    key: "nazar",
+    label: "Nazar",
+    icon: "bi bi-eye",
+    subTabs: [
+      {
+        key: "total",
+        label: "Total Nazar",
+        count: 50,
+      },
+      {
+        key: "pending",
+        label: "Pending",
+        count: 10,
+      },
+      {
+        key: "resolved",
+        label: "Resolved",
+        count: 40,
+      },
+    ],
+  },
+  {
+    key: "14c",
+    label: "14C",
+    icon: "bi bi-file-earmark-text",
+    subTabs: [
+      {
+        key: "total",
+        label: "Total 14C",
+        count: 30,
+      },
+      {
+        key: "pending",
+        label: "Pending",
+        count: 5,
+      },
+      {
+        key: "resolved",
+        label: "Resolved",
+        count: 25,
+      },
+    ],
+  },
+];
 
 const RequestComplaintDetails = () => {
-  const { id } = useParams();
-  const { getRequestApi } = ApiClient();
-  const [data, setData] = useState(null);
-  const [intermediaryData, setIntermediaryData] = useState(null);
+  const { requestId, tab, subTab } = useParams();
 
-  const [tabValue, setTabValue] = useState(0);
+  const activeTab = TABS.find((item) => item.key === tab) || TABS[0];
 
-  const loadData = async () => {
-    // Fetch data based on the id parameter
-    try {
-      const response = await getRequestApi(
-        `api/producer/complaintDetails/${id}`,
-      );
-      setData(response.data);
-    } catch (error) {
-      console.error("Error fetching request details:", error);
-    }
-  };
-
-  const loadIntermediaryData = async () => {
-    // Fetch intermediary data if needed
-    try {
-      const response = await getRequestApi(`api/intermediary`);
-      setIntermediaryData(response.data);
-    } catch (error) {
-      console.error("Error fetching intermediary data:", error);
-    }
-  };
-
-  React.useEffect(() => {
-    loadData();
-    loadIntermediaryData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
-
-  const handleIntermediaryChange = (event) => {
-    const selectedIntermediaryId = event.target.value;
-    console.log("Selected Intermediary ID:", selectedIntermediaryId);
-    setData((prevData) => ({
-      ...prevData,
-      intermediary_id: selectedIntermediaryId,
-    }));
-  };
+  const activeSubTab =
+    activeTab.subTabs?.find((item) => item.key === subTab) ||
+    activeTab.subTabs?.[0];
 
   return (
-    <>
-      <Container
-        maxWidth="xl"
-        sx={{ py: 4, bgcolor: "background.default", minHeight: "100vh" }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
-        >
-          <Box>
-            <Typography variant="h4" fontWeight="bold" color="primary">
-              Complaint Details for : {data?.producer_movie?.title}
-            </Typography>
-            <Typography variant="subtitle1" color="text.secondary">
-              Review and manage complaints
-            </Typography>
-          </Box>
-        </Box>
+    <Container
+      maxWidth="xl"
+      sx={{
+        py: 4,
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
+      {/* ========================================
+          HEADER
+      ======================================== */}
+      <div className="border-bottom border-2 border-primary pb-3 mb-4">
+        <div className="d-flex align-items-center justify-content-between gap-3">
+          <div>
+            <h4 className="fw-bold text-primary mb-1 fs-5 fs-sm-4">
+              Complaint Details
+            </h4>
 
-        <Box sx={{ width: "100%" }}>
-          <Box
-            sx={{
-              borderBottom: 1,
-              borderColor: "divider",
-              width: "100%",
-            }}
-          >
-            <Tabs
-              value={tabValue}
-              onChange={(event, newValue) => setTabValue(newValue)}
-              variant="scrollable"
-              scrollButtons="auto"
-              allowScrollButtonsMobile
-              aria-label="complaint status tabs"
-              sx={{
-                minHeight: 48,
+            <small className="text-muted">
+              Request ID:{" "}
+              <span className="fw-semibold text-dark">{requestId || "-"}</span>
+            </small>
+          </div>
 
-                "& .MuiTab-root": {
-                  minHeight: 48,
-                  minWidth: "auto",
-                  px: 2,
-                  textTransform: "none",
-                  fontSize: "0.875rem",
-                  fontWeight: 500,
-                  whiteSpace: "nowrap",
-                },
+          {/* Active Tab */}
+          <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+            {activeTab.label}
+          </span>
+        </div>
+      </div>
 
-                "& .MuiTabs-scrollButtons": {
-                  width: 36,
-                },
-              }}
+      {/* ========================================
+          MAIN TABS
+      ======================================== */}
+      <div className="bg-white rounded-3 shadow-sm mb-3">
+        <div className="d-flex  flex-wrap border-bottom">
+          {TABS.map((item) => (
+            <NavLink
+              key={item.key}
+              to={`/request/${requestId}/${item.key}/${item.subTabs[0].key}`}
+              className={({ isActive }) =>
+                `main-tab ${
+                  isActive || item.key === activeTab.key ? "active" : ""
+                }`
+              }
             >
-              <Tab
-                label={`Pending URLs (${data?.pending_complaint_urls ?? 0})`}
-              />
+              <i className={`${item.icon} me-2`}></i>
 
-              <Tab
-                label={`In Progress URLs (${
-                  data?.processed_complaint_urls ?? 0
-                })`}
-              />
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
 
-              <Tab
-                label={`More Clarifications Required (${
-                  data?.moreclarification_complaint_urls ?? 0
-                })`}
-              />
+        {/* ========================================
+            SUB TABS
+        ======================================== */}
+        {activeTab.subTabs?.length > 0 && (
+          <div className="px-3 py-3 bg-light">
+            <div className="d-flex flex-wrap gap-2">
+              {activeTab.subTabs.map((item) => (
+                <NavLink
+                  key={item.key}
+                  to={`/request/${requestId}/${activeTab.key}/${item.key}`}
+                  className={({ isActive }) =>
+                    `sub-tab ${
+                      isActive || item.key === activeSubTab?.key ? "active" : ""
+                    }`
+                  }
+                >
+                  <span>{item.label}</span>
 
-              <Tab
-                label={`Takedown Complaint (${
-                  data?.takedown_complaint_urls ?? 0
-                })`}
-              />
+                  {item.count !== undefined && (
+                    <span className="badge rounded-pill ms-2">
+                      {item.count}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-              <Tab
-                label={`Rejected URLs (${data?.rejected_complaint_urls ?? 0})`}
-              />
+      {/* ========================================
+          ACTIVE TAB INFO
+      ======================================== */}
+      <div className="mb-3">
+        <div className="d-flex align-items-center gap-2">
+          <h5 className="fw-bold mb-0">
+            {activeSubTab?.label || activeTab.label}
+          </h5>
 
-              <Tab
-                label={`Total Complaints (${data?.total_complaint_urls ?? 0})`}
-              />
-            </Tabs>
-          </Box>
-          <Box sx={{ p: 3 }}>
-            {tabValue === 0 ? (
-              <Typography>
-                <PendingUrls
-                  data={data}
-                  intermediaryData={intermediaryData}
-                  handleIntermediaryChange={handleIntermediaryChange}
-                  fetchData={loadData}
-                />
-              </Typography>
-            ) : null}
-            {tabValue === 1 ? (
-              <>
-                <ProcessedComplaint
-                  data={data}
-                  intermediaryData={intermediaryData}
-                />
-              </>
-            ) : null}
-            {tabValue === 2 ? (
-              <>
-                <MoreClarificationsRequired
-                  data={data}
-                  intermediaryData={intermediaryData}
-                />
-              </>
-            ) : null}
-            {tabValue === 3 ? (
-              <>
-                <TakedownComplaint
-                  data={data}
-                  intermediaryData={intermediaryData}
-                />
-              </>
-            ) : null}
-            {tabValue === 4 ? (
-              <>
-                <Rejected data={data} intermediaryData={intermediaryData} />
-              </>
-            ) : null}
-            {tabValue === 5 ? (
-              <>
-                <Typography variant="h6" fontWeight={600} gutterBottom>
-                  Total Complaints
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Total complaints: {data?.total_complaints}
-                </Typography>
-              </>
-            ) : null}
-          </Box>
-        </Box>
-      </Container>
-    </>
+          {activeSubTab?.count !== undefined && (
+            <span className="badge bg-primary rounded-pill">
+              {activeSubTab.count}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ========================================
+          TAB CONTENT
+      ======================================== */}
+      <div className="bg-white rounded-3 shadow-sm border">
+        <Outlet
+          context={{
+            requestId,
+            activeTab,
+            activeSubTab,
+          }}
+        />
+      </div>
+
+      {/* ========================================
+          CSS
+      ======================================== */}
+      <style>{`
+        .main-tab {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          padding: 14px 22px;
+          color: #6c757d;
+          text-decoration: none;
+          font-weight: 600;
+          border-bottom: 3px solid transparent;
+          transition: all 0.2s ease;
+          border:1px solid #ddd;
+          border-radius: 5px 5px 0 0;
+          margin-right:5px;
+        }
+
+        .main-tab:hover {
+          color: #0d6efd;
+          background: rgba(13, 110, 253, 0.04);
+        }
+
+        .main-tab.active {
+          color: #0d6efd;
+          border-color: #0d6efd;
+          background: rgba(13, 110, 253, 0.05);
+        }
+
+        .sub-tab {
+          display: inline-flex;
+          align-items: center;
+          padding: 8px 14px;
+          border-radius: 8px;
+          color: #6c757d;
+          text-decoration: none;
+          background: #fff;
+          border: 1px solid #dee2e6;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .sub-tab:hover {
+          color: #0d6efd;
+          border-color: #0d6efd;
+          background: rgba(13, 110, 253, 0.04);
+        }
+
+        .sub-tab.active {
+          color: #fff;
+          background: #0d6efd;
+          border-color: #0d6efd;
+        }
+
+        .sub-tab .badge {
+          background: #e9ecef;
+          color: #495057;
+          font-size: 11px;
+        }
+
+        .sub-tab.active .badge {
+          background: rgba(255, 255, 255, 0.2);
+          color: #fff;
+        }
+      `}</style>
+    </Container>
   );
 };
 

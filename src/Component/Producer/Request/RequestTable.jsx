@@ -96,10 +96,10 @@ const RequestTable = ({
             <TableCell>TOTAL COMPLAINTS</TableCell>
             <TableCell>PROCESS COMPLAINTS</TableCell>
             <TableCell>TOTAL URLS</TableCell>
-            <TableCell>PROCESS URLS</TableCell>
+            {/* <TableCell>PROCESS URLS</TableCell> */}
             <TableCell>TAKEDOWN URLS</TableCell>
             <TableCell>CLARIFICATION URLS</TableCell>
-            <TableCell>REJECTED URLS</TableCell>
+            {/* <TableCell>REJECTED URLS</TableCell> */}
             {/* <TableCell>URL's</TableCell> */}
             {/* <TableCell>EVIDENCE</TableCell> */}
             {/* <TableCell>Report Date</TableCell> */}
@@ -223,7 +223,7 @@ const RequestTable = ({
                 )}
               </TableCell>
 
-              <TableCell>
+              {/* <TableCell>
                 {request.proccessed_url ? (
                   <Button
                     size="small"
@@ -239,7 +239,7 @@ const RequestTable = ({
                     No process URLs
                   </Typography>
                 )}
-              </TableCell>
+              </TableCell> */}
 
               <TableCell>
                 {request.takedown_url ? (
@@ -277,7 +277,7 @@ const RequestTable = ({
                 )}
               </TableCell>
 
-              <TableCell>
+              {/* <TableCell>
                 {request.rejected_url ? (
                   <Button
                     size="small"
@@ -293,7 +293,7 @@ const RequestTable = ({
                     No rejected URLs
                   </Typography>
                 )}
-              </TableCell>
+              </TableCell> */}
 
               {/* <TableCell>
                 <Tooltip title={formatDate(request.createdAt)}>

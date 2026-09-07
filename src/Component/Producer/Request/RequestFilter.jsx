@@ -26,42 +26,35 @@ const RequestFilter = ({
   // Producer search props
   selectedProducer,
   onProducerChange,
-  producerSearchQuery,
   onProducerSearchChange,
   producerOptions,
   loadingProducers,
+  // producerSearchQuery,
 
   // Search props
-  searchQuery,
-  onSearchChange,
-  onSearchSubmit,
+  // searchQuery,
+  // onSearchChange,
+  // onSearchSubmit,
 
   // Status filter props
-  statusFilter,
-  onStatusFilterChange,
+  // statusFilter,
+  // onStatusFilterChange,
 
   // Pagination props
-  rowsPerPage,
-  onRowsPerPageChange,
+  // rowsPerPage,
+  // onRowsPerPageChange,
 
   // Refresh props
-  onRefresh,
-  onClearProducer,
+  // onRefresh,
+  // onClearProducer,
 
-  statusConfig,
+  // statusConfig,
 }) => {
   return (
-    <Paper
-      elevation={2}
-      sx={{
-        p: 3,
-        mb: 4,
-      
-      }}
-    >
+    <div className="pb-3">
       <Grid container spacing={2} alignItems="center">
         {/* Producer Search Typeahead */}
-        <Grid size={{ md: 3 }}>
+        <Grid size={{ md: 12 }}>
           <Autocomplete
             value={selectedProducer}
             onChange={onProducerChange}
@@ -115,7 +108,7 @@ const RequestFilter = ({
         </Grid>
 
         {/* Search Bar */}
-        <Grid size={{ md: 4 }}>
+        {/* <Grid size={{ md: 4 }}>
           <TextField
             fullWidth
             placeholder="Search by title..."
@@ -140,7 +133,7 @@ const RequestFilter = ({
               sx: { borderRadius: 2 },
             }}
           />
-        </Grid>
+        </Grid> */}
 
         {/* Status Filter */}
         {/* <Grid size={{ md: 2 }}>
@@ -163,7 +156,7 @@ const RequestFilter = ({
         </Grid> */}
 
         {/* Rows Per Page */}
-        <Grid size={{ md: 2 }}>
+        {/* <Grid size={{ md: 2 }}>
           <FormControl fullWidth size="small">
             <InputLabel>Rows</InputLabel>
             <Select
@@ -178,10 +171,10 @@ const RequestFilter = ({
               <MenuItem value={50}>50 per page</MenuItem>
             </Select>
           </FormControl>
-        </Grid>
+        </Grid> */}
 
         {/* Refresh Button */}
-        <Grid size={{ md: 2 }} sx={{ display: "flex", gap: 1 }}>
+        {/* <Grid size={{ md: 2 }} sx={{ display: "flex", gap: 1 }}>
           <Tooltip title="Refresh">
             <IconButton
               onClick={onRefresh}
@@ -206,9 +199,9 @@ const RequestFilter = ({
               Clear Filter
             </Button>
           )}
-        </Grid>
+        </Grid> */}
       </Grid>
-    </Paper>
+    </div>
   );
 };
 
