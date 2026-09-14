@@ -158,6 +158,8 @@ const RequestComplaintDetails = () => {
                 <TotalComplants
                   data={data}
                   intermediaryData={intermediaryData}
+                  handleIntermediaryChange={handleIntermediaryChange}
+                  fetchData={loadData}
                 />
               </>
             ) : null}

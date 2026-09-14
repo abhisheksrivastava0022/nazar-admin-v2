@@ -14,6 +14,8 @@ import ComplantsListing from "../New/Complants/ComplantsListing";
 import FilmsListing from "../New/Films/FilmsListing";
 import FilmDetails from "../New/Films/FilmDetails";
 import ComplaintDetails from "../New/Complants/ComplantsDetails";
+import ClarificationListing from "../New/Clarification/ClarificationListing";
+// import ComplaintDetails from "../New/Complants/ComplantsDetails copy";
 
 export const routes = [
   {
@@ -52,10 +54,20 @@ export const routes = [
           },
         ],
       },
-      // {
-      //   index: true,
-      //   element: <RequestListing />,
-      // },
+      {
+        path: "/more-clarification",
+        element: <RenderOutlet />,
+        children: [
+          {
+            index: true,
+            element: <ClarificationListing />,
+          },
+          {
+            path: "request-complaint-details/:id",
+            element: <RequestComplaintDetails />,
+          },
+        ],
+      },
       {
         path: "/user-request",
         element: <RenderOutlet />,
