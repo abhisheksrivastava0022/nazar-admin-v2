@@ -1,65 +1,37 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import ApiClient from "../../API/ApiClient";
 
-const FilmDetails = ({ film, onBack }) => {
+const FilmDetails = ({ onBack }) => {
+  const { id } = useParams(); // Get ID from URL if editing
   const navigate = useNavigate();
+  const { getRequestApi } = ApiClient();
+
+  const [data, setData] = useState();
+
+  const loadData = async () => {
+    try {
+      const response = await getRequestApi(`api/producer/movie/details/${id}`);
+      if (response.status) {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
   // ============================================
   // STATIC DATA (for demo purposes)
   // ============================================
-  const filmComplaints = [
-    {
-      id: "CMP-001",
-      description:
-        "Unauthorized streaming of Dune: Part Two on multiple platforms including illegal streaming sites and social media platforms.",
-      urls_count: 45,
-      created_at: "2024-01-15 10:30 AM",
-    },
-    {
-      id: "CMP-002",
-      description:
-        "Copyright infringement on social media platforms where users have uploaded full scenes and clips.",
-      urls_count: 32,
-      created_at: "2024-01-14 02:45 PM",
-    },
-    {
-      id: "CMP-003",
-      description:
-        "False DMCA takedown notice submitted by unauthorized party.",
-      urls_count: 12,
-      created_at: "2024-01-13 09:15 AM",
-    },
-    {
-      id: "CMP-004",
-      description:
-        "Pirated copies available on torrent sites and file-sharing platforms.",
-      urls_count: 67,
-      created_at: "2024-01-12 04:20 PM",
-    },
-    {
-      id: "CMP-005",
-      description:
-        "Unauthorized merchandise sales using film branding and imagery.",
-      urls_count: 23,
-      created_at: "2024-01-11 11:30 AM",
-    },
-  ];
 
   const handleComplaintClick = (complaint) => {
     // setSelectedFilm(film);
     // setShowDetailModal(true);
     navigate(`/complants/${complaint.id}`);
-  };
-
-  const stats = {
-    films: 24,
-    totalComplaints: 1847,
-    totalUrls: 12456,
-    // pendingComplaints: 342,
-    pendingUrls: 242,
-    processUrls: 142,
-    complianceUrls: 8234,
-    moreClarificationUrls: 2876,
-    notComplianceUrls: 1346,
   };
 
   const StatCard = ({ icon, label, value, color, onClick, subtitle }) => (
@@ -84,15 +56,25 @@ const FilmDetails = ({ film, onBack }) => {
       </div>
     </div>
   );
+
+  const statusCounts = data?.complaint_url_status_count || [];
+
+  const getStatusCount = (status) => {
+    return statusCounts.find((item) => item.status === status)?.count || 0;
+  };
+
   return (
     <>
       <div className="film-details-container">
         {/* ========== HEADER ========== */}
         <div className="listing-header">
           <div className="header-left">
-            <h2 className="listing-title">
+            <h2
+              className="listing-title"
+              style={{ textTransform: "uppercase" }}
+            >
               <i className="bi bi-film"></i>
-              {film?.name || "Film Name"}
+              {data?.producer_movie?.title || "Film Name"}
             </h2>
             <p className="listing-subtitle">
               View and manage all films with their complaint details
@@ -120,7 +102,7 @@ const FilmDetails = ({ film, onBack }) => {
           <StatCard
             icon="bi bi-chat-square-text"
             label="Total Complaints"
-            value={stats.totalComplaints}
+            value={data?.total_complaint}
             color="#7C3AED"
             onClick={() => {
               navigate("/complants");
@@ -129,51 +111,51 @@ const FilmDetails = ({ film, onBack }) => {
           <StatCard
             icon="bi bi-globe"
             label="Total URLs"
-            value={stats.totalUrls}
+            value={data?.total_complaint_url}
             color="#059669"
           />
           <StatCard
             icon="bi bi-hourglass-split"
             label="Pending URLs"
-            value={stats.pendingUrls}
+            value={getStatusCount(1)}
             color="#D97706"
           />
           <StatCard
             icon="bi bi-arrow-repeat"
             label="Send / Processed URLs"
-            value={stats.processUrls}
+            value={getStatusCount(3)}
             color="#D97706"
           />
           <StatCard
             icon="bi bi-check-circle-fill"
             label="Compliance URLs"
-            value={stats.complianceUrls}
+            value={getStatusCount(5)}
             color="#10B981"
           />
           <StatCard
             icon="bi bi-chat-dots"
             label="More Clarification URLs"
-            value={stats.moreClarificationUrls}
+            value={getStatusCount(2) + getStatusCount(4)}
             color="#F59E0B"
           />
           <StatCard
             icon="bi bi-x-circle-fill"
             label="Not Compliance URLs"
-            value={stats.notComplianceUrls}
+            value={getStatusCount(6)}
             color="#EF4444"
           />
         </div>
 
         {/* ========== COMPLAINTS LIST ========== */}
         <div className="complaints-list-wrapper">
-          {filmComplaints.length === 0 ? (
+          {data?.complaints?.length === 0 ? (
             <div className="empty-state">
               <i className="bi bi-inbox"></i>
               <p>No complaints for this film</p>
             </div>
           ) : (
             <div className="complaints-list">
-              {filmComplaints.map((complaint) => (
+              {data?.complaints?.map((complaint) => (
                 <div
                   key={complaint.id}
                   className="complaint-item"
@@ -188,11 +170,17 @@ const FilmDetails = ({ film, onBack }) => {
                   <div className="complaint-meta">
                     <span>
                       <i className="bi bi-link-45deg"></i>
-                      {complaint.urls_count} URLs
+                      {complaint?.complaint_urls?.length} URLs
                     </span>
                     <span>
                       <i className="bi bi-calendar3"></i>
-                      {complaint.created_at}
+                      {new Date(complaint.createdAt).toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </span>
                   </div>
                 </div>

@@ -7,6 +7,7 @@ const VITE_APP_BASE_PREFIX = `${import.meta.env.VITE_APP_BASE_PREFIX}`;
 const ApiClient = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const userCheckApi = async (endpoint, options = {}) => {
     let apiUrl = `${BASE_URL_API}${endpoint}`;
     try {
@@ -35,7 +36,6 @@ const ApiClient = () => {
     }
   };
   const userChecklogin = async (endpoint, options = {}) => {
-
     let apiUrl = `${BASE_URL_API}${endpoint}`;
     try {
       const response = await fetch(apiUrl, {

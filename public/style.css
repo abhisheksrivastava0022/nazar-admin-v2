@@ -1293,11 +1293,25 @@ body {
   color: #dc2626;
 }
 
+/* .complaint-description {
+  font-size: 14px;
+  color: #475569;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+} */
+
 .complaint-description {
   font-size: 14px;
   color: #475569;
   margin: 0 0 8px 0;
   line-height: 1.4;
+
+  /* 2 line ke baad truncate */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .complaint-meta {
