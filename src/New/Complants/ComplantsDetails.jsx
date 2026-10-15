@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
-const ComplaintDetails = ({ complaint, film, onBack }) => {
+const ComplaintDetails = ({  onBack }) => {
   const { id } = useParams(); // Get ID from URL if editing
 
   const BASE_URL_API = `${import.meta.env.VITE_BASE_URL}/evidence`;
 
-  const { getRequestApi } = ApiClient();
+  const { getRequestApi , postRequestApi } = ApiClient();
 
   const [data, setData] = useState();
 
@@ -29,31 +29,6 @@ const ComplaintDetails = ({ complaint, film, onBack }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  // ============================================
-  // STATIC DATA (for demo purposes)
-  // ============================================
-  const complaintDetails = {
-    id: complaint?.id || "CMP-001",
-    filmName: "Dummy Dummy",
-    status: "Pending",
-    description:
-      "Unauthorized streaming of Dune: Part Two on multiple platforms including illegal streaming sites and social media platforms. The content is being distributed without proper licensing and copyright permissions.",
-    evidence:
-      "Screenshots of streaming sites, URL lists, and DMCA takedown notices have been submitted as evidence. Multiple instances of copyright violation have been documented.",
-    court_order: "/court-order-dune-001.pdf",
-    created_at: "2024-01-15 10:30 AM",
-    updated_at: "2024-01-16 02:15 PM",
-    urls: [
-      { url: "https://example-stream.com/dune-2", status: "Compliant" },
-      { url: "https://social-media.com/video/dune-2", status: "Pending" },
-      {
-        url: "https://torrent-site.com/dune-2-torrent",
-        status: "Not Compliant",
-      },
-      { url: "https://streaming-site.net/dune-part-two", status: "Pending" },
-      { url: "https://video-sharing.com/dune-2-clip", status: "Compliant" },
-    ],
-  };
 
   // ============================================
   // HELPER FUNCTIONS
@@ -73,9 +48,17 @@ const ComplaintDetails = ({ complaint, film, onBack }) => {
 
   const getStatusLabel = (status) => STATUS_MAP[status]?.label ?? "Unknown";
 
-  // ============================================
-  // RENDER
-  // ============================================
+  const handleSendToI4C = async () => {
+    try {
+      const response = await postRequestApi( `api/request-i4c/InsertComplaint`,{
+  "complaint_id":4
+});
+
+      console.log({response})
+    }catch(error){
+        console.error(error)
+  }}
+
   return (
     <>
       <div className="film-details-container">
@@ -94,6 +77,10 @@ const ComplaintDetails = ({ complaint, film, onBack }) => {
             <button className="back-btn" onClick={onBack}>
               <i className="bi bi-arrow-left"></i>
               Back to
+            </button>
+            <button className="back-btn" onClick={handleSendToI4C}>
+              <i className="bi bi-arrow-left"></i>
+              Send
             </button>
           </div>
         </div>
