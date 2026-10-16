@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ApiClient from "../../API/ApiClient";
 
-const ComplaintDetails = ({  onBack }) => {
+const ComplaintDetails = ({ onBack }) => {
   const { id } = useParams(); // Get ID from URL if editing
 
   const BASE_URL_API = `${import.meta.env.VITE_BASE_URL}/evidence`;
 
-  const { getRequestApi , postRequestApi } = ApiClient();
+  const { getRequestApi, postRequestApi } = ApiClient();
 
   const [data, setData] = useState();
 
@@ -50,14 +50,15 @@ const ComplaintDetails = ({  onBack }) => {
 
   const handleSendToI4C = async () => {
     try {
-      const response = await postRequestApi( `api/request-i4c/InsertComplaint`,{
-  "complaint_id":4
-});
+      const response = await postRequestApi(`api/request-i4c/InsertComplaint`, {
+        "complaint_id": Number(id)
+      });
 
-      console.log({response})
-    }catch(error){
-        console.error(error)
-  }}
+      console.log({ response })
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   return (
     <>
@@ -78,10 +79,19 @@ const ComplaintDetails = ({  onBack }) => {
               <i className="bi bi-arrow-left"></i>
               Back to
             </button>
-            <button className="back-btn" onClick={handleSendToI4C}>
-              <i className="bi bi-arrow-left"></i>
-              Send
-            </button>
+            {data?.complaints?.status === 1 ? (<>
+              <button className="back-btn" onClick={handleSendToI4C}>
+                Send
+                <i className="bi bi-arrow-right"></i>
+              </button>
+            </>) : (<>
+              <div className="d-inline-flex align-items-center gap-2 p-2  rounded bg-success-subtle  text-success">
+                <i className="bi bi-check-circle-fill"></i>
+                <span className="fw-semibold small">Send to 14C</span>
+              </div>
+            </>)
+            }
+
           </div>
         </div>
 

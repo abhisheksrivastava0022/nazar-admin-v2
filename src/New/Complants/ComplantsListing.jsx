@@ -1,108 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ApiClient from "../../API/ApiClient";
 
 const ComplaintsListing = () => {
   const navigate = useNavigate();
-  // ============================================
-  // STATIC DATA (with read status)
-  // ============================================
-  const [complaintsData, setComplaintsData] = useState([
-    {
-      id: "CMP-001",
-      film_name: "Dune: Part Two",
-      total_urls: 45,
-      created_date: "2026-09-07",
-      isRead: false, // Unread
-    },
-    {
-      id: "CMP-002",
-      film_name: "Dune: Part Two",
-      total_urls: 32,
-      created_date: "2026-09-06",
-      isRead: true, // Read
-    },
-    {
-      id: "CMP-003",
-      film_name: "Dune: Part Two",
-      total_urls: 12,
-      created_date: "2026-09-05",
-      isRead: false,
-    },
-    {
-      id: "CMP-004",
-      film_name: "Dune: Part Two",
-      total_urls: 67,
-      created_date: "2026-09-04",
-      isRead: true,
-    },
-    {
-      id: "CMP-005",
-      film_name: "Deadpool & Wolverine",
-      total_urls: 78,
-      created_date: "2026-09-07",
-      isRead: false,
-    },
-    {
-      id: "CMP-006",
-      film_name: "Deadpool & Wolverine",
-      total_urls: 45,
-      created_date: "2026-09-06",
-      isRead: true,
-    },
-    {
-      id: "CMP-007",
-      film_name: "Inside Out 2",
-      total_urls: 23,
-      created_date: "2026-09-05",
-      isRead: false,
-    },
-    {
-      id: "CMP-008",
-      film_name: "Gladiator II",
-      total_urls: 156,
-      created_date: "2026-09-03",
-      isRead: false,
-    },
-    {
-      id: "CMP-009",
-      film_name: "Gladiator II",
-      total_urls: 89,
-      created_date: "2026-09-02",
-      isRead: true,
-    },
-    {
-      id: "CMP-010",
-      film_name: "Gladiator II",
-      total_urls: 34,
-      created_date: "2026-09-01",
-      isRead: false,
-    },
-    {
-      id: "CMP-011",
-      film_name: "Moana 2",
-      total_urls: 12,
-      created_date: "2026-08-30",
-      isRead: false,
-    },
-    {
-      id: "CMP-012",
-      film_name: "Wicked",
-      total_urls: 67,
-      created_date: "2026-08-28",
-      isRead: true,
-    },
-  ]);
+  const { getRequestApi, postRequestApi } = ApiClient();
 
   // ============================================
   // STATE
   // ============================================
+  const [complaintsData, setComplaintsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(8);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showMarkAsReadDialog, setShowMarkAsReadDialog] = useState(false);
   const [pendingComplaintId, setPendingComplaintId] = useState(null);
+  const [paginationInfo, setPaginationInfo] = useState({ total: 0, totalPages: 1 });
+
+  // ============================================
+  // FETCH API DATA
+  // ============================================
+  useEffect(() => {
+    loadData(currentPage, searchTerm);
+  }, [currentPage, searchTerm]);
+
+  const loadData = async (page, search = "") => {
+    try {
+      setLoading(true);
+      const response = await getRequestApi(`api/producer/complaints?page=${page}&search=${encodeURIComponent(search)}`);
+
+      if (response && response.status && response.data) {
+        const formattedData = response.data.map((item) => ({
+          id: item.id,
+          originalId: item.id,
+          film_name: item.producer_movie?.title || item.title || "Unknown Film",
+          total_urls: item.complaint_urls ? item.complaint_urls.length : 0,
+          created_date: item.createdAt ? item.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
+          isRead: item.read_complaint === 1,
+          complaint_urls: item.complaint_urls || [],
+          description: item.description
+        }));
+
+        setComplaintsData(formattedData);
+        if (response.pagination) {
+          setPaginationInfo({
+            total: response.pagination.total,
+            totalPages: response.pagination.totalPages || 1
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ============================================
   // HELPER FUNCTIONS
@@ -115,9 +70,7 @@ const ComplaintsListing = () => {
     complaintDate.setHours(0, 0, 0, 0);
 
     const diffTime = today - complaintDate;
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const getDaysOldText = (dateString) => {
@@ -125,14 +78,8 @@ const ComplaintsListing = () => {
 
     if (days === 0) return "Today";
     if (days === 1) return "1 day ago";
-    if (days === 2) return "2 days ago";
-    if (days === 3) return "3 days ago";
-    if (days === 4) return "4 days ago";
-    if (days === 5) return "5 days ago";
-    if (days === 6) return "6 days ago";
     if (days < 7) return `${days} days ago`;
     if (days === 7) return "1 week ago";
-    if (days < 14) return `${Math.floor(days / 7)} weeks ago`;
     if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
     if (days < 365) return `${Math.floor(days / 30)} months ago`;
     return `${Math.floor(days / 365)} years ago`;
@@ -140,36 +87,11 @@ const ComplaintsListing = () => {
 
   const getDaysOldColor = (dateString) => {
     const days = getDaysOld(dateString);
-
     if (days <= 1) return "days-old-fresh";
     if (days <= 3) return "days-old-medium";
     if (days <= 7) return "days-old-old";
     return "days-old-very-old";
   };
-
-  // ============================================
-  // FILTER LOGIC
-  // ============================================
-  const filteredComplaints = complaintsData.filter((complaint) => {
-    const searchMatch =
-      complaint.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      complaint.film_name.toLowerCase().includes(searchTerm.toLowerCase());
-
-    return searchMatch;
-  });
-
-  // Sort by date (newest first)
-  const sortedComplaints = [...filteredComplaints].sort((a, b) => {
-    return new Date(b.created_date) - new Date(a.created_date);
-  });
-
-  // ============================================
-  // PAGINATION
-  // ============================================
-  const totalPages = Math.ceil(sortedComplaints.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentComplaints = sortedComplaints.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -183,61 +105,60 @@ const ComplaintsListing = () => {
     setCurrentPage(1);
   };
 
-  const handleViewClick = (complaint, e) => {
-    e.stopPropagation();
-    setPendingComplaintId(complaint.id);
-
-    if (!complaint.isRead) {
-      setShowMarkAsReadDialog(true);
-    } else {
-      // If already read, just show details
+  const handleRowClick = (complaint) => {
+    // If already read, bypass confirmation dialog completely and go straight to details
+    if (complaint.isRead) {
       setSelectedComplaint(complaint);
-      // setShowDetailModal(true);
+      navigate(`${complaint.originalId || complaint.id}`);
+      setShowDetailModal(true);
+    } else {
+      // If unread, prompt user with the Mark as Read dialog
+      setPendingComplaintId(complaint.id);
+      setShowMarkAsReadDialog(true);
     }
   };
 
-  const handleMarkAsRead = () => {
-    // Mark complaint as read
-    setComplaintsData((prevData) =>
-      prevData.map((complaint) =>
-        complaint.id === pendingComplaintId
-          ? { ...complaint, isRead: true }
-          : complaint,
-      ),
-    );
+  const handleMarkAsRead = async () => {
+    if (!pendingComplaintId) return;
 
-    // Close dialog and show details
-    setShowMarkAsReadDialog(false);
-    const complaint = complaintsData.find((c) => c.id === pendingComplaintId);
-    if (complaint) {
-      // setSelectedComplaint({ ...complaint, isRead: true });
-      navigate(`${complaint.id}`);
-      setShowDetailModal(true);
+    try {
+      setIsSubmitting(true);
+      const response = await postRequestApi(`api/producer/complaints/markread/${pendingComplaintId}`);
+
+      if (response && response.status) {
+        setComplaintsData((prevData) =>
+          prevData.map((complaint) =>
+            complaint.id === pendingComplaintId
+              ? { ...complaint, isRead: true }
+              : complaint
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error marking complaint as read:", error);
+    } finally {
+      setIsSubmitting(false);
+      setShowMarkAsReadDialog(false);
+
+      const complaint = complaintsData.find((c) => c.id === pendingComplaintId);
+      if (complaint) {
+        setSelectedComplaint(complaint);
+        navigate(`${complaint.originalId || complaint.id}`);
+        setShowDetailModal(true);
+      }
+      setPendingComplaintId(null);
     }
-    setPendingComplaintId(null);
   };
 
   const handleSkipMarkAsRead = () => {
-    // Close dialog and show details without marking
     setShowMarkAsReadDialog(false);
     const complaint = complaintsData.find((c) => c.id === pendingComplaintId);
     if (complaint) {
-      // setSelectedComplaint(complaint);
-      navigate(`${complaint.id}`);
+      setSelectedComplaint(complaint);
+      navigate(`${complaint.originalId || complaint.id}`);
       setShowDetailModal(true);
     }
     setPendingComplaintId(null);
-  };
-
-  const handleRowClick = (complaint) => {
-    // If unread, show dialog first
-    if (!complaint.isRead) {
-      setPendingComplaintId(complaint.id);
-      setShowMarkAsReadDialog(true);
-    } else {
-      setSelectedComplaint(complaint);
-      setShowDetailModal(true);
-    }
   };
 
   // ============================================
@@ -256,18 +177,12 @@ const ComplaintsListing = () => {
             Manage and track all complaints across films
           </p>
         </div>
-        <div className="header-right">
-          {/* <button className="btn-primary">
-            <i className="bi bi-plus-lg"></i>
-            New Complaint
-          </button> */}
-        </div>
       </div>
 
       {/* ========== STATS BAR ========== */}
       <div className="stats-bar">
         <div className="stat-item">
-          <span className="stat-value">{complaintsData.length}</span>
+          <span className="stat-value">{paginationInfo.total}</span>
           <span className="stat-label">Total Complaints</span>
         </div>
         <div className="stat-divider"></div>
@@ -287,48 +202,9 @@ const ComplaintsListing = () => {
         <div className="stat-divider"></div>
         <div className="stat-item">
           <span className="stat-value days-old-fresh">
-            {
-              complaintsData.filter((c) => getDaysOld(c.created_date) <= 1)
-                .length
-            }
+            {complaintsData.filter((c) => getDaysOld(c.created_date) <= 1).length}
           </span>
           <span className="stat-label">New (0-1 days)</span>
-        </div>
-        <div className="stat-divider"></div>
-        <div className="stat-item">
-          <span className="stat-value days-old-medium">
-            {
-              complaintsData.filter(
-                (c) =>
-                  getDaysOld(c.created_date) > 1 &&
-                  getDaysOld(c.created_date) <= 3,
-              ).length
-            }
-          </span>
-          <span className="stat-label">2-3 days</span>
-        </div>
-        <div className="stat-divider"></div>
-        <div className="stat-item">
-          <span className="stat-value days-old-old">
-            {
-              complaintsData.filter(
-                (c) =>
-                  getDaysOld(c.created_date) > 3 &&
-                  getDaysOld(c.created_date) <= 7,
-              ).length
-            }
-          </span>
-          <span className="stat-label">4-7 days</span>
-        </div>
-        <div className="stat-divider"></div>
-        <div className="stat-item">
-          <span className="stat-value days-old-very-old">
-            {
-              complaintsData.filter((c) => getDaysOld(c.created_date) > 7)
-                .length
-            }
-          </span>
-          <span className="stat-label">7+ days</span>
         </div>
       </div>
 
@@ -356,7 +232,6 @@ const ComplaintsListing = () => {
         <table className="complaints-table">
           <thead>
             <tr>
-              {/* <th>Status</th> */}
               <th>Complaint ID</th>
               <th>Film Name</th>
               <th>Total URLs</th>
@@ -366,16 +241,22 @@ const ComplaintsListing = () => {
             </tr>
           </thead>
           <tbody>
-            {currentComplaints.length === 0 ? (
+            {loading ? (
               <tr>
-                <td colSpan="7" className="empty-state">
+                <td colSpan="6" className="empty-state">
+                  <p>Loading complaints...</p>
+                </td>
+              </tr>
+            ) : complaintsData.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="empty-state">
                   <i className="bi bi-inbox"></i>
                   <p>No complaints found</p>
                   <span>Try adjusting your search terms</span>
                 </td>
               </tr>
             ) : (
-              currentComplaints.map((complaint) => (
+              complaintsData.map((complaint) => (
                 <tr
                   key={complaint.id}
                   onClick={() => handleRowClick(complaint)}
@@ -385,29 +266,20 @@ const ComplaintsListing = () => {
                     <span className="complaint-id-text">{complaint.id}</span>
                   </td>
                   <td className="film-name-cell">
-                    <div className="film-name-wrapper">
-                      {/* <div className="film-dot"></div> */}
-                      {complaint.film_name}
-                    </div>
+                    <div className="film-name-wrapper">{complaint.film_name}</div>
                   </td>
                   <td>
                     <span className="urls-count">{complaint.total_urls}</span>
                   </td>
                   <td>{complaint.created_date}</td>
                   <td>
-                    <span
-                      className={`days-old-badge ${getDaysOldColor(complaint.created_date)}`}
-                    >
-                      <i
-                        className={`bi bi-${getDaysOld(complaint.created_date) <= 1 ? "clock-history" : "calendar"} me-1`}
-                      ></i>
+                    <span className={`days-old-badge ${getDaysOldColor(complaint.created_date)}`}>
+                      <i className={`bi bi-${getDaysOld(complaint.created_date) <= 1 ? "clock-history" : "calendar"} me-1`}></i>
                       {getDaysOldText(complaint.created_date)}
                     </span>
                   </td>
                   <td>
-                    <span
-                      className={`status-dot ${complaint.isRead ? "read" : "unread"}`}
-                    >
+                    <span className={`status-dot ${complaint.isRead ? "read" : "unread"}`}>
                       <i
                         className={`bi ${complaint.isRead ? "bi-envelope-open" : "bi-envelope"}`}
                         style={{
@@ -417,18 +289,6 @@ const ComplaintsListing = () => {
                       ></i>
                     </span>
                   </td>
-                  {/* <td>
-                    <button
-                      className="action-btn view-btn"
-                      title="View Details"
-                      onClick={(e) => handleViewClick(complaint, e)}
-                    >
-                      <i className="bi bi-eye"></i>
-                    </button>
-                    <button className="action-btn edit-btn" title="Edit">
-                      <i className="bi bi-pencil"></i>
-                    </button>
-                  </td> */}
                 </tr>
               ))
             )}
@@ -437,12 +297,10 @@ const ComplaintsListing = () => {
       </div>
 
       {/* ========== PAGINATION ========== */}
-      {sortedComplaints.length > 0 && (
+      {paginationInfo.totalPages > 1 && (
         <div className="pagination-section">
           <div className="pagination-info">
-            Showing {startIndex + 1} -{" "}
-            {Math.min(endIndex, sortedComplaints.length)} of{" "}
-            {sortedComplaints.length} complaints
+            Page {currentPage} of {paginationInfo.totalPages}
           </div>
           <div className="pagination-buttons">
             <button
@@ -452,7 +310,7 @@ const ComplaintsListing = () => {
             >
               <i className="bi bi-chevron-left"></i>
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: paginationInfo.totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 className={`pagination-btn ${currentPage === page ? "active" : ""}`}
@@ -464,7 +322,7 @@ const ComplaintsListing = () => {
             <button
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === paginationInfo.totalPages}
             >
               <i className="bi bi-chevron-right"></i>
             </button>
@@ -474,11 +332,8 @@ const ComplaintsListing = () => {
 
       {/* ========== MARK AS READ DIALOG ========== */}
       {showMarkAsReadDialog && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowMarkAsReadDialog(false)}
-        >
-          <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay" onClick={() => !isSubmitting && setShowMarkAsReadDialog(false)}>
+          <div className="dialog-content" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
             <div className="dialog-icon">
               <i className="bi bi-eye"></i>
             </div>
@@ -490,20 +345,30 @@ const ComplaintsListing = () => {
               <button
                 className="dialog-btn dialog-btn-primary"
                 onClick={handleMarkAsRead}
+                disabled={isSubmitting}
               >
-                <i className="bi bi-check-lg"></i>
-                Yes, Mark as Read
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Marking...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-check-lg"></i> Yes, Mark as Read
+                  </>
+                )}
               </button>
               <button
                 className="dialog-btn dialog-btn-secondary"
                 onClick={handleSkipMarkAsRead}
+                disabled={isSubmitting}
               >
-                <i className="bi bi-eye"></i>
-                View Without Marking
+                <i className="bi bi-eye"></i> View Without Marking
               </button>
               <button
                 className="dialog-btn dialog-btn-danger"
                 onClick={() => setShowMarkAsReadDialog(false)}
+                disabled={isSubmitting}
               >
                 Cancel
               </button>
@@ -514,23 +379,16 @@ const ComplaintsListing = () => {
 
       {/* ========== DETAIL MODAL ========== */}
       {showDetailModal && selectedComplaint && (
-        <div
-          className="modal-overlay"
-          onClick={() => setShowDetailModal(false)}
-        >
+        <div className="modal-overlay" onClick={() => setShowDetailModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <div>
                 <h3 className="modal-title">
-                  <i className="bi bi-file-text"></i>
-                  Complaint {selectedComplaint.id}
+                  <i className="bi bi-file-text"></i> Complaint {selectedComplaint.id}
                 </h3>
                 <p className="modal-subtitle">{selectedComplaint.film_name}</p>
               </div>
-              <button
-                className="modal-close"
-                onClick={() => setShowDetailModal(false)}
-              >
+              <button className="modal-close" onClick={() => setShowDetailModal(false)}>
                 <i className="bi bi-x-lg"></i>
               </button>
             </div>
@@ -553,60 +411,6 @@ const ComplaintsListing = () => {
                   <label>Created Date</label>
                   <span>{selectedComplaint.created_date}</span>
                 </div>
-                <div className="detail-item">
-                  <label>Days Old</label>
-                  <span
-                    className={`days-old-badge ${getDaysOldColor(selectedComplaint.created_date)}`}
-                  >
-                    <i
-                      className={`bi bi-${getDaysOld(selectedComplaint.created_date) <= 1 ? "clock-history" : "calendar"} me-1`}
-                    ></i>
-                    {getDaysOldText(selectedComplaint.created_date)}
-                  </span>
-                </div>
-                <div className="detail-item">
-                  <label>Status</label>
-                  <span
-                    className={`status-badge ${selectedComplaint.isRead ? "status-read" : "status-unread"}`}
-                  >
-                    <i
-                      className={`bi ${selectedComplaint.isRead ? "bi-check-circle" : "bi-circle"}`}
-                    ></i>
-                    {selectedComplaint.isRead ? "Read" : "Unread"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="detail-actions">
-                {!selectedComplaint.isRead && (
-                  <button
-                    className="btn-primary"
-                    onClick={() => {
-                      setComplaintsData((prevData) =>
-                        prevData.map((c) =>
-                          c.id === selectedComplaint.id
-                            ? { ...c, isRead: true }
-                            : c,
-                        ),
-                      );
-                      setSelectedComplaint({
-                        ...selectedComplaint,
-                        isRead: true,
-                      });
-                    }}
-                  >
-                    <i className="bi bi-check-lg"></i>
-                    Mark as Read
-                  </button>
-                )}
-                <button className="btn-secondary">
-                  <i className="bi bi-link-45deg"></i>
-                  View URLs
-                </button>
-                <button className="btn-primary">
-                  <i className="bi bi-pencil"></i>
-                  Edit Complaint
-                </button>
               </div>
             </div>
           </div>
