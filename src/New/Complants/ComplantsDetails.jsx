@@ -109,7 +109,7 @@ const ComplaintDetails = ({ onBack }) => {
             <label>Created At</label>
             <span>
               {/* {data?.complaints?.createdAt} */}
-              {new Date(data?.complaints.createdAt).toLocaleString("en-IN", {
+              {new Date(data?.complaints?.createdAt).toLocaleString("en-IN", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",

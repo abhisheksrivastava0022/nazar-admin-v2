@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ApiClient from "../../API/ApiClient";
 import FilmsView from "../Films/FilmsView";
 import { useSearchParams } from "react-router-dom";
+import ComplantsView from "../Complants/ComplantsView";
 
 const OverViewLayout = () => {
   // const { postRequestApi, getRequestApi } = ApiClient();
@@ -152,7 +153,20 @@ const OverViewLayout = () => {
           <></>
         )}
 
-        {/* {tab === "total-complaints" ? <FilmsOverView /> : <></>} */}
+        {tab === "total-complaints" ? <>
+          <div className="films-section mb-3">
+            <div className="section-header">
+              <h3 className="section-title">
+                <i className="bi bi-chat-square-text"></i>
+                Latest Complaints
+              </h3>
+              {/* <span className="section-count">{filmsData.length} films</span> */}
+            </div>
+          </div>
+
+          <ComplantsView statsBar={false} searching={false} pagination={false} />
+
+        </> : <></>}
       </div>
     </>
   );

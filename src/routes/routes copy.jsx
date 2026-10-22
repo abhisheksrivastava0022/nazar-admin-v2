@@ -2,21 +2,21 @@ import Login from "../Auth/Login ";
 import IntermediaryListing from "../Component/Intermediaries/IntermediaryListing";
 import IntermediaryCreateUpdate from "../Component/Intermediaries/IntermediaryCreateUpdate";
 import NotFound from "../Component/NotFound";
-import VerifiedRequest from "../Component/Producer/VerifiedRequest";
-import ApprovedListing from "../Component/Producer/ApprovedListing";
 import ProducerListing from "../Component/Producer/ProducerListing";
 import ProducerCreateUpdate from "../Component/Producer/ProducterCreateUpdate";
 import RequestListing from "../Component/Producer/RequestListing";
-import ChangePassword from "../Component/User/ChangePassword";
-import UserCreate from "../Component/User/UserCreate";
-import UserList from "../Component/User/UserList";
-import UserUpdate from "../Component/User/UserUpdate";
 import MainLayout from "../layout/MainLayout";
-import PendingList from "../Component/Pending/PendingList";
-import SendList from "../Component/SendToSehaog/SendList";
 // import RequestComplaintDetails from "../Component/Producer/Request/RequestComplaintDetails";
 import RequestComplaintDetails from "../Component/Producer/Request/RequestComplaintDetails copy";
 import RenderOutlet from "../RenderOutlet";
+import OverViewLayout from "../New/Overview/OverViewLayout";
+import ComplantsListing from "../New/Complants/ComplantsListing";
+import FilmsListing from "../New/Films/FilmsListing";
+import FilmDetails from "../New/Films/FilmDetails";
+import ComplaintDetails from "../New/Complants/ComplantsDetails";
+import ClarificationListing from "../New/Clarification/ClarificationListing";
+import ClarificationDetails from "../New/Clarification/ClarificationDetails";
+// import ComplaintDetails from "../New/Complants/ComplantsDetails copy";
 
 export const routes = [
   {
@@ -25,52 +25,63 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <RequestListing />,
+        element: <OverViewLayout />,
+      },
+      {
+        path: "/complants",
+        element: <RenderOutlet />,
+        children: [
+          {
+            index: true,
+            element: <ComplantsListing />,
+          },
+          {
+            path: ":id",
+            element: <ComplaintDetails />,
+          },
+        ],
+      },
+      {
+        path: "/films",
+        element: <RenderOutlet />,
+        children: [
+          {
+            index: true,
+            element: <FilmsListing />,
+          },
+          {
+            path: ":id",
+            element: <FilmDetails />,
+          },
+        ],
+      },
+      {
+        path: "/more-clarification",
+        element: <RenderOutlet />,
+        children: [
+          {
+            index: true,
+            element: <ClarificationListing />,
+          },
+          {
+            path: ":id",
+            element: <ClarificationDetails />,
+          },
+        ],
       },
       {
         path: "/user-request",
-        element: <RequestListing />,
-      },
-
-      {
-        path: "/request-complaint-details/:id",
-        element: <RequestComplaintDetails />,
-      },
-      {
-        path: "/pending-request",
-        element: <PendingList filterStatus={1} />,
-      },
-      {
-        path: "/clarification-request",
-        element: <PendingList filterStatus={8} />,
-      },
-      {
-        path: "/information-received",
-        element: <PendingList filterStatus={9} />,
-      },
-      {
-        path: "/resolved",
-        element: <PendingList filterStatus={10} />,
-      },
-      {
-        path: "/compliance",
-        element: <PendingList filterStatus={6} />,
-      },
-      {
-        path: "/rejected",
-        element: <PendingList filterStatus={4} />,
-      },
-      {
-        path: "/verified-request",
-        element: <VerifiedRequest />,
-      },
-      {
-        path: "/send-request",
-        element: <SendList />,
-      },
-      {
-        path: "/approved-request",
-        element: <ApprovedListing />,
+        element: <RenderOutlet />,
+        children: [
+          {
+            index: true,
+            element: <RequestListing />,
+          },
+          {
+            path: "request-complaint-details/:id",
+            element: <RequestComplaintDetails />,
+          },
+        ],
       },
       {
         path: "/producer",
@@ -84,38 +95,6 @@ export const routes = [
         path: "/producer/update/:id",
         element: <ProducerCreateUpdate />,
       },
-      {
-        path: "/user",
-        element: <UserList />,
-      },
-      {
-        path: "/user/create",
-        element: <UserCreate />,
-      },
-      {
-        path: "/user/:id",
-        element: <UserUpdate />,
-      },
-      {
-        path: "/change-password",
-        element: <ChangePassword />,
-      },
-      {
-        path: "/change-password/:id",
-        element: <ChangePassword />,
-      },
-
-      // {
-      //   path: "/history",
-      //   element: <History />,
-      // children: [
-      //   {
-      //     path: "details",
-      //     element: <Mask />,
-      //   },
-      // ],
-      // },
-
       {
         path: "/intermediary",
         element: <IntermediaryListing />,
